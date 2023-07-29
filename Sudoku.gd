@@ -3,7 +3,7 @@ var PuzzleGenerator = preload("res://PuzzleGenerator.tscn")
 
 func _ready():
 	var puzzle_generator = PuzzleGenerator.instance()
-	add_child(puzzle_generator)
+	get_parent().add_child(puzzle_generator)  # Add the PuzzleGenerator instance to the parent node
 	var puzzle = puzzle_generator.generate_sudoku()
 	for i in range(81):
 		var cell = Button.new()

@@ -1,18 +1,16 @@
-[gd_scene load_steps=3 format=2]
+[gd_scene load_steps=4 format=2]
 
 [ext_resource path="res://Sudoku.gd" type="Script" id=1]
 [ext_resource path="res://PuzzleGenerator.gd" type="Script" id=2]
+[ext_resource path="res://GameScene.gd" type="Script" id=3]
 
 [node name="GameScene" type="Node2D"]
+script = ExtResource( 3 )
 
 [node name="Sudoku" type="GridContainer" parent="."]
 margin_right = 40.0
 margin_bottom = 40.0
 script = ExtResource( 1 )
-
-[node name="cells" type="Button" parent="Sudoku"]
-margin_right = 12.0
-margin_bottom = 20.0
 
 [node name="PuzzleGeneratorParent" type="Node" parent="."]
 
