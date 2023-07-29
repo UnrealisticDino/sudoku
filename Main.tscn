@@ -1,7 +1,7 @@
 [gd_scene load_steps=3 format=2]
 
 [ext_resource path="res://Options.gd" type="Script" id=1]
-[ext_resource path="res://play.gd" type="Script" id=2]
+[ext_resource path="res://Play.gd" type="Script" id=2]
 
 [node name="Control" type="Control"]
 margin_right = 540.0
@@ -13,7 +13,7 @@ margin_top = 210.0
 margin_right = 388.0
 margin_bottom = 605.0
 
-[node name="play" type="Button" parent="VBoxContainer"]
+[node name="Play" type="Button" parent="VBoxContainer"]
 margin_right = 253.0
 margin_bottom = 20.0
 text = "Play"
@@ -26,6 +26,4 @@ margin_bottom = 44.0
 text = "Options"
 script = ExtResource( 1 )
 
-[connection signal="button_up" from="VBoxContainer/play" to="VBoxContainer/play" method="_on_play_button_up"]
-[connection signal="button_up" from="VBoxContainer/play" to="VBoxContainer/play" method="_on_Button_button_up"]
 [connection signal="button_up" from="VBoxContainer/Options" to="VBoxContainer/Options" method="_on_Options_button_up"]
