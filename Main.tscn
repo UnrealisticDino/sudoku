@@ -26,4 +26,5 @@ margin_bottom = 44.0
 text = "Options"
 script = ExtResource( 1 )
 
+[connection signal="button_up" from="VBoxContainer/Play" to="VBoxContainer/Play" method="_on_Play_button_up"]
 [connection signal="button_up" from="VBoxContainer/Options" to="VBoxContainer/Options" method="_on_Options_button_up"]

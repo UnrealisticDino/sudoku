@@ -9,7 +9,10 @@ func _ready():
 func generate_sudoku() -> Array:
 	grid = []
 	for i in range(9):
-		grid.append([0]*9)
+		var row = []
+		for j in range(9):
+			row.append(0)
+		grid.append(row)
 	fill_diagonal(grid)
 	fill_remaining(grid, 0, 3)
 	remove_numbers(grid, 20)
