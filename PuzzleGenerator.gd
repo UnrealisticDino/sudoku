@@ -4,13 +4,10 @@ extends Node
 func _ready():
 	randomize()  # Add this line
 	var grid = generate_sudoku()
-	print("Generated Sudoku: ", grid)  # Print the generated Sudoku
 	Global.completed_sudoku = grid  # Update the global variable
-	print("Global Sudoku: ", Global.completed_sudoku)  # Print the global Sudoku
 
 func save_sudoku_to_file(grid):
 	var file = File.new()
-	file.open("res://completed_sudoku.txt", File.WRITE)
 	for i in range(9):
 		var row = ""
 		for j in range(9):
@@ -19,7 +16,6 @@ func save_sudoku_to_file(grid):
 	file.close()
 
 func generate_sudoku() -> Array:
-	print("generate_sudoku() called by: ", get_script().resource_path)
 	var grid = []
 	for i in range(9):
 		var row = []

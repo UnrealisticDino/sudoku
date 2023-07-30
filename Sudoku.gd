@@ -1,10 +1,10 @@
 extends GridContainer
-var PuzzleGenerator = preload("res://PuzzleGenerator.tscn")
+var PuzzleCreator = preload("res://PuzzleCreator.gd")  # Load the PuzzleCreator script
 
 func _ready():
-	var puzzle_generator = PuzzleGenerator.instance()
-	get_parent().add_child(puzzle_generator)  # Add the PuzzleGenerator instance to the parent node
-	var puzzle = puzzle_generator.generate_sudoku()
+	var puzzle_creator = PuzzleCreator.new()  # Create a new instance of PuzzleCreator
+	get_parent().add_child(puzzle_creator)  # Add the PuzzleCreator instance to the parent node
+	var puzzle = puzzle_creator.get_puzzle()  # Get the puzzle from PuzzleCreator
 	for i in range(81):
 		var cell = Button.new()
 		cell.text = str(puzzle[i/9][i%9])  # Set the button text to the corresponding puzzle number
