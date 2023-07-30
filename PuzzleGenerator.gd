@@ -1,13 +1,17 @@
+# PuzzleGenerator.gd
 extends Node
 
-var grid : Array
+var Global = preload("res://Scripts/Global.gd")
 
 func _ready():
-	grid = generate_sudoku()
-	print_grid(grid)
+	var grid = generate_sudoku()
+	print("Generated Sudoku: ", grid)  # Print the generated Sudoku
+	Global.completed_sudoku = grid  # Update the global variable
+	print("Global Sudoku: ", Global.completed_sudoku)  # Print the global Sudoku
+
 
 func generate_sudoku() -> Array:
-	grid = []
+	var grid = []
 	for i in range(9):
 		var row = []
 		for j in range(9):
@@ -15,7 +19,6 @@ func generate_sudoku() -> Array:
 		grid.append(row)
 	fill_diagonal(grid)
 	fill_remaining(grid, 0, 3)
-	remove_numbers(grid, 20)
 	return grid
 
 func fill_diagonal(grid : Array):
@@ -85,16 +88,7 @@ func shuffle(array : Array) -> Array:
 		res[i] = res[rand_i]
 		res[rand_i] = temp
 	return res
-
-func remove_numbers(grid : Array, count : int):
-	while count > 0:
-		var cell_id : int = randi() % 81
-		var i : int = int(cell_id/9)
-		var j : int = cell_id%9
-		if grid[i][j] != 0:
-			count -= 1
-			grid[i][j] = 0
-
+	
 func print_grid(grid : Array):
 	for i in range(9):
 		var row : String = ""

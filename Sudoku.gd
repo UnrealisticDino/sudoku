@@ -12,4 +12,3 @@ func _ready():
 	for child in get_children():
 		if child is Control:
 			child.rect_min_size = Vector2(50, 50)
-
