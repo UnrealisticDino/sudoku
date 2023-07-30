@@ -1,16 +1,25 @@
 # PuzzleGenerator.gd
 extends Node
 
-var Global = preload("res://Scripts/Global.gd")
-
 func _ready():
+	randomize()  # Add this line
 	var grid = generate_sudoku()
 	print("Generated Sudoku: ", grid)  # Print the generated Sudoku
 	Global.completed_sudoku = grid  # Update the global variable
 	print("Global Sudoku: ", Global.completed_sudoku)  # Print the global Sudoku
 
+func save_sudoku_to_file(grid):
+	var file = File.new()
+	file.open("res://completed_sudoku.txt", File.WRITE)
+	for i in range(9):
+		var row = ""
+		for j in range(9):
+			row += str(grid[i][j]) + " "
+		file.store_line(row)
+	file.close()
 
 func generate_sudoku() -> Array:
+	print("generate_sudoku() called by: ", get_script().resource_path)
 	var grid = []
 	for i in range(9):
 		var row = []
@@ -88,10 +97,3 @@ func shuffle(array : Array) -> Array:
 		res[i] = res[rand_i]
 		res[rand_i] = temp
 	return res
-	
-func print_grid(grid : Array):
-	for i in range(9):
-		var row : String = ""
-		for j in range(9):
-			row += str(grid[i][j]) + " "
-		print(row)
