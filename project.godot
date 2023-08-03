@@ -10,21 +10,8 @@ config_version=4
 
 [application]
 
-config/name="New Game Project"
-run/main_scene="res://Main.tscn"
+config/name="SudokuGame"
 config/icon="res://icon.png"
-
-[autoload]
-
-Global="*res://Scripts/Global.gd"
-
-[display]
-
-window/size/width=1080
-window/size/height=2400
-window/size/resizable=false
-window/size/test_width=540
-window/size/test_height=1200
 
 [gui]
 
