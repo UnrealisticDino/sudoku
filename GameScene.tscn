@@ -9,5 +9,4 @@ margin_bottom = 40.0
 [node name="SudokuGrid" type="GridContainer" parent="."]
 margin_right = 40.0
 margin_bottom = 40.0
-columns = 9
 script = ExtResource( 1 )

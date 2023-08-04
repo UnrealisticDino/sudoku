@@ -1,22 +1,26 @@
 #SudokuGrid
 extends GridContainer
-
 var selected_cell = null
 
 func _ready():
 	randomize()
-	for i in range(81):
-		var cell = LineEdit.new()
-		cell.max_length = 1 # Limit input to one character
-		cell.connect("mouse_entered", self, "_on_Cell_mouse_entered", [cell])
-		cell.set("editable_by_player", true) # Add custom property
-		add_child(cell)
-	
+	columns = 3 # Main grid has 3 columns
+	var subgrid_scene = preload("res://Subgrid.tscn") # Load the Subgrid scene
+	for i in range(9):
+		var subgrid_container = Control.new()
+		subgrid_container.rect_min_size = Vector2(130, 130) # Set the size of the container, including padding
+		var subgrid = subgrid_scene.instance() # Instantiate the Subgrid scene
+		subgrid_container.add_child(subgrid) # Add the subgrid to the container
+		add_child(subgrid_container) # Add the container to the main grid
+		if (i + 1) % 3 == 0 and i < 8: # Add spacer after every 3 subgrids
+			var spacer = Control.new()
+			spacer.rect_min_size = Vector2(10, 0) # Set the size of the spacer
+			add_child(spacer)
 	var full_grid = generate_full_grid()
 	var clues = 30 # Adjust this number for different difficulty levels
 	var puzzle = generate_puzzle(full_grid, clues)
 	display_puzzle(puzzle)
-	
+
 func _input(event):
 	if event is InputEventKey and event.pressed:
 		var key = event.scancode
@@ -43,23 +47,18 @@ func is_valid_input(cell, number):
 			break
 	if index == -1:
 		return false # Cell not found
-
 	var row = int(index / 9)
 	var col = index % 9
 	var subgrid = int(row / 3) * 3 + int(col / 3)
-	
 	# Check if the number is already present in the same row
 	if str(number) in get_cells_in_row(row):
 		return false
-	
 	# Check if the number is already present in the same column
 	if str(number) in get_cells_in_column(col):
 		return false
-	
 	# Check if the number is already present in the same subgrid
 	if str(number) in get_cells_in_subgrid(subgrid):
 		return false
-	
 	return true
 
 func _on_Cell_text_changed(cell, new_text):
@@ -72,41 +71,47 @@ func validate_sudoku():
 	for row in range(9):
 		if not validate_group(get_cells_in_row(row)):
 			return false
-
 	# Check columns
 	for col in range(9):
 		if not validate_group(get_cells_in_column(col)):
 			return false
-
 	# Check 3x3 subgrids
 	for subgrid in range(9):
 		if not validate_group(get_cells_in_subgrid(subgrid)):
 			return false
-
 	return true
 
 func get_cells_in_row(row):
-	# Return the cells in the specified row
 	var cells = []
 	for i in range(9):
-		cells.append(get_child(row * 9 + i).text)
+		var subgrid_index = int(row / 3) * 3 + int(i / 3)
+		var subgrid_container = get_child(subgrid_index)
+		var subgrid = subgrid_container.get_child(0)
+		var cell = subgrid.get_child((row % 3) * 3 + (i % 3))
+		cells.append(cell.text)
 	return cells
 
 func get_cells_in_column(col):
-	# Return the cells in the specified column
 	var cells = []
 	for i in range(9):
-		cells.append(get_child(i * 9 + col).text)
+		var subgrid_index = int(i / 3) * 3 + int(col / 3)
+		var subgrid_container = get_child(subgrid_index)
+		var subgrid = subgrid_container.get_child(0)
+		var cell = subgrid.get_child((i % 3) * 3 + (col % 3))
+		cells.append(cell.text)
 	return cells
 
-func get_cells_in_subgrid(subgrid):
-	# Return the cells in the specified 3x3 subgrid
+func get_cells_in_subgrid(subgrid_index):
 	var cells = []
-	var row_offset = int(subgrid / 3) * 3
-	var col_offset = (subgrid % 3) * 3
+	var row_offset = int(subgrid_index / 3) * 3
+	var col_offset = (subgrid_index % 3) * 3
 	for row in range(3):
 		for col in range(3):
-			cells.append(get_child((row + row_offset) * 9 + (col + col_offset)).text)
+			var inner_subgrid_index = row_offset + int(row / 3)
+			var subgrid_container = get_child(inner_subgrid_index)
+			var subgrid = subgrid_container.get_child(0)
+			var cell = subgrid.get_child((row % 3) * 3 + (col % 3))
+			cells.append(cell.text)
 	return cells
 
 func validate_group(cells):
@@ -187,14 +192,12 @@ func generate_puzzle(grid, clues):
 	return puzzle
 
 func display_puzzle(puzzle):
-	var index = 0
 	for row in range(9):
 		for col in range(9):
-			var cell = get_child(index)
-			if cell is LineEdit:
-				var value = puzzle[row][col]
-				cell.text = str(value) if value != 0 else ""
-				var is_editable_by_player = value == 0
-				cell.set("editable_by_player", is_editable_by_player) # Set custom property
-				cell.editable = is_editable_by_player # Disable or enable editing
-			index += 1
+			var subgrid_index = int(row / 3) * 3 + int(col / 3)
+			var subgrid_container_index = subgrid_index + int(subgrid_index / 3) # Considering spacers
+			var subgrid_container = get_child(subgrid_container_index) # Get the container, considering spacers
+			var subgrid = subgrid_container.get_child(0) # Get the subgrid inside the container
+			var cell_index = (row % 3) * 3 + (col % 3)
+			var cell = subgrid.get_child(cell_index)
+			cell.text = str(puzzle[row][col]) if puzzle[row][col] != 0 else ""
