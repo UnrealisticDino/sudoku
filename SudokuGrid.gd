@@ -2,6 +2,8 @@
 extends GridContainer
 var selected_cell = null
 
+onready var puzzle_generator = preload("res://PuzzleGenerator.tscn").instance()
+
 func _ready():
 	randomize()
 	var subgrid_scene = preload("res://Subgrid.tscn") # Load the Subgrid scene
@@ -123,34 +125,6 @@ func validate_group(cells):
 			numbers.append(cell)
 	return true
 
-func generate_full_grid():
-	var grid = []
-	for row in range(9):
-		var row_data = []
-		for col in range(9):
-			row_data.append(0)
-		grid.append(row_data)
-	# Fill the diagonal 3x3 subgrids
-	for i in range(0, 9, 3):
-		fill_subgrid(grid, i, i)
-
-	# Fill the remaining cells
-	solve_grid(grid)
-
-	return grid
-
-func fill_subgrid(grid, row, col):
-	var numbers = [1, 2, 3, 4, 5, 6, 7, 8, 9]
-	numbers.shuffle()
-	for i in range(3):
-		for j in range(3):
-			grid[row + i][col + j] = numbers.pop_front()
-
-func solve_grid(grid):
-	var empty_cell = find_empty_cell(grid)
-	if empty_cell == null:
-		return true
-
 	var row = empty_cell[0]
 	var col = empty_cell[1]
 
@@ -163,53 +137,27 @@ func solve_grid(grid):
 
 	return false
 
-func find_empty_cell(grid):
-	for row in range(9):
-		for col in range(9):
-			if grid[row][col] == 0:
-				return [row, col]
-	return null
-
-func is_safe_to_place_number(grid, row, col, num):
-	# Check row, column, and 3x3 subgrid
-	for x in range(9):
-		if grid[row][x] == num or grid[x][col] == num or grid[row - row % 3 + int(x / 3)][col - col % 3 + x % 3] == num:
-			return false
-	return true
-
-func generate_puzzle(grid, clues):
-	var puzzle = []
-	for row in grid:
-		puzzle.append(row.duplicate())
-	var cells_to_remove = 81 - clues
-	while cells_to_remove > 0:
-		var row = randi() % 9
-		var col = randi() % 9
-		if puzzle[row][col] != 0:
-			puzzle[row][col] = 0
-			cells_to_remove -= 1
-	return puzzle
-
 func display_puzzle(puzzle):
 	for row in range(9):
 		for col in range(9):
-			var subgrid_container_index = row / 3 * 4 + col / 3  # Adjusted to account for spacers
-			var cell_index = row % 3 * 3 + col % 3
+			# Calculate the subgrid's container index and the cell's name based on its position in the grid
+			var subgrid_container_index = int(row / 3) * 4 + int(col / 3)  # Adjusted to account for spacers
+			var cell_name = "Cell" + str(row % 3 * 3 + col % 3 + 1)  # This will give names from Cell1 to Cell9
 			
-			var subgrid = get_child(subgrid_container_index)
-			var cell_container = subgrid.get_child(cell_index)
-			if cell_container == null:
-				print("Error: Cell container not found in subgrid at index:", cell_index)
-				continue
-
-			var cell_instance = cell_container.get_node("Cell")  # Get the Cell instance
-			if cell_instance == null:
-				print("Error: Cell instance not found in cell container.")
-				continue
-
-			var cell = cell_instance.get_node("LineEdit")  # Access the LineEdit inside the Cell instance
-			if cell == null:
-				print("Error: LineEdit not found in cell instance.")
-				continue
-
-			cell.text = str(puzzle[row][col]) if puzzle[row][col] != 0 else ""
+			# Get the specific subgrid container and then the subgrid instance
+			var subgrid_container = get_child(subgrid_container_index)
+			var subgrid_instance = subgrid_container.get_child(0)  # Assuming the subgrid is the first child of the container
+			
+			# Get the specific cell instance
+			var cell_instance = subgrid_instance.get_node(cell_name)
+			
+			# Access the LineEdit inside the Cell instance
+			var line_edit = cell_instance.get_node("LineEdit")
+			
+			# Display the puzzle values and set the editable property
+			if puzzle[row][col] != 0:
+				line_edit.text = str(puzzle[row][col])
+				line_edit.editable = false  # Numbers placed by the game are not editable
+			else:
+				line_edit.text = ""
+				line_edit.editable = true  # Empty cells are editable by the player
