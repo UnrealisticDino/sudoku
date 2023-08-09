@@ -1,0 +1,13 @@
+[gd_scene format=2]
+
+[node name="Cell" type="Control"]
+margin_right = 58.0
+margin_bottom = 58.0
+rect_min_size = Vector2( 58, 58 )
+
+[node name="LineEdit" type="LineEdit" parent="."]
+margin_right = 58.0
+margin_bottom = 58.0
+rect_min_size = Vector2( 58, 58 )
+align = 1
+max_length = 1

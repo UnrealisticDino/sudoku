@@ -4,11 +4,10 @@ var selected_cell = null
 
 func _ready():
 	randomize()
-	columns = 3 # Main grid has 3 columns
 	var subgrid_scene = preload("res://Subgrid.tscn") # Load the Subgrid scene
 	for i in range(9):
 		var subgrid_container = Control.new()
-		subgrid_container.rect_min_size = Vector2(130, 130) # Set the size of the container, including padding
+		subgrid_container.rect_min_size = Vector2(190, 190) # Set the size of the container, including padding
 		var subgrid = subgrid_scene.instance() # Instantiate the Subgrid scene
 		subgrid_container.add_child(subgrid) # Add the subgrid to the container
 		add_child(subgrid_container) # Add the container to the main grid
@@ -194,10 +193,23 @@ func generate_puzzle(grid, clues):
 func display_puzzle(puzzle):
 	for row in range(9):
 		for col in range(9):
-			var subgrid_index = int(row / 3) * 3 + int(col / 3)
-			var subgrid_container_index = subgrid_index + int(subgrid_index / 3) # Considering spacers
-			var subgrid_container = get_child(subgrid_container_index) # Get the container, considering spacers
-			var subgrid = subgrid_container.get_child(0) # Get the subgrid inside the container
-			var cell_index = (row % 3) * 3 + (col % 3)
-			var cell = subgrid.get_child(cell_index)
+			var subgrid_container_index = row / 3 * 4 + col / 3  # Adjusted to account for spacers
+			var cell_index = row % 3 * 3 + col % 3
+			
+			var subgrid = get_child(subgrid_container_index)
+			var cell_container = subgrid.get_child(cell_index)
+			if cell_container == null:
+				print("Error: Cell container not found in subgrid at index:", cell_index)
+				continue
+
+			var cell_instance = cell_container.get_node("Cell")  # Get the Cell instance
+			if cell_instance == null:
+				print("Error: Cell instance not found in cell container.")
+				continue
+
+			var cell = cell_instance.get_node("LineEdit")  # Access the LineEdit inside the Cell instance
+			if cell == null:
+				print("Error: LineEdit not found in cell instance.")
+				continue
+
 			cell.text = str(puzzle[row][col]) if puzzle[row][col] != 0 else ""
