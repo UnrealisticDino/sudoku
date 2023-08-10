@@ -2,7 +2,7 @@
 extends Panel
 
 # Nodes
-onready var highlight_identical_digits_checkbox = $HighlightIdenticalDigits
+onready var highlight_identical_digits_checkbox = $VBoxContainer/HighlightIdenticalDigits
 
 # Config file for saving settings
 var config = ConfigFile.new()
@@ -10,8 +10,9 @@ var config = ConfigFile.new()
 func _ready():
 	# Load settings when the scene starts
 	load_settings()
-
-highlight_identical_digits_checkbox.connect("toggled", self, "_on_highlight_identical_digits_toggled")
+	
+	# Connect the signal inside the _ready function
+	highlight_identical_digits_checkbox.connect("toggled", self, "_on_highlight_identical_digits_toggled")
 
 func _on_highlight_identical_digits_toggled(enabled):
 	# Save the highlight identical digits setting

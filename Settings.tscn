@@ -1,17 +1,27 @@
-[gd_scene load_steps=2 format=2]
+[gd_scene load_steps=3 format=2]
 
 [ext_resource path="res://Settings.gd" type="Script" id=1]
+[ext_resource path="res://GoToMainMenu.gd" type="Script" id=2]
 
 [node name="Settings" type="Panel"]
-margin_right = 40.0
-margin_bottom = 40.0
+margin_right = 300.0
+margin_bottom = 139.0
 script = ExtResource( 1 )
 
 [node name="VBoxContainer" type="VBoxContainer" parent="."]
-margin_right = 186.0
-margin_bottom = 40.0
+margin_left = 38.0
+margin_top = 14.0
+margin_right = 266.0
+margin_bottom = 105.0
 
 [node name="HighlightIdenticalDigits" type="CheckBox" parent="VBoxContainer"]
-margin_right = 186.0
+margin_right = 228.0
 margin_bottom = 24.0
 text = "Highlight Identical Digits"
+
+[node name="GoToMainMenu" type="Button" parent="VBoxContainer"]
+margin_top = 28.0
+margin_right = 228.0
+margin_bottom = 48.0
+text = "Back"
+script = ExtResource( 2 )

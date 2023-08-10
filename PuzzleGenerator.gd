@@ -26,7 +26,19 @@ func fill_subgrid(grid, row, col):
 func solve_grid(grid):
 	var empty_cell = find_empty_cell(grid)
 	if empty_cell == null:
-		return true
+		return true # Puzzle is solved
+
+	var row = empty_cell[0]
+	var col = empty_cell[1]
+
+	for num in range(1, 10):
+		if is_safe_to_place_number(grid, row, col, num):
+			grid[row][col] = num
+			if solve_grid(grid):
+				return true # Continue if the solution is found
+			grid[row][col] = 0 # Backtrack if no solution is found
+
+	return false # Trigger backtracking
 
 func find_empty_cell(grid):
 	for row in range(9):

@@ -1,14 +1,13 @@
 #SudokuGrid
 extends GridContainer
 var selected_cell = null
+var highlight_identical_digits = false
 
 onready var puzzle_generator = preload("res://PuzzleGenerator.tscn").instance()
 
 func _ready():
 	randomize()
-	
-	# Load the Subgrid scene and instantiate it multiple times for the Sudoku grid
-	var subgrid_scene = preload("res://Subgrid.tscn")
+	var subgrid_scene = preload("res://Subgrid.tscn") # Load the Subgrid scene
 	for i in range(9):
 		var subgrid_container = Control.new()
 		subgrid_container.rect_min_size = Vector2(190, 190) # Set the size of the container, including padding
@@ -20,19 +19,17 @@ func _ready():
 			spacer.rect_min_size = Vector2(10, 0) # Set the size of the spacer
 			add_child(spacer)
 	
-	# Use the puzzle_generator to generate the puzzle
+	# Create an instance of the PuzzleGenerator scene
+	var puzzle_generator_scene = preload("res://PuzzleGenerator.tscn")
+	var puzzle_generator = puzzle_generator_scene.instance()
+	
+	# Generate the full grid and create a puzzle with clues
 	var full_grid = puzzle_generator.generate_full_grid()
 	var clues = 30 # Adjust this number for different difficulty levels
 	var puzzle = puzzle_generator.generate_puzzle(full_grid, clues)
-	display_puzzle(puzzle)
 	
-	# Connect the selected signal from each cell to the _on_Cell_selected function
-	for i in range(get_child_count()):
-		var subgrid_container = get_child(i)
-		var subgrid = subgrid_container.get_child(0)
-		for j in range(subgrid.get_child_count()):
-			var cell = subgrid.get_child(j)
-			cell.connect("selected", self, "_on_Cell_selected")
+	# Display the puzzle on the grid
+	display_puzzle(puzzle)
 
 func _input(event):
 	if event is InputEventKey and event.pressed:
@@ -44,14 +41,14 @@ func _input(event):
 					selected_cell.text = str(number)
 					update_game_state(selected_cell, number)
 
+func update_game_state(cell, number):
+	# Update the game state based on the selected cell and input number
+	# You can add logic here to check for a win condition, update scores, etc.
+	pass
+
 func _on_Cell_mouse_entered(cell):
 	selected_cell = cell
-	
-func update_game_state(cell, number):
-	# Check if the Sudoku puzzle is solved
-	if validate_sudoku():
-		print("Congratulations! You've solved the puzzle!")
-		
+
 func is_valid_input(cell, number):
 	var index = -1
 	for i in range(get_child_count()):
@@ -78,21 +75,6 @@ func _on_Cell_text_changed(cell, new_text):
 	new_text = str(new_text)
 	if new_text != "" and (int(new_text) < 1 or int(new_text) > 9):
 		cell.text = ""
-		
-func validate_sudoku():
-	# Check rows
-	for row in range(9):
-		if not validate_group(get_cells_in_row(row)):
-			return false
-	# Check columns
-	for col in range(9):
-		if not validate_group(get_cells_in_column(col)):
-			return false
-	# Check 3x3 subgrids
-	for subgrid in range(9):
-		if not validate_group(get_cells_in_subgrid(subgrid)):
-			return false
-	return true
 
 func get_cells_in_row(row):
 	var cells = []
@@ -127,28 +109,6 @@ func get_cells_in_subgrid(subgrid_index):
 			cells.append(cell.text)
 	return cells
 
-func validate_group(cells):
-	# Check that the cells contain no duplicate numbers
-	var numbers = []
-	for cell in cells:
-		if cell != "" and cell in numbers:
-			return false
-		elif cell != "":
-			numbers.append(cell)
-	return true
-
-	var row = empty_cell[0]
-	var col = empty_cell[1]
-
-	for num in range(1, 10):
-		if is_safe_to_place_number(grid, row, col, num):
-			grid[row][col] = num
-			if solve_grid(grid):
-				return true
-			grid[row][col] = 0
-
-	return false
-
 func display_puzzle(puzzle):
 	for row in range(9):
 		for col in range(9):
@@ -173,3 +133,19 @@ func display_puzzle(puzzle):
 			else:
 				line_edit.text = ""
 				line_edit.editable = true  # Empty cells are editable by the player
+
+func _on_Cell_selected(cell):
+	selected_cell = cell
+	if highlight_identical_digits:
+		highlight_identical_cells(cell.text)
+		
+func highlight_identical_cells(number):
+	for i in range(get_child_count()):
+		var subgrid_container = get_child(i)
+		var subgrid = subgrid_container.get_child(0)
+		for j in range(subgrid.get_child_count()):
+			var cell = subgrid.get_child(j)
+			if cell.text == number:
+				cell.add_color_override("font_color", Color(1, 0, 0)) # Highlight in red
+			else:
+				cell.add_color_override("font_color", Color(0, 0, 0)) # Reset to black
