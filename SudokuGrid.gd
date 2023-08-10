@@ -6,7 +6,9 @@ onready var puzzle_generator = preload("res://PuzzleGenerator.tscn").instance()
 
 func _ready():
 	randomize()
-	var subgrid_scene = preload("res://Subgrid.tscn") # Load the Subgrid scene
+	
+	# Load the Subgrid scene and instantiate it multiple times for the Sudoku grid
+	var subgrid_scene = preload("res://Subgrid.tscn")
 	for i in range(9):
 		var subgrid_container = Control.new()
 		subgrid_container.rect_min_size = Vector2(190, 190) # Set the size of the container, including padding
@@ -17,10 +19,20 @@ func _ready():
 			var spacer = Control.new()
 			spacer.rect_min_size = Vector2(10, 0) # Set the size of the spacer
 			add_child(spacer)
-	var full_grid = generate_full_grid()
+	
+	# Use the puzzle_generator to generate the puzzle
+	var full_grid = puzzle_generator.generate_full_grid()
 	var clues = 30 # Adjust this number for different difficulty levels
-	var puzzle = generate_puzzle(full_grid, clues)
+	var puzzle = puzzle_generator.generate_puzzle(full_grid, clues)
 	display_puzzle(puzzle)
+	
+	# Connect the selected signal from each cell to the _on_Cell_selected function
+	for i in range(get_child_count()):
+		var subgrid_container = get_child(i)
+		var subgrid = subgrid_container.get_child(0)
+		for j in range(subgrid.get_child_count()):
+			var cell = subgrid.get_child(j)
+			cell.connect("selected", self, "_on_Cell_selected")
 
 func _input(event):
 	if event is InputEventKey and event.pressed:

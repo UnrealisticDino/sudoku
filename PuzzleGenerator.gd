@@ -1,3 +1,4 @@
+#PuzzleGenerator
 extends Node
 
 func generate_full_grid():
