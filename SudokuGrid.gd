@@ -1,9 +1,7 @@
 #SudokuGrid
 extends GridContainer
 var selected_cell = null
-var highlight_identical_digits = false
-
-onready var puzzle_generator = preload("res://PuzzleGenerator.tscn").instance()
+var highlight_identical_digits = true
 
 func _ready():
 	randomize()
@@ -14,20 +12,24 @@ func _ready():
 		var subgrid = subgrid_scene.instance() # Instantiate the Subgrid scene
 		subgrid_container.add_child(subgrid) # Add the subgrid to the container
 		add_child(subgrid_container) # Add the container to the main grid
+		for j in range(subgrid.get_child_count()):
+			var cell_instance = subgrid.get_child(j) # Get the Cell instance
+			var line_edit = cell_instance.get_node("LineEdit") # Get the LineEdit node inside the Cell
+			line_edit.connect("cell_selected", self, "_on_Cell_selected")
 		if (i + 1) % 3 == 0 and i < 8: # Add spacer after every 3 subgrids
 			var spacer = Control.new()
 			spacer.rect_min_size = Vector2(10, 0) # Set the size of the spacer
 			add_child(spacer)
-	
+
 	# Create an instance of the PuzzleGenerator scene
 	var puzzle_generator_scene = preload("res://PuzzleGenerator.tscn")
 	var puzzle_generator = puzzle_generator_scene.instance()
-	
+
 	# Generate the full grid and create a puzzle with clues
 	var full_grid = puzzle_generator.generate_full_grid()
 	var clues = 30 # Adjust this number for different difficulty levels
 	var puzzle = puzzle_generator.generate_puzzle(full_grid, clues)
-	
+
 	# Display the puzzle on the grid
 	display_puzzle(puzzle)
 
@@ -46,8 +48,26 @@ func update_game_state(cell, number):
 	# You can add logic here to check for a win condition, update scores, etc.
 	pass
 
-func _on_Cell_mouse_entered(cell):
+func _on_Cell_selected(cell):
+	print("Cell picked:", cell.text) # Debugging print statement
 	selected_cell = cell
+	print(Global.highlight_identical_digits) # Access the Singleton's variable
+	if Global.highlight_identical_digits: # Access the Singleton's variable
+		print("hello world")
+		highlight_identical_cells(cell.text)
+
+func highlight_identical_cells(digit):
+	print("this is qorking")
+	for i in range(get_child_count()):
+		var subgrid_container = get_child(i)
+		if subgrid_container is Control:
+			var subgrid = subgrid_container.get_child(0)
+			for j in range(subgrid.get_child_count()):
+				var cell_instance = subgrid.get_child(j)
+				var line_edit = cell_instance.get_node("LineEdit")
+				if line_edit.text == digit:
+					# Apply highlighting to the cell (e.g., change background color)
+					line_edit.add_color_override("font_color", Color(1, 0, 0)) # Example: change text color to red
 
 func is_valid_input(cell, number):
 	var index = -1
@@ -133,19 +153,3 @@ func display_puzzle(puzzle):
 			else:
 				line_edit.text = ""
 				line_edit.editable = true  # Empty cells are editable by the player
-
-func _on_Cell_selected(cell):
-	selected_cell = cell
-	if highlight_identical_digits:
-		highlight_identical_cells(cell.text)
-		
-func highlight_identical_cells(number):
-	for i in range(get_child_count()):
-		var subgrid_container = get_child(i)
-		var subgrid = subgrid_container.get_child(0)
-		for j in range(subgrid.get_child_count()):
-			var cell = subgrid.get_child(j)
-			if cell.text == number:
-				cell.add_color_override("font_color", Color(1, 0, 0)) # Highlight in red
-			else:
-				cell.add_color_override("font_color", Color(0, 0, 0)) # Reset to black

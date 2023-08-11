@@ -1,7 +1,8 @@
-[gd_scene load_steps=3 format=2]
+[gd_scene load_steps=4 format=2]
 
 [ext_resource path="res://Settings.gd" type="Script" id=1]
 [ext_resource path="res://GoToMainMenu.gd" type="Script" id=2]
+[ext_resource path="res://HighlightIdenticalDigits.gd" type="Script" id=3]
 
 [node name="Settings" type="Panel"]
 margin_right = 300.0
@@ -18,6 +19,7 @@ margin_bottom = 105.0
 margin_right = 228.0
 margin_bottom = 24.0
 text = "Highlight Identical Digits"
+script = ExtResource( 3 )
 
 [node name="GoToMainMenu" type="Button" parent="VBoxContainer"]
 margin_top = 28.0
