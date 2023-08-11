@@ -1,7 +1,6 @@
 #SudokuGrid
 extends GridContainer
 var selected_cell = null
-var highlight_identical_digits = true
 
 func _ready():
 	randomize()
@@ -49,25 +48,23 @@ func update_game_state(cell, number):
 	pass
 
 func _on_Cell_selected(cell):
-	print("Cell picked:", cell.text) # Debugging print statement
 	selected_cell = cell
-	print(Global.highlight_identical_digits) # Access the Singleton's variable
-	if Global.highlight_identical_digits: # Access the Singleton's variable
-		print("hello world")
+	if Global.highlight_identical_digits: 
 		highlight_identical_cells(cell.text)
 
 func highlight_identical_cells(digit):
-	print("this is qorking")
+	print("Highlighting cells with digit:", digit)
 	for i in range(get_child_count()):
 		var subgrid_container = get_child(i)
-		if subgrid_container is Control:
-			var subgrid = subgrid_container.get_child(0)
+		if subgrid_container is Control and subgrid_container.get_child_count() > 0:
+			var subgrid = subgrid_container.get_child(0) # Get the Subgrid instance
 			for j in range(subgrid.get_child_count()):
 				var cell_instance = subgrid.get_child(j)
 				var line_edit = cell_instance.get_node("LineEdit")
-				if line_edit.text == digit:
-					# Apply highlighting to the cell (e.g., change background color)
-					line_edit.add_color_override("font_color", Color(1, 0, 0)) # Example: change text color to red
+				if line_edit.text == str(digit): # Make sure to compare with the string representation of the digit
+					print("Highlighting cell with text:", line_edit.text)
+					line_edit.set("custom_colors/font_color", Color(1, 0, 0)) # Example: change font color to red
+
 
 func is_valid_input(cell, number):
 	var index = -1

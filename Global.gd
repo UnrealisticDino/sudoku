@@ -1,6 +1,6 @@
 extends Node
 
-var highlight_identical_digits = true
+var highlight_identical_digits = false
 
 func toggle_highlight(value):
 	highlight_identical_digits = value
