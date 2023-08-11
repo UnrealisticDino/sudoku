@@ -65,7 +65,6 @@ func highlight_identical_cells(digit):
 					print("Highlighting cell with text:", line_edit.text)
 					line_edit.set("custom_colors/font_color", Color(1, 0, 0)) # Example: change font color to red
 
-
 func is_valid_input(cell, number):
 	var index = -1
 	for i in range(get_child_count()):
