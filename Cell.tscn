@@ -1,6 +1,8 @@
-[gd_scene load_steps=2 format=2]
+[gd_scene load_steps=4 format=2]
 
 [ext_resource path="res://Cell.gd" type="Script" id=1]
+[ext_resource path="res://DefaultImages/numbers.jpg" type="Texture" id=2]
+[ext_resource path="res://ImageDisplay.gd" type="Script" id=3]
 
 [node name="Cell" type="Control"]
 margin_right = 58.0
@@ -14,3 +16,9 @@ rect_min_size = Vector2( 58, 58 )
 align = 1
 max_length = 1
 script = ExtResource( 1 )
+
+[node name="ImageDisplay" type="Sprite" parent="."]
+position = Vector2( 29, 31 )
+scale = Vector2( 0.223139, 0.223139 )
+texture = ExtResource( 2 )
+script = ExtResource( 3 )
