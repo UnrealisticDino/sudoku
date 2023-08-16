@@ -18,7 +18,9 @@ max_length = 1
 script = ExtResource( 1 )
 
 [node name="ImageDisplay" type="Sprite" parent="."]
-position = Vector2( 29, 31 )
-scale = Vector2( 0.223139, 0.223139 )
+position = Vector2( 27, 27 )
+scale = Vector2( 0.700501, 0.700501 )
 texture = ExtResource( 2 )
+region_enabled = true
+region_rect = Rect2( 0, 0, 240, 240 )
 script = ExtResource( 3 )

@@ -128,6 +128,8 @@ func get_cells_in_subgrid(subgrid_index):
 func display_puzzle(puzzle):
 	for row in range(9):
 		for col in range(9):
+			
+			# Display the puzzle values and set the editable property
 			# Calculate the subgrid's container index and the cell's name based on its position in the grid
 			var subgrid_container_index = int(row / 3) * 4 + int(col / 3)  # Adjusted to account for spacers
 			var cell_name = "Cell" + str(row % 3 * 3 + col % 3 + 1)  # This will give names from Cell1 to Cell9
@@ -146,6 +148,10 @@ func display_puzzle(puzzle):
 			if puzzle[row][col] != 0:
 				line_edit.text = str(puzzle[row][col])
 				line_edit.editable = false  # Numbers placed by the game are not editable
+				
+				# Access the ImageDisplay node and set the number
+				var image_display = cell_instance.get_node("ImageDisplay")
+				image_display.set_number(puzzle[row][col])
 			else:
 				line_edit.text = ""
 				line_edit.editable = true  # Empty cells are editable by the player

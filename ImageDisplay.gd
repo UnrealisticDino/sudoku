@@ -1,11 +1,11 @@
 #ImageDisplay
 extends Sprite
 
-# Width and height of each individual cell in the sprite sheet
-var cell_width = self.texture.get_width() / 3
-var cell_height = self.texture.get_height() / 3
-
 func set_number(value):
+
+	var cell_width = self.texture.get_width() / 3
+	var cell_height = self.texture.get_height() / 3
+
 	# Define a dictionary to map numbers to their positions in the 3x3 grid
 	var number_positions = {
 		3: Vector2(0, 0),
@@ -29,3 +29,7 @@ func set_number(value):
 	# Set the region_rect to display the correct number
 	self.region_rect = Rect2(x_position, y_position, cell_width, cell_height)
 	self.region_enabled = true
+
+func clear_overlay():
+	self.region_enabled = false
+	self.texture = null
