@@ -47,10 +47,18 @@ func update_game_state(cell, number):
 	# You can add logic here to check for a win condition, update scores, etc.
 	pass
 
-func _on_Cell_selected(cell):
-	selected_cell = cell
-	if Global.highlight_identical_digits: 
-		highlight_identical_cells(cell.text)
+func _on_Cell_selected(line_edit):
+	# Update the selected_cell variable
+	selected_cell = line_edit
+	
+	# Access the ImageDisplay node, which is a sibling of the LineEdit node
+	var image_display = line_edit.get_node("../ImageDisplay")
+	
+	# Check the content of the LineEdit and update the ImageDisplay accordingly
+	if line_edit.text == "":
+		image_display.clear_overlay()
+	else:
+		image_display.set_number(int(line_edit.text))
 
 func highlight_identical_cells(digit):
 	print("Highlighting cells with digit:", digit)
@@ -87,10 +95,15 @@ func is_valid_input(cell, number):
 		return false
 	return true
 
-func _on_Cell_text_changed(cell, new_text):
-	new_text = str(new_text)
-	if new_text != "" and (int(new_text) < 1 or int(new_text) > 9):
-		cell.text = ""
+func _on_Cell_content_changed(cell, new_text):
+	# Access the ImageDisplay node inside the Cell instance
+	var image_display = cell.get_node("ImageDisplay")
+	
+	# If the cell now has a number, set the overlay to match the number
+	if new_text != "":
+		image_display.set_number(int(new_text))
+	else:
+		image_display.clear_overlay()
 
 func get_cells_in_row(row):
 	var cells = []
@@ -128,8 +141,6 @@ func get_cells_in_subgrid(subgrid_index):
 func display_puzzle(puzzle):
 	for row in range(9):
 		for col in range(9):
-			
-			# Display the puzzle values and set the editable property
 			# Calculate the subgrid's container index and the cell's name based on its position in the grid
 			var subgrid_container_index = int(row / 3) * 4 + int(col / 3)  # Adjusted to account for spacers
 			var cell_name = "Cell" + str(row % 3 * 3 + col % 3 + 1)  # This will give names from Cell1 to Cell9
@@ -148,10 +159,18 @@ func display_puzzle(puzzle):
 			if puzzle[row][col] != 0:
 				line_edit.text = str(puzzle[row][col])
 				line_edit.editable = false  # Numbers placed by the game are not editable
-				
-				# Access the ImageDisplay node and set the number
-				var image_display = cell_instance.get_node("ImageDisplay")
-				image_display.set_number(puzzle[row][col])
 			else:
 				line_edit.text = ""
 				line_edit.editable = true  # Empty cells are editable by the player
+				
+			# Update the ImageDisplay based on the content of the LineEdit
+			update_image_display_for_cell(cell_instance)
+
+# Additional function to update the ImageDisplay based on the content of a LineEdit
+func update_image_display_for_cell(cell):
+	var line_edit = cell.get_node("LineEdit")
+	var image_display = cell.get_node("ImageDisplay")
+	if line_edit.text == "":
+		image_display.clear_overlay()
+	else:
+		image_display.set_number(int(line_edit.text))

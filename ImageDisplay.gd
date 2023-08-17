@@ -2,7 +2,12 @@
 extends Sprite
 
 func set_number(value):
-
+	if self.texture == null:
+		print("Texture is null, returning early")
+		return
+	
+	print("Setting ImageDisplay with value:", value)
+	
 	var cell_width = self.texture.get_width() / 3
 	var cell_height = self.texture.get_height() / 3
 
