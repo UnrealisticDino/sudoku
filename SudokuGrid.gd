@@ -56,8 +56,10 @@ func _on_Cell_selected(line_edit):
 	
 	# Check the content of the LineEdit and update the ImageDisplay accordingly
 	if line_edit.text == "":
+		print("Selected cell is empty")
 		image_display.clear_overlay()
 	else:
+		print("Selected cell has value:", line_edit.text)
 		image_display.set_number(int(line_edit.text))
 
 func highlight_identical_cells(digit):

@@ -8,27 +8,12 @@ signal cell_selected
 func _ready():
 	# Connect the text_changed signal of the LineEdit (self) to a local function
 	self.connect("text_changed", self, "_on_LineEdit_text_changed")
-	
 	# Connect the focus_entered signal to detect when the LineEdit is clicked on
 	self.connect("focus_entered", self, "_on_LineEdit_focus_entered")
 
 # Called when the LineEdit gains focus (i.e., when it's clicked on)
 func _on_LineEdit_focus_entered():
-	print("LineEdit focus entered")
 	emit_signal("cell_selected", self)
-
-# Handle user input for the cell
-func _on_Cell_input(event = null):
-	# Handle mouse input
-	if event and event is InputEventMouseButton and event.pressed:
-		emit_signal("cell_selected", self)
-
-	# Handle text change
-	var image_display = get_node("../ImageDisplay")
-	if self.text == "":
-		image_display.clear_overlay()
-	else:
-		image_display.set_number(int(self.text))
 
 # Called when the content of the LineEdit changes
 func _on_LineEdit_text_changed(new_text):
@@ -37,6 +22,8 @@ func _on_LineEdit_text_changed(new_text):
 	
 	# If the cell now has a number, set the overlay to match the number
 	if new_text != "":
+		print("Cell changed to:", new_text)
 		image_display.set_number(int(new_text))
 	else:
+		print("Cell cleared")
 		image_display.clear_overlay()
