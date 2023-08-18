@@ -13,8 +13,8 @@ func _ready():
 		add_child(subgrid_container) # Add the container to the main grid
 		for j in range(subgrid.get_child_count()):
 			var cell_instance = subgrid.get_child(j) # Get the Cell instance
-			var line_edit = cell_instance.get_node("LineEdit") # Get the LineEdit node inside the Cell
-			line_edit.connect("cell_selected", self, "_on_Cell_selected")
+			cell_instance.connect("cell_selected", self, "_on_Cell_selected")
+			var cell_button = cell_instance
 		if (i + 1) % 3 == 0 and i < 8: # Add spacer after every 3 subgrids
 			var spacer = Control.new()
 			spacer.rect_min_size = Vector2(10, 0) # Set the size of the spacer
@@ -39,7 +39,7 @@ func _input(event):
 			if selected_cell.get("editable_by_player"): # Check custom property
 				var number = key - KEY_1 + 1
 				if is_valid_input(selected_cell, number):
-					selected_cell.text = str(number)
+					selected_cell.cell_value = str(number)
 					update_game_state(selected_cell, number)
 
 func update_game_state(cell, number):
@@ -47,20 +47,18 @@ func update_game_state(cell, number):
 	# You can add logic here to check for a win condition, update scores, etc.
 	pass
 
-func _on_Cell_selected(line_edit):
+func _on_Cell_selected(cell_instance):
 	# Update the selected_cell variable
-	selected_cell = line_edit
-	
-	# Access the ImageDisplay node, which is a sibling of the LineEdit node
-	var image_display = line_edit.get_node("../ImageDisplay")
-	
-	# Check the content of the LineEdit and update the ImageDisplay accordingly
-	if line_edit.text == "":
+	selected_cell = cell_instance
+	# Access the ImageDisplay node, which is a child of the Cell instance
+	var image_display = cell_instance.get_node("ImageDisplay")
+	# Check the content of the Cell and update the ImageDisplay accordingly
+	if cell_instance.cell_value == "":
 		print("Selected cell is empty")
 		image_display.clear_overlay()
 	else:
-		print("Selected cell has value:", line_edit.text)
-		image_display.set_number(int(line_edit.text))
+		print("Selected cell has value:", cell_instance.cell_value)
+		image_display.set_number(int(cell_instance.cell_value))
 
 func highlight_identical_cells(digit):
 	print("Highlighting cells with digit:", digit)
@@ -70,10 +68,10 @@ func highlight_identical_cells(digit):
 			var subgrid = subgrid_container.get_child(0) # Get the Subgrid instance
 			for j in range(subgrid.get_child_count()):
 				var cell_instance = subgrid.get_child(j)
-				var line_edit = cell_instance.get_node("LineEdit")
-				if line_edit.text == str(digit): # Make sure to compare with the string representation of the digit
-					print("Highlighting cell with text:", line_edit.text)
-					line_edit.set("custom_colors/font_color", Color(1, 0, 0)) # Example: change font color to red
+				var cell_button = cell_instance
+				if cell_button.cell_value == str(digit): # Make sure to compare with the string representation of the digit
+					print("Highlighting cell with text:", cell_button.cell_value)
+					cell_button.set("custom_colors/font_color", Color(1, 0, 0)) # Example: change font color to red
 
 func is_valid_input(cell, number):
 	var index = -1
@@ -100,7 +98,6 @@ func is_valid_input(cell, number):
 func _on_Cell_content_changed(cell, new_text):
 	# Access the ImageDisplay node inside the Cell instance
 	var image_display = cell.get_node("ImageDisplay")
-	
 	# If the cell now has a number, set the overlay to match the number
 	if new_text != "":
 		image_display.set_number(int(new_text))
@@ -114,7 +111,7 @@ func get_cells_in_row(row):
 		var subgrid_container = get_child(subgrid_index)
 		var subgrid = subgrid_container.get_child(0)
 		var cell = subgrid.get_child((row % 3) * 3 + (i % 3))
-		cells.append(cell.text)
+		cells.append(cell.cell_value)  # Changed from cell.text
 	return cells
 
 func get_cells_in_column(col):
@@ -124,7 +121,7 @@ func get_cells_in_column(col):
 		var subgrid_container = get_child(subgrid_index)
 		var subgrid = subgrid_container.get_child(0)
 		var cell = subgrid.get_child((i % 3) * 3 + (col % 3))
-		cells.append(cell.text)
+		cells.append(cell.cell_value)  # Changed from cell.text
 	return cells
 
 func get_cells_in_subgrid(subgrid_index):
@@ -137,7 +134,7 @@ func get_cells_in_subgrid(subgrid_index):
 			var subgrid_container = get_child(inner_subgrid_index)
 			var subgrid = subgrid_container.get_child(0)
 			var cell = subgrid.get_child((row % 3) * 3 + (col % 3))
-			cells.append(cell.text)
+			cells.append(cell.cell_value)  # Changed from cell.text
 	return cells
 
 func display_puzzle(puzzle):
@@ -151,28 +148,24 @@ func display_puzzle(puzzle):
 			var subgrid_container = get_child(subgrid_container_index)
 			var subgrid_instance = subgrid_container.get_child(0)  # Assuming the subgrid is the first child of the container
 			
-			# Get the specific cell instance
-			var cell_instance = subgrid_instance.get_node(cell_name)
-			
-			# Access the LineEdit inside the Cell instance
-			var line_edit = cell_instance.get_node("LineEdit")
+			# Get the specific cell instance (CellButton)
+			var cell_button = subgrid_instance.get_node(cell_name)
 			
 			# Display the puzzle values and set the editable property
 			if puzzle[row][col] != 0:
-				line_edit.text = str(puzzle[row][col])
-				line_edit.editable = false  # Numbers placed by the game are not editable
+				cell_button.cell_value = str(puzzle[row][col])
+				cell_button.editable_by_player = false  # Numbers placed by the game are not editable
 			else:
-				line_edit.text = ""
-				line_edit.editable = true  # Empty cells are editable by the player
+				cell_button.cell_value = ""
+				cell_button.editable_by_player = true  # Empty cells are editable by the player
 				
-			# Update the ImageDisplay based on the content of the LineEdit
-			update_image_display_for_cell(cell_instance)
+			# Update the ImageDisplay based on the content of the CellButton
+			update_image_display_for_cell(cell_button)
 
-# Additional function to update the ImageDisplay based on the content of a LineEdit
-func update_image_display_for_cell(cell):
-	var line_edit = cell.get_node("LineEdit")
-	var image_display = cell.get_node("ImageDisplay")
-	if line_edit.text == "":
+# Additional function to update the ImageDisplay based on the content of a button
+func update_image_display_for_cell(cell_button):  # Renamed the parameter to cell_button for clarity
+	var image_display = cell_button.get_node("ImageDisplay")
+	if cell_button.cell_value == "":
 		image_display.clear_overlay()
 	else:
-		image_display.set_number(int(line_edit.text))
+		image_display.set_number(int(cell_button.cell_value))

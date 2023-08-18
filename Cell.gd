@@ -1,29 +1,37 @@
 #Cell
-extends LineEdit
+extends Button
 
-# Signal emitted when the cell is selected
-signal cell_selected
+signal cell_selected(cell)
 
-# Called when the node enters the scene tree for the first time
+var cell_value = "" setget set_cell_value
+var editable_by_player = true
+
+func _pressed():
+	if editable_by_player:
+		emit_signal("cell_selected", self)
+
+func set_cell_value(value):
+	cell_value = value
+	text = value
+
+# Convert a Unicode value to its corresponding character string
+func unicode_to_char(unicode_value):
+	return "%c" % unicode_value
+
 func _ready():
-	# Connect the text_changed signal of the LineEdit (self) to a local function
-	self.connect("text_changed", self, "_on_LineEdit_text_changed")
-	# Connect the focus_entered signal to detect when the LineEdit is clicked on
-	self.connect("focus_entered", self, "_on_LineEdit_focus_entered")
+	# Connect the button's pressed signal to set it as the focused cell
+	connect("pressed", self, "_on_CellButton_pressed")
 
-# Called when the LineEdit gains focus (i.e., when it's clicked on)
-func _on_LineEdit_focus_entered():
-	emit_signal("cell_selected", self)
+func _on_CellButton_pressed():
+	# Set this button as the focused cell
+	grab_focus()
 
-# Called when the content of the LineEdit changes
-func _on_LineEdit_text_changed(new_text):
-	# Access the ImageDisplay node directly
-	var image_display = self.get_parent().get_node("ImageDisplay")
-	
-	# If the cell now has a number, set the overlay to match the number
-	if new_text != "":
-		print("Cell changed to:", new_text)
-		image_display.set_number(int(new_text))
-	else:
-		print("Cell cleared")
-		image_display.clear_overlay()
+func _input(event):
+	if not editable_by_player:
+		return  # Exit the function early if editing is not allowed
+
+	if event is InputEventKey and event.pressed:
+		var key = event.scancode
+		if key >= KEY_1 and key <= KEY_9:
+			cell_value = str(key - KEY_1 + 1)  # Update the cell_value
+			self.text = cell_value  # Update the button's displayed text

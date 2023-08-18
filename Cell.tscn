@@ -4,17 +4,10 @@
 [ext_resource path="res://DefaultImages/numbers.jpg" type="Texture" id=2]
 [ext_resource path="res://ImageDisplay.gd" type="Script" id=3]
 
-[node name="Cell" type="Control"]
+[node name="Cell" type="Button"]
 margin_right = 58.0
 margin_bottom = 58.0
 rect_min_size = Vector2( 58, 58 )
-
-[node name="LineEdit" type="LineEdit" parent="."]
-margin_right = 58.0
-margin_bottom = 58.0
-rect_min_size = Vector2( 58, 58 )
-align = 1
-max_length = 1
 script = ExtResource( 1 )
 
 [node name="ImageDisplay" type="Sprite" parent="."]
