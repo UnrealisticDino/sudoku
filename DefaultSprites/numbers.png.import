@@ -2,15 +2,15 @@
 
 importer="texture"
 type="StreamTexture"
-path="res://.import/WhiteBackground.jpg-63576d2c514a21fbe87cc8c200457237.stex"
+path="res://.import/numbers.png-27ffe63bf8d241d59288ca6d95221670.stex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://DefaultImages/WhiteBackground.jpg"
-dest_files=[ "res://.import/WhiteBackground.jpg-63576d2c514a21fbe87cc8c200457237.stex" ]
+source_file="res://DefaultSprites/numbers.png"
+dest_files=[ "res://.import/numbers.png-27ffe63bf8d241d59288ca6d95221670.stex" ]
 
 [params]
 

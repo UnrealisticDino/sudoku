@@ -2,7 +2,7 @@
 extends Panel
 
 # Nodes
-onready var highlight_identical_digits_checkbox = $VBoxContainer/HighlightIdenticalDigits
+onready var highlight_identical_digits_checkbox = $HighlightIdenticalDigits
 
 # Config file for saving settings
 var config = ConfigFile.new()

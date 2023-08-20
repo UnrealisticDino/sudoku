@@ -1,0 +1,13 @@
+[gd_scene load_steps=3 format=2]
+
+[ext_resource path="res://Scenes/DrawGrid.gd" type="Script" id=1]
+[ext_resource path="res://DefaultSprites/Backgound.png" type="Texture" id=2]
+
+[node name="Sudoku" type="Node2D"]
+
+[node name="Background" type="TextureRect" parent="."]
+texture = ExtResource( 2 )
+stretch_mode = 5
+
+[node name="DrawGrid" type="Control" parent="."]
+script = ExtResource( 1 )

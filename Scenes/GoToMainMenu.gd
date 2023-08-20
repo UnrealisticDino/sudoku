@@ -1,4 +1,4 @@
-# GoToSettings
+# GoToMainMenu
 extends Button
 
 func _ready():
@@ -7,4 +7,4 @@ func _ready():
 
 func _on_StartButton_pressed():
 	# Change the scene to GameScene.tscn when the button is pressed
-	get_tree().change_scene("res://Settings.tscn")
+	get_tree().change_scene("res://Scenes/MainMenu.tscn")
