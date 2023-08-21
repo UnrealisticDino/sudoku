@@ -51,7 +51,7 @@ func set_number(value, source):
 	if source == "game":
 		self.modulate = Color(1, 0, 0)  # Red color for game-placed numbers
 	elif source == "player":
-		self.modulate = Color(1, 1, 1)  # Default white color for player-placed numbers
+		self.modulate = Color(0, 0, 0)  # Default white color for player-placed numbers
 
 func clear_overlay():
 	self.region_enabled = false
@@ -64,9 +64,3 @@ func _input(event):
 		if self.get_rect().has_point(event.position):
 			emit_signal("cell_clicked")
 			Input.set_input_as_handled()  # Mark the input as handled to stop propagation
-
-func set_color(source):
-	if source == "game":
-		self.modulate = Color(0, 0, 1)  # Blue for game-placed numbers
-	else:
-		self.modulate = Color(0, 0, 0)  # Black for player-placed numbers
