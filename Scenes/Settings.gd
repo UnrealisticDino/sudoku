@@ -1,7 +1,6 @@
 extends Panel
 
 # Nodes
-onready var highlight_identical_digits_checkbox = $HighlightIdenticalDigits
 onready var easy_button = $Easy
 onready var medium_button = $Medium
 onready var hard_button = $Hard
@@ -27,7 +26,6 @@ func _ready():
 	load_settings()
 	
 	# Connect the signals
-	highlight_identical_digits_checkbox.connect("toggled", self, "_on_highlight_identical_digits_toggled")
 	easy_button.connect("pressed", self, "_on_difficulty_button_pressed", ["Easy"])
 	medium_button.connect("pressed", self, "_on_difficulty_button_pressed", ["Medium"])
 	hard_button.connect("pressed", self, "_on_difficulty_button_pressed", ["Hard"])
@@ -69,6 +67,5 @@ func load_settings():
 	# Load settings from the config file
 	var err = config.load("user://settings.cfg")
 	if err == OK:
-		highlight_identical_digits_checkbox.pressed = config.get_value("highlight", "identical_digits", true)  # Default to true if not found
 		current_difficulty = config.get_value("difficulty", "selected", "Easy")  # Default to "Easy" if not found
 		update_button_colors()

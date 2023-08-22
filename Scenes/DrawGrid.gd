@@ -15,6 +15,8 @@ var selected_cell = Vector2(-1, -1)
 var number_source = []
 var digit_scale_factor = 0.7
 var selected_cells = []
+var selected_cell_color = Global.selected_cell_color
+var identical_digits_color = selected_cell_color.linear_interpolate(Color(0.5, 0.5, 1, 0.5), 0.5)  # Derived color with added transparency
 
 func _ready():
 	# Call the draw function when the node is ready
@@ -80,10 +82,17 @@ func _draw():
 		if i % 3 == 0:
 			draw_line(start_point, end_point, Color(0, 0, 0), 4)
 
-	# Highlight the selected cell with a blueish color
+	# Highlight the selected cell
 	if selected_cell != Vector2(-1, -1):
 		var cell_pos = Vector2(start_x + selected_cell.y * scaled_cell_size, start_y + selected_cell.x * scaled_cell_size)
-		draw_rect(Rect2(cell_pos, Vector2(scaled_cell_size, scaled_cell_size)), Color(0.5, 0.5, 1, 0.5))
+		draw_rect(Rect2(cell_pos, Vector2(scaled_cell_size, scaled_cell_size)), selected_cell_color)
+
+	# Highlight all identical digits if the setting is turned on
+	if Global.highlight_identical_digits:
+		print(selected_cells)
+		for cell in selected_cells:
+			var cell_pos = Vector2(start_x + cell.y * scaled_cell_size, start_y + cell.x * scaled_cell_size)
+			draw_rect(Rect2(cell_pos, Vector2(scaled_cell_size, scaled_cell_size)), identical_digits_color)
 
 	for i in range(grid_size):
 		for j in range(grid_size):
@@ -109,10 +118,17 @@ func _input(event):
 	if event is InputEventMouseButton and event.pressed:
 		var cell_y = int((event.position.x - start_x) / scaled_cell_size)
 		var cell_x = int((event.position.y - start_y) / scaled_cell_size)
+
+		# Check if the click is within the grid boundaries
 		if 0 <= cell_x and cell_x < grid_size and 0 <= cell_y and cell_y < grid_size:
-			selected_cell = Vector2(cell_x, cell_y)
-			print("Selected cell: ", selected_cell)
-			_draw_grid()  # Redraw the grid to update the highlighted cell
+			# Check if the click is within the actual grid area
+			if event.position.x >= start_x and event.position.x <= start_x + grid_size * scaled_cell_size and \
+			   event.position.y >= start_y and event.position.y <= start_y + grid_size * scaled_cell_size:
+				selected_cell = Vector2(cell_x, cell_y)
+				print("Selected cell: ", selected_cell)
+				if Global.highlight_identical_digits:
+					highlight_identical_digits(selected_cell)
+				_draw_grid()  # Redraw the grid to update the highlighted cell
 
 	if selected_cell != Vector2(-1, -1) and event is InputEventKey and event.pressed:
 		if number_source[selected_cell.x][selected_cell.y] == "player":
@@ -155,3 +171,11 @@ func _on_cell_clicked(cell_position):
 func update_puzzle():
 	puzzle = Global.puzzle
 	_draw_grid()
+
+func highlight_identical_digits(cell):
+	selected_cells.clear()
+	var selected_value = puzzle[cell.x][cell.y]
+	for i in range(grid_size):
+		for j in range(grid_size):
+			if puzzle[i][j] == selected_value and Vector2(i, j) != cell:
+				selected_cells.append(Vector2(i, j))
