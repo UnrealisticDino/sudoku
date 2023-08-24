@@ -28,10 +28,10 @@ text = "Back"
 script = ExtResource( 2 )
 
 [node name="HighlightColorPicker" type="ColorPicker" parent="."]
-margin_left = 195.0
-margin_top = 480.0
-margin_right = 517.0
-margin_bottom = 942.0
+margin_left = 199.0
+margin_top = 484.0
+margin_right = 521.0
+margin_bottom = 946.0
 
 [node name="SelectedCellPreview" type="Panel" parent="."]
 margin_left = 568.0

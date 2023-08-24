@@ -6,8 +6,8 @@ func _ready():
 	connect("pressed", self, "_on_StartGame_pressed")
 
 func _on_StartGame_pressed():
-	# Generate the puzzle using the function from the Global singleton
-	Global.generate_puzzle_based_on_difficulty()
-	
+	# Send the generated puzzle to PuzzleGenerator
+	Global.send_and_receive_grid(Global.filled_sudoku)
+
 	# Transition to the sudoku.tscn scene
 	get_tree().change_scene("res://Scenes/Sudoku.tscn")
