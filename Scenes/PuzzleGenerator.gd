@@ -1,101 +1,151 @@
 #PuzzleGenerator
 extends Node
-
-var difficulty = "Easy"  # Default difficulty
+var difficulty = "Easy"
+var GRID_SIZE = 9
+var SUBGRID_SIZE = 3
 
 # Function to receive the filled Sudoku from Global.gd
 func receive_completed_grid(grid):
-	# Update techniques based on difficulty
-	update_techniques_based_on_difficulty(Global.difficulty)
-	
-	# Generate the puzzle based on the enabled techniques
-	var generated_puzzle = generate_puzzle(grid)
-	
+	print("does this wokr")
+	var puzzle = generate_puzzle(grid, difficulty)
 	# Send the generated puzzle to Global.gd using the new function
-	Global.send_and_receive_grid(generated_puzzle)
+	Global.send_and_receive_grid(puzzle)
 
-# This function updates the techniques based on the provided difficulty.
-func update_techniques_based_on_difficulty(difficulty):
-	if difficulty == "Easy":
-		use_full_house = true
-		use_naked_singles = true
-		use_hidden_singles = true
-	# ... [handle other difficulties if needed]
-
-# This function generates a puzzle based on the enabled techniques.
-func generate_puzzle(filled_sudoku):
+# This function generates a puzzle based on the difficulty's techniques.
+func generate_puzzle(filled_sudoku, difficulty):
 	var puzzle = filled_sudoku.duplicate()
+	
+	# Check if the puzzle is solvable with the given techniques for the difficulty
+	if is_solvable_with_techniques(puzzle, difficulty):
+		return puzzle
+	
 
-	# Flatten the puzzle to a list of cell coordinates
-	var cells_to_try_removing = _get_all_cells_in_random_order()
-	var digit_removed = true  # Initialize variable to keep track of whether a digit was removed in the last iteration
+func is_solvable_with_techniques(puzzle, difficulty):
+	# Set flags based on the selected difficulty
+	if difficulty in difficulty_techniques:
+		for technique in difficulty_techniques[difficulty]:
+			match technique:
+				#Easy
+				"use_full_house":
+					use_full_house = true
+				"use_naked_singles":
+					use_naked_singles = true
+				"use_hidden_singles":
+					use_hidden_singles = true
+				#Intermediate
+				"use_naked_pairs":
+					use_naked_pairs = true
+		
+# Start a loop to iteratively remove digits and check solvability
+	var successful_removal = true
+	
+	var tried_cells = []  # Initialize an empty list to keep track of tried cells
+	while successful_removal:
+		successful_removal = false  # Reset the flag
 
-	while digit_removed:  # Continue until no more digits can be removed
-		digit_removed = false  # Reset the flag at the start of each loop
-		for cell in cells_to_try_removing:
-			var original_value = puzzle[cell.x][cell.y]
-			if original_value == 0:  # Skip if the cell is already empty
-				continue
+		var row = randi() % GRID_SIZE
+		var col = randi() % GRID_SIZE
+		if [row, col] in tried_cells:  # If the cell has already been tried, continue to the next iteration
+			continue
 
-			puzzle[cell.x][cell.y] = 0  # Temporarily remove the number
+		tried_cells.append([row, col])  # Add the current cell to the tried list
 
-			# Check if the puzzle can still be solved using enabled techniques
-			if not _is_solvable_with_enabled_techniques(puzzle, cell):
-				puzzle[cell.x][cell.y] = original_value  # If not, restore the number
+
+		if puzzle[row][col] != 0:  # If the cell is not already empty
+			var backup_value = puzzle[row][col]
+			puzzle[row][col] = 0  # Remove the number
+
+			var solvable = true
+			
+			if use_full_house:
+				solvable = solvable and apply_full_house(puzzle, row, col)
+				if solvable == false:
+					successful_removal = false
+
+#			if use_naked_singles:
+#				solvable = solvable and apply_naked_singles(puzzle)
+#			if use_hidden_singles:
+#				solvable = solvable and apply_hidden_singles(puzzle)
+
+			if solvable:
+				successful_removal = true  # Continue removing other numbers
 			else:
-				digit_removed = true  # If yes, update the flag
-				puzzle = puzzle
-				print(puzzle)
-		# Re-shuffle the cells for the next iteration to try removing digits in a different order
-		cells_to_try_removing.shuffle()
+				puzzle[row][col] = backup_value  # Restore the removed number if not solvable
+	if not successful_removal:
+		print("solved" )
+		#receive_completed_grid(puzzle)
+	return true  # The puzzle is solvable with the given techniques
 
-	return puzzle
+func apply_full_house(puzzle, row_index, col_index):
+	var progress_made = false
+	# Check the row of the cleared cell
+	var count_empty = 0
+	var empty_col = -1
+	for j in range(GRID_SIZE):
+		if puzzle[row_index][j] == 0:
+			count_empty += 1
+			empty_col = j
+	
+	if count_empty == 1:
+		# Only one empty cell in the row, find the missing number and fill it in
+		var missing_num = find_missing_number(puzzle[row_index])
+		progress_made = true
 
-func _get_all_cells_in_random_order():
-	var cells = []
-	for i in range(9):
-		for j in range(9):
-			cells.append(Vector2(i, j))
-	cells.shuffle()
-	return cells
+	# Check the column of the cleared cell
+	count_empty = 0
+	var empty_row = -1
+	for i in range(GRID_SIZE):
+		if puzzle[i][col_index] == 0:
+			count_empty += 1
+			empty_row = i
+	if count_empty == 1:
+		# Only one empty cell in the column, find the missing number and fill it in
+		var col_values = []
+		for i in range(GRID_SIZE):
+				col_values.append(puzzle[i][col_index])
 
-func _is_solvable_with_enabled_techniques(puzzle, cell):
-	var temp_puzzle = puzzle.duplicate()
-	# Check if the cell is already filled
-	if temp_puzzle[cell.x][cell.y] != 0:
-		return false
+		var missing_num = find_missing_number(col_values)
+		progress_made = true
 
-	# Apply Naked Singles Technique on the specific cell
-	if use_naked_singles and _apply_naked_single_on_cell(temp_puzzle, cell):
-		return temp_puzzle
+	# Check the block (3x3 square) containing the cleared cell
+	var block_row_start = (row_index / SUBGRID_SIZE) * SUBGRID_SIZE
+	var block_col_start = (col_index / SUBGRID_SIZE) * SUBGRID_SIZE
+	count_empty = 0
+	var empty_cell = [-1, -1]
+	var block_values = []
+	for i in range(SUBGRID_SIZE):
+		for j in range(SUBGRID_SIZE):
+			var row = block_row_start + i
+			var col = block_col_start + j
+			block_values.append(puzzle[row][col])
+			if puzzle[row][col] == 0:
+				count_empty += 1
+				empty_cell = [row, col]
+	if count_empty == 1:
+		# Only one empty cell in the block, find the missing number and fill it in
+		var missing_num = find_missing_number(block_values)
+		progress_made = true
+	return progress_made
 
-	# Apply Hidden Singles Technique on the specific cell
-#	if use_hidden_singles and _apply_hidden_single_on_cell(temp_puzzle, cell):
-#		return temp_puzzle
+func apply_naked_singles(puzzle):
 
-	# ... Add other techniques here for the specific cell
+	return true
+	
+func apply_hidden_singles(puzzle):
+	# Implement the technique and return true if progress is made, false otherwise.
+	return true
 
-	# If no technique could fill the cell, return false
-	return false
+#func find_missing_number_and_fill(puzzle, row_index, col_index):
+#	row = puzzle[row_index]
+#	if row.count(0) == 1:  # Only one empty cell in the row
+#		missing_number = 45 - sum(row)  # Since sum of numbers from 1-9 is 45
+#		row[col_index] = missing_number  # Fill in the missing number
 
-func _apply_naked_single_on_cell(puzzle, cell):
-	var possibilities = _get_possibilities(cell.x, cell.y, puzzle)
-	if len(possibilities) == 1:
-		puzzle[cell.x][cell.y] = possibilities[0]
-		return true
-	return false
-
-func _apply_hidden_singles(puzzle):
-	# For each row, column, and box, if a number appears as a possibility in only one cell, fill it in.
-	var made_changes = false
-	# TODO: Implement the logic for hidden singles
-	return made_changes
-
-func _apply_naked_pairs(puzzle):
-	# If two cells in a row, column, or box have the same two possibilities and only those two, remove those numbers as possibilities from other cells in that row, column, or box.
-	var made_changes = false
-	# TODO: Implement the logic for naked pairs
-	return made_changes
+func find_missing_number(nums):
+	for i in range(1, GRID_SIZE + 1):
+		if not nums.has(i):
+			return i
+	return -1
 
 func _get_possibilities(x, y, puzzle):
 	var possibilities = [1, 2, 3, 4, 5, 6, 7, 8, 9]
@@ -115,8 +165,8 @@ func _get_possibilities(x, y, puzzle):
 # List of techniques for each difficulty level
 var difficulty_techniques = {
 	"Easy": ["use_full_house", "use_naked_singles", "use_hidden_singles"],
-	"Intermediate": ["use_naked_pairs", "use_hidden_pairs", "use_naked_triples", "use_hidden_triples"],
-	"Advanced": ["use_naked_quads", "use_hidden_quads", "use_pointing_pairs", "use_pointing_triples"],
+	"Intermediate": ["use_full_house", "use_naked_singles", "use_hidden_singles", "use_naked_pairs", "use_hidden_pairs", "use_naked_triples", "use_hidden_triples"],
+	"Advanced": ["use_full_house", "use_naked_singles", "use_hidden_singles", "use_naked_quads", "use_hidden_quads", "use_pointing_pairs", "use_pointing_triples"],
 	# ... Add techniques for other difficulty levels
 }
 

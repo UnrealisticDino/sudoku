@@ -37,6 +37,7 @@ func send_and_receive_grid(grid):
 	puzzle = PuzzleGenerator.temp_puzzle  # Assuming PuzzleGenerator stores the generated puzzle in a variable named temp_puzzle
 	
 	# Print the received puzzle
+	print("congratuualtions")
 	for row in puzzle:
 		print(row)
 
