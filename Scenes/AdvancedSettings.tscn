@@ -7,15 +7,17 @@
 [ext_resource path="res://Scenes/IdenticalCellPreview.gd" type="Script" id=5]
 
 [node name="AdvancedSettings" type="Panel"]
-margin_right = 1080.0
-margin_bottom = 1920.0
+margin_left = -1.0
+margin_top = -1.0
+margin_right = 1079.0
+margin_bottom = 1919.0
 script = ExtResource( 3 )
 
 [node name="HighlightIdneticalDigits" type="CheckBox" parent="."]
-margin_left = 487.0
-margin_top = 194.0
-margin_right = 893.0
-margin_bottom = 421.0
+margin_left = 364.0
+margin_top = 133.0
+margin_right = 770.0
+margin_bottom = 360.0
 text = "Highlight Identical Digits"
 script = ExtResource( 1 )
 
@@ -28,16 +30,16 @@ text = "Back"
 script = ExtResource( 2 )
 
 [node name="HighlightColorPicker" type="ColorPicker" parent="."]
-margin_left = 199.0
-margin_top = 484.0
-margin_right = 521.0
-margin_bottom = 946.0
+margin_left = 203.0
+margin_top = 488.0
+margin_right = 525.0
+margin_bottom = 950.0
 
 [node name="SelectedCellPreview" type="Panel" parent="."]
-margin_left = 568.0
-margin_top = 597.0
-margin_right = 608.0
-margin_bottom = 637.0
+margin_left = 539.0
+margin_top = 561.0
+margin_right = 579.0
+margin_bottom = 601.0
 script = ExtResource( 4 )
 
 [node name="IdenticalCellPreview" type="Panel" parent="."]
@@ -46,3 +48,21 @@ margin_top = 496.0
 margin_right = 586.0
 margin_bottom = 536.0
 script = ExtResource( 5 )
+
+[node name="PlayerDigits" type="ColorPicker" parent="."]
+margin_left = 201.0
+margin_top = 989.0
+margin_right = 509.0
+margin_bottom = 1451.0
+
+[node name="GamePlacedDigits" type="ColorPicker" parent="."]
+margin_left = 545.0
+margin_top = 995.0
+margin_right = 853.0
+margin_bottom = 1457.0
+
+[node name="GameGrid" type="ColorPicker" parent="."]
+margin_left = 565.0
+margin_top = 489.0
+margin_right = 873.0
+margin_bottom = 951.0

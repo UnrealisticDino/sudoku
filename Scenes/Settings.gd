@@ -1,3 +1,4 @@
+#Settings
 extends Panel
 
 # Nodes
@@ -29,6 +30,7 @@ func _ready():
 	easy_button.connect("pressed", self, "_on_difficulty_button_pressed", ["Easy"])
 	medium_button.connect("pressed", self, "_on_difficulty_button_pressed", ["Medium"])
 	hard_button.connect("pressed", self, "_on_difficulty_button_pressed", ["Hard"])
+	print(current_difficulty)
 
 	# Set initial button colors
 	update_button_colors()
@@ -40,8 +42,6 @@ func _on_highlight_identical_digits_toggled(enabled):
 
 func _on_difficulty_button_pressed(selected_difficulty):
 	current_difficulty = selected_difficulty
-	# Update the difficulty in the Global script
-	global_script.difficulty = current_difficulty
 	# Save the selected difficulty in the config file
 	config.set_value("difficulty", "selected", current_difficulty)
 	config.save("user://settings.cfg")
