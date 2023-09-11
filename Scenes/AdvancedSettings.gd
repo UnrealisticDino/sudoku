@@ -13,11 +13,20 @@ onready var grid_lines_color = $GameGrid
 # Config file to save and load settings
 var config = ConfigFile.new()
 
-
 func _ready():
 	# Load the saved colors when the scene is loaded
 	config.load("user://settings.cfg")
 	
+	# Load saved colors into the color pickers if they exist in the config file
+	if config.has_section_key("highlight", "color"):
+		highlight_color_picker.color = Color(config.get_value("highlight", "color"))
+	if config.has_section_key("player_digit", "color"):
+		player_digit_color.color = Color(config.get_value("player_digit", "color"))
+	if config.has_section_key("game_placed_digit", "color"):
+		game_placed_digit_color.color = Color(config.get_value("game_placed_digit", "color"))
+	if config.has_section_key("grid_color", "color"):
+		grid_lines_color.color = Color(config.get_value("grid_color", "color"))
+
 	# Connect the color_changed signal to functions for the new color pickers
 	highlight_color_picker.connect("color_changed", self, "_on_highlight_color_changed")
 	player_digit_color.connect("color_changed", self, "_on_player_digit_color_changed")

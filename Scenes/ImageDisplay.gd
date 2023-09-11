@@ -33,30 +33,33 @@ func _ready():
 		penciled_sprites[i] = sprite
 
 func set_number(value, source):
+	if value in number_positions:
+		if sprite_sheet:
+			var cell_width = sprite_sheet.get_width() / 3
+			var cell_height = sprite_sheet.get_height() / 3
 
-	if sprite_sheet:
-		var cell_width = sprite_sheet.get_width() / 3
-		var cell_height = sprite_sheet.get_height() / 3
+			# Get the position of the number in the sprite sheet
+			var position = number_positions[value]
+			
+			# Calculate the x and y coordinates based on the position
+			var x_position = position.x * cell_width
+			var y_position = position.y * cell_height
+			
+			# Set the texture and region_rect to display the correct number
+			self.texture = sprite_sheet
+			self.region_rect = Rect2(x_position, y_position, cell_width, cell_height)
+			self.region_enabled = true
+		else:
+			print("Sprite sheet not loaded")
 
-		# Get the position of the number in the sprite sheet
-		var position = number_positions[value]
-		
-		# Calculate the x and y coordinates based on the position
-		var x_position = position.x * cell_width
-		var y_position = position.y * cell_height
-		
-		# Set the texture and region_rect to display the correct number
-		self.texture = sprite_sheet
-		self.region_rect = Rect2(x_position, y_position, cell_width, cell_height)
-		self.region_enabled = true
+		# Set the color based on the source
+		if source == "game":
+			self.modulate = game_placed_digits
+		elif source == "player":
+			self.modulate = player_digits
 	else:
-		print("Sprite sheet not loaded")
-
-	# Set the color based on the source
-	if source == "game":
-		self.modulate = game_placed_digits
-	elif source == "player":
-		self.modulate = player_digits
+		# Handle the case where the value is not in number_positions (likely 0)
+		clear_cell()
 
 func clear_overlay():
 	self.region_enabled = false
