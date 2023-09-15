@@ -311,18 +311,10 @@ func toggle_pencil_digit(cell, digit):
 		penciled_digits[cell.x][cell.y].append(digit)
 	_draw_grid()
 
-func save_state():
-	undo_stack.append({
-		"puzzle": puzzle.duplicate(true),
-		"selected_cells": selected_cells.duplicate(true),
-		"penciled_digits": penciled_digits.duplicate(true),
-	})
-	print("State saved: ", undo_stack[-1])
-
 func undo():
 	print("Undo stack before undo: ", undo_stack)
 	print("Redo stack before undo: ", redo_stack)
-	if undo_stack.size() > 0:
+	if undo_stack.size() > 0:  # Changed from > 1 to > 0
 		var current_state = {
 			"puzzle": puzzle.duplicate(true),
 			"selected_cells": selected_cells.duplicate(true),
@@ -355,11 +347,27 @@ func redo():
 	print("Undo stack after redo: ", undo_stack)
 	print("Redo stack after redo: ", redo_stack)
 
+func save_state():
+	print("Saving state")
+	if puzzle is Array and selected_cells is Array and penciled_digits is Array:
+		var state = {
+			"puzzle": puzzle.duplicate(true),
+			"selected_cells": selected_cells.duplicate(true),
+			"penciled_digits": penciled_digits.duplicate(true),
+			# Add other game state variables here
+		}
+		undo_stack.append(state)
+		redo_stack.clear()
+		print("State saved: ", state)
+
 func load_state(state):
-	puzzle = state["puzzle"].duplicate(true)
-	selected_cells = state["selected_cells"].duplicate(true)
-	penciled_digits = state["penciled_digits"].duplicate(true)
-	update_cells()
+	if state.has("puzzle") and state.has("selected_cells") and state.has("penciled_digits"):
+		puzzle = state["puzzle"].duplicate(true)
+		selected_cells = state["selected_cells"].duplicate(true)
+		penciled_digits = state["penciled_digits"].duplicate(true)
+		# Load other game state variables here
+		update_cells()  # Update the visual elements
+		_draw_grid()  # Redraw the grid to reflect the changes
 
 func update_cells():
 	for i in range(grid_size):
