@@ -117,3 +117,7 @@ func clear_cell():
 			var pencil_sprite = get_node("pencil_" + str(i))
 			pencil_sprite.texture = null
 			pencil_sprite.region_enabled = false
+
+func clear_pencil_digits():
+	for i in range(1, 10):
+		set_pencil_digit(i, false)
