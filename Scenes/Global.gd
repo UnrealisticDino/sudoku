@@ -21,7 +21,6 @@ func _ready():
 	load_game_placed_digit_color()
 	randomize()
 
-	
 	if not puzzle_generated:
 		filled_sudoku = generate_full_grid()
 		puzzle_generated = true

@@ -20,9 +20,6 @@ const UNSELECTED_COLOR = Color(0.5, 0.5, 0.5)  # Grey
 var current_difficulty = "Easy"
 
 func _ready():
-	# Print the path to the user data directory
-	print("Settings.cfg path: " + OS.get_user_data_dir())
-	
 	# Load settings when the scene starts
 	load_settings()
 	
@@ -30,7 +27,6 @@ func _ready():
 	easy_button.connect("pressed", self, "_on_difficulty_button_pressed", ["Easy"])
 	medium_button.connect("pressed", self, "_on_difficulty_button_pressed", ["Medium"])
 	hard_button.connect("pressed", self, "_on_difficulty_button_pressed", ["Hard"])
-	print(current_difficulty)
 
 	# Set initial button colors
 	update_button_colors()

@@ -1,7 +1,6 @@
 # StartGame.gd
 extends Button
 
-
 func _ready():
 	# Connect the "pressed" signal to the _on_StartGame_pressed function
 	connect("pressed", self, "_on_StartGame_pressed")
