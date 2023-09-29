@@ -28,12 +28,13 @@ func generate_puzzle(filled_sudoku):
 		# Backup the cell value and clear it
 		var backup = puzzle[row][col]
 		puzzle[row][col] = 0
-		
+		print("not last ", puzzle)
 		# Send the puzzle to SudokuSolver for validation
-		var is_valid = SudokuSolver.solve(puzzle, filled_sudoku)
-		
+		var is_valid = SudokuSolver.solve(puzzle.duplicate(), filled_sudoku.duplicate())
+		print("is valid ", is_valid)
 		# Restore the cell value if the puzzle is not valid
 		if not is_valid:
+			print("made it")
 			puzzle[row][col] = backup
 		
 		attempts += 1

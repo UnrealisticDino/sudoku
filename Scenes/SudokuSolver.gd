@@ -13,20 +13,19 @@ func load_settings():
 # Implement human-viable techniques for solving Sudoku
 func solve(puzzle, filled_sudoku):
 	load_settings()
+	
 	var allowed_techniques = []
-#	print(difficulty)
-#	print(puzzle)
+
 	match difficulty:
 		"Easy":
-			allowed_techniques = ["NakedSingles", "HiddenSingles"]
+			allowed_techniques = ["use_full_house", "use_naked_singles", "use_hidden_singles"]
 		"Medium":
-			allowed_techniques = ["NakedSingles", "HiddenSingles", "PointingPairs"]
+			allowed_techniques = ["use_full_house", "use_naked_singles", "use_hidden_singles", "use_naked_pairs", "use_hidden_pairs", "use_naked_triples", "use_hidden_triples", "use_naked_quads", "use_hidden_quads"]
 		"Hard":
-			allowed_techniques = ["NakedSingles", "HiddenSingles", "PointingPairs", "BoxLineReduction"]
-	print(allowed_techniques)
+			allowed_techniques = ["use_full_house", "use_naked_singles", "use_hidden_singles", "use_naked_quads", "use_hidden_quads", "use_pointing_pairs", "use_pointing_triples"]
 	# Solve the puzzle using only the allowed techniques
 	var solved_puzzle = solve_with_techniques(puzzle, allowed_techniques)
-	
+
 	# Check if the solved puzzle matches the original filled grid
 	if solved_puzzle == filled_sudoku:
 		return true
@@ -34,16 +33,107 @@ func solve(puzzle, filled_sudoku):
 		return false
 
 func solve_with_techniques(puzzle, techniques):
-	# Implement the solving logic here using only the allowed techniques
-	return puzzle
+	var is_solved = false
 
+	while not is_solved:
+		var made_move = false
+		for technique in techniques:
+			match technique:
+				"use_full_house":
+					made_move = use_full_house(puzzle) or made_move
+				"use_naked_singles":
+					made_move = use_naked_singles(puzzle) or made_move
+				"use_hidden_singles":
+					made_move = use_hidden_singles(puzzle) or made_move
+				
+				# ... (other techniques)
 
-# List of techniques for each difficulty level
-var difficulty_techniques = {
-	"Easy": ["use_full_house", "use_naked_singles", "use_hidden_singles"],
-	"Medium": ["use_full_house", "use_naked_singles", "use_hidden_singles", "use_naked_pairs", "use_hidden_pairs", "use_naked_triples", "use_hidden_triples", "use_naked_quads", "use_hidden_quads"],
-	"Advanced": ["use_full_house", "use_naked_singles", "use_hidden_singles", "use_naked_quads", "use_hidden_quads", "use_pointing_pairs", "use_pointing_triples"],
-}
+		if not made_move:
+			break  # No more moves can be made, exit the loop
+		is_solved = check_if_solved(puzzle)
+
+func check_if_solved(puzzle):
+	for row in puzzle:
+		for cell in row:
+			if cell == 0:
+				return false
+	return true
+
+func use_full_house(puzzle):
+	for i in range(9):
+		for j in range(9):
+			if puzzle[i][j] == 0:
+				var possible_values = [1, 2, 3, 4, 5, 6, 7, 8, 9]
+				for x in range(9):
+					if puzzle[i][x] in possible_values:
+						possible_values.erase(puzzle[i][x])
+					if puzzle[x][j] in possible_values:
+						possible_values.erase(puzzle[x][j])
+				var box_row = i - i % 3
+				var box_col = j - j % 3
+				for x in range(box_row, box_row + 3):
+					for y in range(box_col, box_col + 3):
+						if puzzle[x][y] in possible_values:
+							possible_values.erase(puzzle[x][y])
+				if possible_values.size() == 1:
+					puzzle[i][j] = possible_values[0]
+					return true
+	return false
+
+func use_naked_singles(puzzle):
+	for i in range(9):
+		for j in range(9):
+			if puzzle[i][j] == 0:
+				var possible_values = [1, 2, 3, 4, 5, 6, 7, 8, 9]
+				for x in range(9):
+					if puzzle[i][x] in possible_values:
+						possible_values.erase(puzzle[i][x])
+					if puzzle[x][j] in possible_values:
+						possible_values.erase(puzzle[x][j])
+				var box_row = i - i % 3
+				var box_col = j - j % 3
+				for x in range(box_row, box_row + 3):
+					for y in range(box_col, box_col + 3):
+						if puzzle[x][y] in possible_values:
+							possible_values.erase(puzzle[x][y])
+				if possible_values.size() == 1:
+					puzzle[i][j] = possible_values[0]
+					return true
+	return false
+
+func use_hidden_singles(puzzle):
+	for i in range(9):
+		for j in range(9):
+			if puzzle[i][j] == 0:
+				var possible_values = [1, 2, 3, 4, 5, 6, 7, 8, 9]
+				for x in range(9):
+					if puzzle[i][x] in possible_values:
+						possible_values.erase(puzzle[i][x])
+					if puzzle[x][j] in possible_values:
+						possible_values.erase(puzzle[x][j])
+				var box_row = i - i % 3
+				var box_col = j - j % 3
+				for x in range(box_row, box_row + 3):
+					for y in range(box_col, box_col + 3):
+						if puzzle[x][y] in possible_values:
+							possible_values.erase(puzzle[x][y])
+				for value in possible_values:
+					var count_row = 0
+					var count_col = 0
+					var count_box = 0
+					for x in range(9):
+						if puzzle[i][x] == value:
+							count_row += 1
+						if puzzle[x][j] == value:
+							count_col += 1
+					for x in range(box_row, box_row + 3):
+						for y in range(box_col, box_col + 3):
+							if puzzle[x][y] == value:
+								count_box += 1
+					if count_row == 0 and count_col == 0 and count_box == 0:
+						puzzle[i][j] = value
+						return true
+	return false
 
 #Needed
 var use_full_house = false
@@ -55,8 +145,10 @@ var use_naked_pairs = false
 var use_hidden_pairs = false
 var use_naked_triples = false
 var use_hidden_triples = false
+#Hard Maybe
 var use_naked_quads = false
 var use_hidden_quads = false
+#Stopping point
 var use_pointing_pairs = false
 var use_pointing_triples = false
 var use_box_line_reduction = false
