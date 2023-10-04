@@ -13,8 +13,9 @@ func send_grid(grid):
 	Global.fetch_grid(grid)
 
 # This function generates a puzzle
-func generate_puzzle(filled_sudoku):
-	var puzzle = filled_sudoku.duplicate()
+func generate_puzzle(filled_sudoku_original):
+	var filled_sudoku = deep_copy_2d_array(filled_sudoku_original)
+	var puzzle = deep_copy_2d_array(filled_sudoku)
 	var attempts = 0
 	
 	while attempts < 100:  # You can adjust the number of attempts
@@ -28,16 +29,20 @@ func generate_puzzle(filled_sudoku):
 		# Backup the cell value and clear it
 		var backup = puzzle[row][col]
 		puzzle[row][col] = 0
-		print("not last ", puzzle)
+		
 		# Send the puzzle to SudokuSolver for validation
-		var is_valid = SudokuSolver.solve(puzzle.duplicate(), filled_sudoku.duplicate())
-		print("is valid ", is_valid)
+		var is_valid = SudokuSolver.solve(deep_copy_2d_array(puzzle), deep_copy_2d_array(filled_sudoku))
+		
 		# Restore the cell value if the puzzle is not valid
 		if not is_valid:
-			print("made it")
 			puzzle[row][col] = backup
-		
 		attempts += 1
 	
 	# Send the finished puzzle using send_grid function
 	send_grid(puzzle)
+
+func deep_copy_2d_array(arr):
+	var new_arr = []
+	for row in arr:
+		new_arr.append(row.duplicate())
+	return new_arr

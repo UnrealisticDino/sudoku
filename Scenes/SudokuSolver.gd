@@ -51,6 +51,7 @@ func solve_with_techniques(puzzle, techniques):
 		if not made_move:
 			break  # No more moves can be made, exit the loop
 		is_solved = check_if_solved(puzzle)
+	return puzzle
 
 func check_if_solved(puzzle):
 	for row in puzzle:
