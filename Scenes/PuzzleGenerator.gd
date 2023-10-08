@@ -16,28 +16,37 @@ func send_grid(grid):
 func generate_puzzle(filled_sudoku_original):
 	var filled_sudoku = deep_copy_2d_array(filled_sudoku_original)
 	var puzzle = deep_copy_2d_array(filled_sudoku)
-	var attempts = 0
-	
-	while attempts < 100:  # You can adjust the number of attempts
-		var row = randi() % GRID_SIZE
-		var col = randi() % GRID_SIZE
-		
+	var GRID_SIZE = 9  # Assuming a 9x9 grid
+
+	# Create a list of all cell coordinates
+	var all_cells = []
+	for row in range(GRID_SIZE):
+		for col in range(GRID_SIZE):
+			all_cells.append({"row": row, "col": col})
+
+	# Shuffle the list to randomize the order
+	all_cells.shuffle()
+
+	# Iterate over each cell in the shuffled list
+	for cell in all_cells:
+		var row = cell["row"]
+		var col = cell["col"]
+
 		# Skip if the cell is already empty
 		if puzzle[row][col] == 0:
 			continue
-		
+
 		# Backup the cell value and clear it
 		var backup = puzzle[row][col]
 		puzzle[row][col] = 0
-		
+
 		# Send the puzzle to SudokuSolver for validation
 		var is_valid = SudokuSolver.solve(deep_copy_2d_array(puzzle), deep_copy_2d_array(filled_sudoku))
-		
+
 		# Restore the cell value if the puzzle is not valid
 		if not is_valid:
 			puzzle[row][col] = backup
-		attempts += 1
-	
+
 	# Send the finished puzzle using send_grid function
 	send_grid(puzzle)
 

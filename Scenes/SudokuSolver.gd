@@ -1,21 +1,20 @@
-#SudokuSolver
+# SudokuSolver
 extends Node
 var difficulty = "Easy"
-
 var config = ConfigFile.new()
+var move_details = []  # Data structure to keep track of the moves made
 
 func load_settings():
-	# Load settings from the config file
 	var err = config.load("user://settings.cfg")
 	if err == OK:
-		difficulty = config.get_value("difficulty", "selected", "Easy")  # Default to "Easy" if not found
+		difficulty = config.get_value("difficulty", "selected", "Easy")
 
-# Implement human-viable techniques for solving Sudoku
 func solve(puzzle, filled_sudoku):
 	load_settings()
+	move_details.clear()
 	
+	# Allowed techniques depending on the difficulty
 	var allowed_techniques = []
-
 	match difficulty:
 		"Easy":
 			allowed_techniques = ["use_full_house", "use_naked_singles", "use_hidden_singles"]
@@ -23,18 +22,18 @@ func solve(puzzle, filled_sudoku):
 			allowed_techniques = ["use_full_house", "use_naked_singles", "use_hidden_singles", "use_naked_pairs", "use_hidden_pairs", "use_naked_triples", "use_hidden_triples", "use_naked_quads", "use_hidden_quads"]
 		"Hard":
 			allowed_techniques = ["use_full_house", "use_naked_singles", "use_hidden_singles", "use_naked_quads", "use_hidden_quads", "use_pointing_pairs", "use_pointing_triples"]
-	# Solve the puzzle using only the allowed techniques
+	
+	# Solve the puzzle using the allowed techniques
 	var solved_puzzle = solve_with_techniques(puzzle, allowed_techniques)
 
-	# Check if the solved puzzle matches the original filled grid
 	if solved_puzzle == filled_sudoku:
+		print_moves_made()
 		return true
 	else:
 		return false
 
 func solve_with_techniques(puzzle, techniques):
 	var is_solved = false
-
 	while not is_solved:
 		var made_move = false
 		for technique in techniques:
@@ -49,10 +48,25 @@ func solve_with_techniques(puzzle, techniques):
 				# ... (other techniques)
 
 		if not made_move:
-			break  # No more moves can be made, exit the loop
+			break
 		is_solved = check_if_solved(puzzle)
 	return puzzle
 
+# Prints the moves made and the eliminated values to a file
+func print_moves_made():
+	var file = File.new()
+	file.open("res://Moves_Made/moves.txt", File.WRITE)
+	
+	file.store_string("Moves made:\n")
+	for move in move_details:
+		file.store_string("Row: %d, Col: %d, Value: %d, Technique: %s\n" % [move["row"], move["col"], move["value"], move["technique"]])
+		
+		if move.has("eliminated_values"):
+			file.store_string("Eliminated values: %s\n" % [str(move["eliminated_values"])])
+	
+	file.close()
+
+# Checks if the puzzle is solved
 func check_if_solved(puzzle):
 	for row in puzzle:
 		for cell in row:
@@ -60,80 +74,100 @@ func check_if_solved(puzzle):
 				return false
 	return true
 
+# Full House technique
 func use_full_house(puzzle):
 	for i in range(9):
 		for j in range(9):
 			if puzzle[i][j] == 0:
 				var possible_values = [1, 2, 3, 4, 5, 6, 7, 8, 9]
+				var eliminated_values = {}
+				
+				# Check row and column
 				for x in range(9):
 					if puzzle[i][x] in possible_values:
+						eliminated_values[puzzle[i][x]] = "Exists in row"
 						possible_values.erase(puzzle[i][x])
 					if puzzle[x][j] in possible_values:
+						eliminated_values[puzzle[x][j]] = "Exists in column"
 						possible_values.erase(puzzle[x][j])
-				var box_row = i - i % 3
-				var box_col = j - j % 3
-				for x in range(box_row, box_row + 3):
-					for y in range(box_col, box_col + 3):
+
+				# Check 3x3 block
+				var block_row = i / 3 * 3
+				var block_col = j / 3 * 3
+				for x in range(block_row, block_row + 3):
+					for y in range(block_col, block_col + 3):
 						if puzzle[x][y] in possible_values:
+							eliminated_values[puzzle[x][y]] = "Exists in block"
 							possible_values.erase(puzzle[x][y])
+
+				# If only one possible value, it's a full house
 				if possible_values.size() == 1:
 					puzzle[i][j] = possible_values[0]
+					move_details.append({"row": i, "col": j, "value": possible_values[0], "technique": "Full House", "eliminated_values": eliminated_values})
 					return true
 	return false
 
+# Naked Single technique
 func use_naked_singles(puzzle):
 	for i in range(9):
 		for j in range(9):
 			if puzzle[i][j] == 0:
 				var possible_values = [1, 2, 3, 4, 5, 6, 7, 8, 9]
+				var eliminated_values = {}
+				
 				for x in range(9):
 					if puzzle[i][x] in possible_values:
+						eliminated_values[puzzle[i][x]] = "Exists in row"
 						possible_values.erase(puzzle[i][x])
 					if puzzle[x][j] in possible_values:
+						eliminated_values[puzzle[x][j]] = "Exists in column"
 						possible_values.erase(puzzle[x][j])
-				var box_row = i - i % 3
-				var box_col = j - j % 3
-				for x in range(box_row, box_row + 3):
-					for y in range(box_col, box_col + 3):
-						if puzzle[x][y] in possible_values:
-							possible_values.erase(puzzle[x][y])
+				
 				if possible_values.size() == 1:
 					puzzle[i][j] = possible_values[0]
+					move_details.append({"row": i, "col": j, "value": possible_values[0], "technique": "Naked Single", "eliminated_values": eliminated_values})
 					return true
 	return false
 
+# Hidden Single technique
 func use_hidden_singles(puzzle):
 	for i in range(9):
 		for j in range(9):
 			if puzzle[i][j] == 0:
 				var possible_values = [1, 2, 3, 4, 5, 6, 7, 8, 9]
+				var eliminated_values = {}  # Added this dictionary to track eliminated values
+				
+				# Check row and column
 				for x in range(9):
 					if puzzle[i][x] in possible_values:
+						# Removing values that are already in the row
+						eliminated_values[puzzle[i][x]] = "Exists in row"
 						possible_values.erase(puzzle[i][x])
 					if puzzle[x][j] in possible_values:
+						# Removing values that are already in the column
+						eliminated_values[puzzle[x][j]] = "Exists in column"
 						possible_values.erase(puzzle[x][j])
-				var box_row = i - i % 3
-				var box_col = j - j % 3
-				for x in range(box_row, box_row + 3):
-					for y in range(box_col, box_col + 3):
+				
+				# Check block
+				var block_row = i / 3 * 3
+				var block_col = j / 3 * 3
+				for x in range(block_row, block_row + 3):
+					for y in range(block_col, block_col + 3):
 						if puzzle[x][y] in possible_values:
+							eliminated_values[puzzle[x][y]] = "Exists in block"
 							possible_values.erase(puzzle[x][y])
-				for value in possible_values:
-					var count_row = 0
-					var count_col = 0
-					var count_box = 0
-					for x in range(9):
-						if puzzle[i][x] == value:
-							count_row += 1
-						if puzzle[x][j] == value:
-							count_col += 1
-					for x in range(box_row, box_row + 3):
-						for y in range(box_col, box_col + 3):
-							if puzzle[x][y] == value:
-								count_box += 1
-					if count_row == 0 and count_col == 0 and count_box == 0:
-						puzzle[i][j] = value
-						return true
+				
+				# If only one possible value remains, it's a Hidden Single
+				if possible_values.size() == 1:
+					puzzle[i][j] = possible_values[0]
+					move_details.append({
+						"row": i,
+						"col": j,
+						"value": possible_values[0],
+						"technique": "Hidden Single",
+						"eliminated_values": eliminated_values  # Record the eliminated values
+					})
+					return true
 	return false
 
 #Needed

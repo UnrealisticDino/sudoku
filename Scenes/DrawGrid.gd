@@ -91,20 +91,7 @@ func _draw_grid():
 	self.update()
 
 func _draw():
-	# Drawing grid lines
-	for i in range(grid_size + 1):
-		var start_point = Vector2(start_x + i * scaled_cell_size, start_y)
-		var end_point = Vector2(start_x + i * scaled_cell_size, start_y + grid_size * scaled_cell_size)
-		draw_line(start_point, end_point, grid_color, 2)
-		if i % 3 == 0:
-			draw_line(start_point, end_point, grid_color, 4)
-		start_point = Vector2(start_x, start_y + i * scaled_cell_size)
-		end_point = Vector2(start_x + grid_size * scaled_cell_size, start_y + i * scaled_cell_size)
-		draw_line(start_point, end_point, grid_color, 2)
-		if i % 3 == 0:
-			draw_line(start_point, end_point, grid_color, 4)
-
-	# Highlight the selected cell (New Feature)
+	# Highlight the selected cell
 	if selected_cell != Vector2(-1, -1):
 		var cell_pos = Vector2(start_x + selected_cell.y * scaled_cell_size, start_y + selected_cell.x * scaled_cell_size)
 		draw_rect(Rect2(cell_pos, Vector2(scaled_cell_size, scaled_cell_size)), selected_cell_color)
@@ -120,7 +107,20 @@ func _draw():
 			var cell_pos = Vector2(start_x + cell.y * scaled_cell_size, start_y + cell.x * scaled_cell_size)
 			draw_rect(Rect2(cell_pos, Vector2(scaled_cell_size, scaled_cell_size)), identical_digits_color)
 
-	# Draw cells and penciled digits (New Feature)
+	# Drawing grid lines
+	for i in range(grid_size + 1):
+		var start_point = Vector2(start_x + i * scaled_cell_size, start_y)
+		var end_point = Vector2(start_x + i * scaled_cell_size, start_y + grid_size * scaled_cell_size)
+		draw_line(start_point, end_point, grid_color, 2)
+		if i % 3 == 0:
+			draw_line(start_point, end_point, grid_color, 4)
+		start_point = Vector2(start_x, start_y + i * scaled_cell_size)
+		end_point = Vector2(start_x + grid_size * scaled_cell_size, start_y + i * scaled_cell_size)
+		draw_line(start_point, end_point, grid_color, 2)
+		if i % 3 == 0:
+			draw_line(start_point, end_point, grid_color, 4)
+
+	# Draw cells and penciled digits
 	for i in range(grid_size):
 		for j in range(grid_size):
 			var cell_name = "cell_" + str(i) + "_" + str(j)
