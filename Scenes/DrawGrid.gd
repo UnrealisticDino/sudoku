@@ -64,6 +64,16 @@ func _ready():
 		for j in range(grid_size):
 			row.append([])  # Each cell starts with an empty array for penciled digits
 		penciled_digits.append(row)
+		
+	# Connect the puzzle_updated signal from SudokuSolver to _on_puzzle_updated method
+	print("Connecting to SudokuSolver's puzzle_updated signal")
+	var result = Global.SudokuSolver.connect("puzzle_updated", self, "_on_puzzle_updated")
+	print("Connection result: ", result)
+
+# Define the _on_puzzle_updated method
+func _on_puzzle_updated():
+	print("working")
+	_draw_grid()
 
 func _calculate_grid_parameters():
 	# Get the window size

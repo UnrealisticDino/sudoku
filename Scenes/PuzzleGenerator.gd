@@ -41,7 +41,7 @@ func generate_puzzle(filled_sudoku_original):
 		puzzle[row][col] = 0
 
 		# Send the puzzle to SudokuSolver for validation
-		var is_valid = SudokuSolver.solve(deep_copy_2d_array(puzzle), deep_copy_2d_array(filled_sudoku))
+		var is_valid = SudokuSolver.solve(deep_copy_2d_array(puzzle), deep_copy_2d_array(filled_sudoku), "PuzzleGenerator")
 
 		# Restore the cell value if the puzzle is not valid
 		if not is_valid:

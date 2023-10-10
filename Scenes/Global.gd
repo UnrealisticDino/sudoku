@@ -8,10 +8,11 @@ var puzzle_generated = false
 var grid_lines_color = Color(0, 0,0)
 var player_digit_color = Color(1, 0, 0)
 var game_placed_digit_color = Color(0, 0, 0)
-var selected_cell_color = Color(0.5, 0.5, 1, 1)  # Default blueish color for the selected cell
-var identical_digits_color = Color(0.5, 0.5, 1, 0.5)  # Default derived color with added transparency
+var selected_cell_color = Color(0.5, 0.5, 1, 1)
+var identical_digits_color = Color(0.5, 0.5, 1, 0.5)
 var game_background_texture = preload("res://DefaultSprites/Backgound.png")
 var PuzzleGenerator = preload("res://Scenes/PuzzleGenerator.gd").new()
+var SudokuSolver = preload("res://Scenes/SudokuSolver.gd").new()
 var puzzle = []
 
 func _ready():

@@ -4,12 +4,16 @@ var difficulty = "Easy"
 var config = ConfigFile.new()
 var move_details = []  # Data structure to keep track of the moves made
 
+signal puzzle_updated
+
 func load_settings():
 	var err = config.load("user://settings.cfg")
 	if err == OK:
 		difficulty = config.get_value("difficulty", "selected", "Easy")
 
-func solve(puzzle, filled_sudoku):
+func solve(puzzle, filled_sudoku, source):
+	if source == "PlayerInput":
+		print("Received puzzle: ", puzzle)  # Debugging
 	load_settings()
 	move_details.clear()
 	
@@ -24,7 +28,7 @@ func solve(puzzle, filled_sudoku):
 			allowed_techniques = ["use_full_house", "use_naked_singles", "use_hidden_singles", "use_naked_quads", "use_hidden_quads", "use_pointing_pairs", "use_pointing_triples"]
 	
 	# Solve the puzzle using the allowed techniques
-	var solved_puzzle = solve_with_techniques(puzzle, allowed_techniques)
+	var solved_puzzle = solve_with_techniques(puzzle, allowed_techniques, source)
 
 	if solved_puzzle == filled_sudoku:
 		print_moves_made()
@@ -32,7 +36,7 @@ func solve(puzzle, filled_sudoku):
 	else:
 		return false
 
-func solve_with_techniques(puzzle, techniques):
+func solve_with_techniques(puzzle, techniques, source):
 	var is_solved = false
 	while not is_solved:
 		var made_move = false
@@ -46,6 +50,12 @@ func solve_with_techniques(puzzle, techniques):
 					made_move = use_hidden_singles(puzzle) or made_move
 				
 				# ... (other techniques)
+			
+			# If the source is "player_input", exit early if a move was made
+			if source == "PlayerInput" and made_move:
+				print("Emitting puzzle_updated signal")
+				emit_signal("puzzle_updated")
+				return puzzle
 
 		if not made_move:
 			break
