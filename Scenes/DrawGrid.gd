@@ -280,14 +280,15 @@ func print_scene_tree(node, indent=0):
 
 ##########
 func input_number(cell, number):
+	print("cell == ", cell)
 	save_state()  # Save the state before making changes
 	if Global.hint:
 		var new_selected_cell = cell
 		selected_cells = [new_selected_cell]
-	if get_tree():
-		print_scene_tree(get_tree().get_root())
-	else:
-		print("Node is not part of the scene tree.")
+#	if get_tree():
+#		print_scene_tree(get_tree().get_root())
+#	else:
+#		print("Node is not part of the scene tree.")
 
 	var col = cell.y
 	var row = cell.x
@@ -304,13 +305,14 @@ func input_number(cell, number):
 	print("cell name = ", cell_name)
 	
 	# Debugging: Print the names of all children nodes
-	for child in get_children():
-		print("Child node: ", child.name)
+#	for child in get_children():
+#		print("Child node: ", child.name)
 	
 	var selected_cell_node = get_node_or_null(cell_name)
 	print("selected cell node ", selected_cell_node)
 	
 	if selected_cell_node:
+		print("puzzle =", puzzle,"\nrow =", row,"\ncol =", col)
 		for i in range(1, 10):  # Clear the visual representation of penciled digits
 			selected_cell_node.set_pencil_digit(i, false)
 		selected_cell_node.set_number(puzzle[row][col], "player")
@@ -339,14 +341,14 @@ func _on_size_changed():
 	# Redraw the grid
 	_draw_grid()
 
-func _on_cell_clicked(cell_position):
-	selected_cell = cell_position 
-	selected_cells = [cell_position]
-	_draw_grid()
-
-	# Update the highlighted digits if the setting is turned on
-	if Global.highlight_identical_digits:
-		highlight_identical_digits(cell_position)
+#func _on_cell_clicked(cell_position):
+#	selected_cell = cell_position 
+#	selected_cells = [cell_position]
+#	_draw_grid()
+#
+#	# Update the highlighted digits if the setting is turned on
+#	if Global.highlight_identical_digits:
+#		highlight_identical_digits(cell_position)
 
 func update_puzzle():
 	puzzle = Global.puzzle

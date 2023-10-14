@@ -6,8 +6,6 @@ var config = ConfigFile.new()
 var move_details = []  # Data structure to keep track of the moves made
 var hint_cell
 var hint_number
-var CellScene = preload("res://Scenes/Cell.tscn")
-onready var Global = get_node("/root/Global")
 
 func load_settings():
 	var err = config.load("user://settings.cfg")
@@ -57,14 +55,20 @@ func solve_with_techniques(puzzle, techniques, source):
 			
 			# If the source is "player_input", exit early if a move was made
 			if source == "PlayerInput" and made_move:
+#				if self.get_parent():
+#					print("The node has a parent, so it's likely part of the scene tree.")
+#				else:
+#					print("The node has no parent, so it's NOT part of the scene tree.")
+				#print("Inside PlayerInput and made_move block")  # Debug
 				Global.hint = true
+				#print("About to call get_tree(): ", get_tree())  # Debug
 				var DrawGrid = get_tree().get_nodes_in_group("DrawGridGroup")[0]
 				if DrawGrid:
 					DrawGrid.input_number(move_result.cell, move_result.number)
 					return
 				else:
 					print("DrawGrid is not available.")
-					return  # Return early if DrawGrid is not available
+				return
 
 		if not made_move:
 			break

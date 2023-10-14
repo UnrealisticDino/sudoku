@@ -9,6 +9,7 @@ var hint_label
 var is_hint_box_pressed = false
 
 func _ready():
+	add_child(SudokuSolver)
 	# Create the outline for the hint box
 	hint_box_outline = ColorRect.new()
 	hint_box_outline.rect_min_size = Vector2(104, 44)  # Slightly larger than the hint_box
@@ -61,4 +62,3 @@ func _swap_colors():
 func _on_HintBox_pressed():
 	SudokuSolver.solve(Global.puzzle, Global.filled_sudoku, "PlayerInput")
 	yield(get_tree().create_timer(1.0), "timeout")
-
