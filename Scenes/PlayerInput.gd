@@ -59,7 +59,6 @@ func _swap_colors():
 		hint_label.add_color_override("font_color", Global.game_placed_digit_color)
 
 func _on_HintBox_pressed():
-	print("Hint box pressed function triggered")  # Debugging
 	SudokuSolver.solve(Global.puzzle, Global.filled_sudoku, "PlayerInput")
-	yield(get_tree().create_timer(1.0), "timeout")  # Wait for 1 second
+	yield(get_tree().create_timer(1.0), "timeout")
 

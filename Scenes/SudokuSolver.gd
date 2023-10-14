@@ -1,10 +1,13 @@
 # SudokuSolver
 extends Node
+
 var difficulty = "Easy"
 var config = ConfigFile.new()
 var move_details = []  # Data structure to keep track of the moves made
-
-signal puzzle_updated
+var hint_cell
+var hint_number
+var CellScene = preload("res://Scenes/Cell.tscn")
+onready var Global = get_node("/root/Global")
 
 func load_settings():
 	var err = config.load("user://settings.cfg")
@@ -12,8 +15,6 @@ func load_settings():
 		difficulty = config.get_value("difficulty", "selected", "Easy")
 
 func solve(puzzle, filled_sudoku, source):
-	if source == "PlayerInput":
-		print("Received puzzle: ", puzzle)  # Debugging
 	load_settings()
 	move_details.clear()
 	
@@ -37,25 +38,33 @@ func solve(puzzle, filled_sudoku, source):
 		return false
 
 func solve_with_techniques(puzzle, techniques, source):
+	var last_filled_cell = {}
 	var is_solved = false
 	while not is_solved:
 		var made_move = false
+		var move_result = {}
 		for technique in techniques:
 			match technique:
 				"use_full_house":
-					made_move = use_full_house(puzzle) or made_move
+					move_result = use_full_house(puzzle)
 				"use_naked_singles":
-					made_move = use_naked_singles(puzzle) or made_move
+					move_result = use_naked_singles(puzzle)
 				"use_hidden_singles":
-					made_move = use_hidden_singles(puzzle) or made_move
+					move_result = use_hidden_singles(puzzle)
 				
 				# ... (other techniques)
+			made_move = move_result.made_move or made_move
 			
 			# If the source is "player_input", exit early if a move was made
 			if source == "PlayerInput" and made_move:
-				print("Emitting puzzle_updated signal")
-				emit_signal("puzzle_updated")
-				return puzzle
+				Global.hint = true
+				var DrawGrid = get_tree().get_nodes_in_group("DrawGridGroup")[0]
+				if DrawGrid:
+					DrawGrid.input_number(move_result.cell, move_result.number)
+					return
+				else:
+					print("DrawGrid is not available.")
+					return  # Return early if DrawGrid is not available
 
 		if not made_move:
 			break
@@ -114,8 +123,8 @@ func use_full_house(puzzle):
 				if possible_values.size() == 1:
 					puzzle[i][j] = possible_values[0]
 					move_details.append({"row": i, "col": j, "value": possible_values[0], "technique": "Full House", "eliminated_values": eliminated_values})
-					return true
-	return false
+					return {"made_move": true, "cell": Vector2(i, j), "number": possible_values[0]}
+	return {"made_move": false}
 
 # Naked Single technique
 func use_naked_singles(puzzle):
@@ -136,8 +145,8 @@ func use_naked_singles(puzzle):
 				if possible_values.size() == 1:
 					puzzle[i][j] = possible_values[0]
 					move_details.append({"row": i, "col": j, "value": possible_values[0], "technique": "Naked Single", "eliminated_values": eliminated_values})
-					return true
-	return false
+					return {"made_move": true, "cell": Vector2(i, j), "number": possible_values[0]}
+	return {"made_move": false}
 
 # Hidden Single technique
 func use_hidden_singles(puzzle):
@@ -177,8 +186,8 @@ func use_hidden_singles(puzzle):
 						"technique": "Hidden Single",
 						"eliminated_values": eliminated_values  # Record the eliminated values
 					})
-					return true
-	return false
+					return {"made_move": true, "cell": Vector2(i, j), "number": possible_values[0]}
+	return {"made_move": false}
 
 #Needed
 var use_full_house = false

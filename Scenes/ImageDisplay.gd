@@ -3,7 +3,7 @@ extends Sprite
 
 # Preload the sprite sheet
 var sprite_sheet = preload("res://DefaultSprites/numbers.png")
-		# Define a dictionary to map numbers to their positions in the 3x3 grid
+# Define a dictionary to map numbers to their positions in the 3x3 grid
 var number_positions = {
 	1: Vector2(0, 0),
 	2: Vector2(1, 0),
@@ -65,13 +65,16 @@ func clear_overlay():
 	self.region_enabled = false
 	self.texture = null
 
-# If you want to detect clicks on the cell
-func _input(event):
-	if event is InputEventMouseButton and event.pressed:
-		# Check if the click is within the cell's boundaries
-		if self.get_rect().has_point(event.position):
-			emit_signal("cell_clicked")
-			Input.set_input_as_handled()  # Mark the input as handled to stop propagation
+## If you want to detect clicks on the cell
+#func _input(event):
+#
+#	if event is InputEventMouseButton and event.pressed:
+#		print(event)
+#		# Check if the click is within the cell's boundaries
+#		if self.get_rect().has_point(event.position):
+#			print("Emitting cell_clicked signal")  # Debugging line
+#			emit_signal("cell_clicked")
+#			Input.set_input_as_handled()  # Mark the input as handled to stop propagation
 
 func set_pencil_digit(digit, show):
 	if sprite_sheet:

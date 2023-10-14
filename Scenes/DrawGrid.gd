@@ -47,7 +47,7 @@ func _ready():
 			cell.position = Vector2(start_x + j * scaled_cell_size + scaled_cell_size / 2, start_y + i * scaled_cell_size + scaled_cell_size / 2)
 			add_child(cell)
 			cell.connect("cell_clicked", self, "_on_cell_clicked", [Vector2(i, j)])
-	
+
 	# Initialize the number_source array
 	for i in range(grid_size):
 		var row = []
@@ -63,17 +63,7 @@ func _ready():
 		var row = []
 		for j in range(grid_size):
 			row.append([])  # Each cell starts with an empty array for penciled digits
-		penciled_digits.append(row)
-		
-	# Connect the puzzle_updated signal from SudokuSolver to _on_puzzle_updated method
-	print("Connecting to SudokuSolver's puzzle_updated signal")
-	var result = Global.SudokuSolver.connect("puzzle_updated", self, "_on_puzzle_updated")
-	print("Connection result: ", result)
-
-# Define the _on_puzzle_updated method
-func _on_puzzle_updated():
-	print("working")
-	_draw_grid()
+		Global.penciled_digits.append(row)
 
 func _calculate_grid_parameters():
 	# Get the window size
@@ -153,7 +143,7 @@ func _draw():
 			# Clear existing penciled digits
 			cell.clear_pencil_digits()
 			# Draw penciled digits for the cell
-			var cell_pencils = penciled_digits[i][j]
+			var cell_pencils = Global.penciled_digits[i][j]
 			for k in range(len(cell_pencils)):
 				var digit = cell_pencils[k]
 				# Calculate position for the penciled digit in a 3x3 grid layout
@@ -163,7 +153,7 @@ func _draw():
 				cell.set_pencil_digit(digit, true)  # true indicates that you want to show the digit
 
 func _process(delta):
-	if mouse_button_down:
+	if !Global.hint and mouse_button_down:  # Added the !Global.hint condition
 		var mouse_position = get_global_mouse_position()
 		for i in range(grid_size):
 			for j in range(grid_size):
@@ -174,7 +164,7 @@ func _process(delta):
 					if !selected_cells.has(cell_vector):
 						selected_cells.append(cell_vector)
 						# Add any additional logic for when a cell is selected
-		_draw_grid()  # Redraw the grid to reflect the changes
+	_draw_grid()  # Redraw the grid to reflect the changes
 
 func _input(event):
 	if event is InputEventMouseButton:
@@ -260,7 +250,7 @@ func clear_selected_cells():
 		# Check if the digit was placed by the player before clearing it
 		if number_source[row][col] == "player":
 			puzzle[row][col] = 0  # Clear the cell's value
-			penciled_digits[row][col] = []  # Clear any penciled digits for the cell
+			Global.penciled_digits[row][col] = []  # Clear any penciled digits for the cell
 			var cell_name = "cell_" + str(row) + "_" + str(col)
 			var selected_cell_node = get_node_or_null(cell_name)
 			if selected_cell_node:
@@ -272,22 +262,54 @@ func clear_selected_cells():
 	highlighted_cells.clear()  # Clear the highlighted cells
 
 	_draw_grid()  # Redraw the grid to reflect the changes
+########
+func print_scene_tree(node, indent=0):
+	if node and node.get_tree():
+		var spaces = ""
+		for i in range(indent):
+			spaces += " "
+		print(spaces + node.name)
+		
+		for child in node.get_children():
+			if child.get_tree() == null:
+				print(spaces + "  " + child.name + " (Not in scene tree)")
+			else:
+				print_scene_tree(child, indent + 2)
+	else:
+		print("Node is not part of the scene tree.")
 
+##########
 func input_number(cell, number):
 	save_state()  # Save the state before making changes
+	if Global.hint:
+		var new_selected_cell = cell
+		selected_cells = [new_selected_cell]
+	if get_tree():
+		print_scene_tree(get_tree().get_root())
+	else:
+		print("Node is not part of the scene tree.")
+
 	var col = cell.y
 	var row = cell.x
 	
 	# Check if the digit being placed is the same as the one already in the cell
 	if puzzle[row][col] == number:
 		puzzle[row][col] = 0  # Remove the digit
-		penciled_digits[row][col] = []  # Clear any penciled digits for the cell
+		Global.penciled_digits[row][col] = []  # Clear any penciled digits for the cell
 	else:
 		puzzle[row][col] = number
-		penciled_digits[row][col] = []  # Clear any penciled digits for the cell
+		Global.penciled_digits[row][col] = []  # Clear any penciled digits for the cell
 	
 	var cell_name = "cell_" + str(row) + "_" + str(col)
+	print("cell name = ", cell_name)
+	
+	# Debugging: Print the names of all children nodes
+	for child in get_children():
+		print("Child node: ", child.name)
+	
 	var selected_cell_node = get_node_or_null(cell_name)
+	print("selected cell node ", selected_cell_node)
+	
 	if selected_cell_node:
 		for i in range(1, 10):  # Clear the visual representation of penciled digits
 			selected_cell_node.set_pencil_digit(i, false)
@@ -297,6 +319,7 @@ func input_number(cell, number):
 	if Global.highlight_identical_digits:
 		highlight_identical_digits(cell)
 	
+	Global.hint = false
 	_draw_grid()  # Redraw the grid to reflect the changes
 
 func _on_size_changed():
@@ -348,20 +371,19 @@ func toggle_pencil_digit(cell, digit):
 	# Check if the cell is empty before allowing penciling in digits
 	if puzzle[cell.x][cell.y] == 0:
 		save_state()  # Save the state before making changes
-		var current_pencils = penciled_digits[cell.x][cell.y]
+		var current_pencils = Global.penciled_digits[cell.x][cell.y]
 		if digit in current_pencils:
 			var new_pencils = []
 			for d in current_pencils:
 				if d != digit:
 					new_pencils.append(d)
 			current_pencils = new_pencils  # Remove the penciled-in digit
-			print("Removed pencil digit: ", digit)
+			#print("Removed pencil digit: ", digit)
 		else:
 			current_pencils.append(digit)  # Add the penciled-in digit
-			print("Added pencil digit: ", digit)
-		penciled_digits[cell.x][cell.y] = current_pencils
+			#print("Added pencil digit: ", digit)
+		Global.penciled_digits[cell.x][cell.y] = current_pencils
 		_draw_grid()  # Redraw the grid to reflect the changes
-		print("Redrawing grid")
 
 func undo():
 	print("Undo stack before undo: ", undo_stack)
@@ -370,7 +392,7 @@ func undo():
 		var current_state = {
 			"puzzle": puzzle.duplicate(true),
 			"selected_cells": selected_cells.duplicate(true),
-			"penciled_digits": penciled_digits.duplicate(true),
+			"penciled_digits": Global.penciled_digits.duplicate(true),
 		}
 		redo_stack.append(current_state)
 		
@@ -390,7 +412,7 @@ func redo():
 		undo_stack.append({
 			"puzzle": puzzle.duplicate(true),
 			"selected_cells": selected_cells.duplicate(true),
-			"penciled_digits": penciled_digits.duplicate(true),
+			"penciled_digits": Global.penciled_digits.duplicate(true),
 		})
 		load_state(last_state)
 		print("Redo successful")
@@ -400,23 +422,21 @@ func redo():
 	print("Redo stack after redo: ", redo_stack)
 
 func save_state():
-	print("Saving state")
-	if puzzle is Array and selected_cells is Array and penciled_digits is Array:
+	if puzzle is Array and selected_cells is Array and Global.penciled_digits is Array:
 		var state = {
 			"puzzle": puzzle.duplicate(true),
 			"selected_cells": selected_cells.duplicate(true),
-			"penciled_digits": penciled_digits.duplicate(true),
+			"penciled_digits": Global.penciled_digits.duplicate(true),
 			# Add other game state variables here
 		}
 		undo_stack.append(state)
 		redo_stack.clear()
-		print("State saved: ", state)
 
 func load_state(state):
 	if state.has("puzzle") and state.has("selected_cells") and state.has("penciled_digits"):
 		puzzle = state["puzzle"].duplicate(true)
 		selected_cells = state["selected_cells"].duplicate(true)
-		penciled_digits = state["penciled_digits"].duplicate(true)
+		Global.penciled_digits = state["penciled_digits"].duplicate(true)
 		# Load other game state variables here
 		update_cells()  # Update the visual elements
 		_draw_grid()  # Redraw the grid to reflect the changes

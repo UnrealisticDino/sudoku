@@ -13,9 +13,15 @@ var identical_digits_color = Color(0.5, 0.5, 1, 0.5)
 var game_background_texture = preload("res://DefaultSprites/Backgound.png")
 var PuzzleGenerator = preload("res://Scenes/PuzzleGenerator.gd").new()
 var SudokuSolver = preload("res://Scenes/SudokuSolver.gd").new()
+var CellScene = preload("res://Scenes/Cell.tscn")
 var puzzle = []
 
+var hint = false
+var penciled_digits = []
+var current_penciled_digits = []
+
 func _ready():
+	var hint = false
 	load_selected_cell_color()
 	load_player_placed_digit_color()
 	load_grid_color()
