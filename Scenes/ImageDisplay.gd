@@ -66,17 +66,6 @@ func clear_overlay():
 	self.region_enabled = false
 	self.texture = null
 
-## If you want to detect clicks on the cell
-#func _input(event):
-#
-#	if event is InputEventMouseButton and event.pressed:
-#		print(event)
-#		# Check if the click is within the cell's boundaries
-#		if self.get_rect().has_point(event.position):
-#			print("Emitting cell_clicked signal")  # Debugging line
-#			emit_signal("cell_clicked")
-#			Input.set_input_as_handled()  # Mark the input as handled to stop propagation
-
 func set_pencil_digit(digit, show):
 	if sprite_sheet:
 		var cell_width = sprite_sheet.get_width() / 3

@@ -43,25 +43,22 @@ func solve_with_techniques(puzzle, techniques, source):
 		var move_result = {}
 		for technique in techniques:
 			match technique:
+				#Easy
 				"use_full_house":
 					move_result = use_full_house(puzzle)
 				"use_naked_singles":
 					move_result = use_naked_singles(puzzle)
 				"use_hidden_singles":
 					move_result = use_hidden_singles(puzzle)
-				
+				#Medium
+#				"use_naked_pairs":
+#					move_result = use_naked_pairs(puzzle)
 				# ... (other techniques)
 			made_move = move_result.made_move or made_move
 			
 			# If the source is "player_input", exit early if a move was made
 			if source == "PlayerInput" and made_move:
-#				if self.get_parent():
-#					print("The node has a parent, so it's likely part of the scene tree.")
-#				else:
-#					print("The node has no parent, so it's NOT part of the scene tree.")
-				#print("Inside PlayerInput and made_move block")  # Debug
 				Global.hint = true
-				#print("About to call get_tree(): ", get_tree())  # Debug
 				var DrawGrid = get_tree().get_nodes_in_group("DrawGridGroup")[0]
 				if DrawGrid:
 					DrawGrid.input_number(move_result.cell, move_result.number)

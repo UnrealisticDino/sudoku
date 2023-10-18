@@ -256,39 +256,14 @@ func clear_selected_cells():
 			if selected_cell_node:
 				selected_cell_node.clear_cell()  # Clear the visual representation of the cell
 	
-	# Remove this line to keep the cells selected
-	# selected_cells.clear()
-	
 	highlighted_cells.clear()  # Clear the highlighted cells
 
-	_draw_grid()  # Redraw the grid to reflect the changes
-########
-func print_scene_tree(node, indent=0):
-	if node and node.get_tree():
-		var spaces = ""
-		for i in range(indent):
-			spaces += " "
-		print(spaces + node.name)
-		
-		for child in node.get_children():
-			if child.get_tree() == null:
-				print(spaces + "  " + child.name + " (Not in scene tree)")
-			else:
-				print_scene_tree(child, indent + 2)
-	else:
-		print("Node is not part of the scene tree.")
-
-##########
 func input_number(cell, number):
 	print("cell == ", cell)
 	save_state()  # Save the state before making changes
 	if Global.hint:
 		var new_selected_cell = cell
 		selected_cells = [new_selected_cell]
-#	if get_tree():
-#		print_scene_tree(get_tree().get_root())
-#	else:
-#		print("Node is not part of the scene tree.")
 
 	var col = cell.y
 	var row = cell.x
@@ -304,10 +279,6 @@ func input_number(cell, number):
 	var cell_name = "cell_" + str(row) + "_" + str(col)
 	print("cell name = ", cell_name)
 	
-	# Debugging: Print the names of all children nodes
-#	for child in get_children():
-#		print("Child node: ", child.name)
-	
 	var selected_cell_node = get_node_or_null(cell_name)
 	print("selected cell node ", selected_cell_node)
 	
@@ -322,7 +293,6 @@ func input_number(cell, number):
 		highlight_identical_digits(cell)
 	
 	Global.hint = false
-	_draw_grid()  # Redraw the grid to reflect the changes
 
 func _on_size_changed():
 	# Recalculate the grid parameters
@@ -337,18 +307,6 @@ func _on_size_changed():
 				cell.position = Vector2(start_x + j * scaled_cell_size + scaled_cell_size / 2, start_y + i * scaled_cell_size + scaled_cell_size / 2)
 				# If the Cell scene has a scale property, adjust it based on the new scaled_cell_size
 				cell.scale = Vector2(scaled_cell_size / cell_size, scaled_cell_size / cell_size) * digit_scale_factor
-	
-	# Redraw the grid
-	_draw_grid()
-
-#func _on_cell_clicked(cell_position):
-#	selected_cell = cell_position 
-#	selected_cells = [cell_position]
-#	_draw_grid()
-#
-#	# Update the highlighted digits if the setting is turned on
-#	if Global.highlight_identical_digits:
-#		highlight_identical_digits(cell_position)
 
 func update_puzzle():
 	puzzle = Global.puzzle
@@ -385,7 +343,7 @@ func toggle_pencil_digit(cell, digit):
 			current_pencils.append(digit)  # Add the penciled-in digit
 			#print("Added pencil digit: ", digit)
 		Global.penciled_digits[cell.x][cell.y] = current_pencils
-		_draw_grid()  # Redraw the grid to reflect the changes
+#		_draw_grid()  # Redraw the grid to reflect the changes
 
 func undo():
 	print("Undo stack before undo: ", undo_stack)
