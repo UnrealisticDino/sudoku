@@ -11,10 +11,10 @@ var start_y
 var grid_width
 var grid_height
 var margin = 50
-var selected_cell = Vector2(-1, -1)
+var selected_cell = Global.selected_cell
 var number_source = []
 var digit_scale_factor = 0.7
-var selected_cells = []
+var selected_cells = Global.selected_cells
 var grid_color = Global.grid_lines_color
 var selected_cell_color = Global.selected_cell_color
 var identical_digits_color = selected_cell_color.linear_interpolate(Color(0.5, 0.5, 1, 0.5), 0.5)  # Derived color with added transparency
@@ -188,36 +188,30 @@ func _input(event):
 
 	# Check for mouse click to select a cell
 	if event is InputEventMouseButton and event.pressed:
-		print("Mouse clicked at position: ", event.position)
 		var cell_y = int((event.position.x - start_x) / scaled_cell_size)
 		var cell_x = int((event.position.y - start_y) / scaled_cell_size)
 		
 		# Check if the click is within the grid boundaries
 		if 0 <= cell_x and cell_x < grid_size and 0 <= cell_y and cell_y < grid_size:
 			var new_selected_cell = Vector2(cell_x, cell_y)
-			print("New selected cell: ", new_selected_cell)
-			
+
 			# If Shift key is pressed, add to the list; otherwise, clear the list and add the new cell
 			if is_shift_pressed:
 				if new_selected_cell in selected_cells:
-					print("Removing cell from selected_cells: ", new_selected_cell)
 					selected_cells.erase(new_selected_cell)
 				else:
-					print("Adding cell to selected_cells: ", new_selected_cell)
 					selected_cells.append(new_selected_cell)
 			else:
-				print("Setting selected_cells to only the new cell: ", new_selected_cell)
 				selected_cells = [new_selected_cell]
 			
 			# Update the highlighted digits if the setting is turned on
 			if Global.highlight_identical_digits:
 				highlight_identical_digits(new_selected_cell)
 			
-			_draw_grid()  # Redraw the grid to update the highlighted cells
+			_draw_grid()
 
 	# Check for Backspace key press to clear the selected cell
 	if event is InputEventKey and event.pressed:
-		#print("Key pressed: ", event.scancode)
 		if selected_cells.size() > 0:
 			if event.scancode == KEY_BACKSPACE:
 				print("Backspace pressed. Clearing selected cells.")
@@ -259,7 +253,8 @@ func clear_selected_cells():
 	highlighted_cells.clear()  # Clear the highlighted cells
 
 func input_number(cell, number):
-	print("cell == ", cell)
+	print("cell == ", cell, "number == ", number)
+
 	save_state()  # Save the state before making changes
 	if Global.hint:
 		var new_selected_cell = cell

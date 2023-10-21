@@ -61,6 +61,7 @@ func solve_with_techniques(puzzle, techniques, source):
 				Global.hint = true
 				var DrawGrid = get_tree().get_nodes_in_group("DrawGridGroup")[0]
 				if DrawGrid:
+					print(move_result.cell)
 					DrawGrid.input_number(move_result.cell, move_result.number)
 					return
 				else:

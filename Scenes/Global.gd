@@ -15,6 +15,8 @@ var PuzzleGenerator = preload("res://Scenes/PuzzleGenerator.gd").new()
 var SudokuSolver = preload("res://Scenes/SudokuSolver.gd").new()
 var CellScene = preload("res://Scenes/Cell.tscn")
 var puzzle = []
+var selected_cell = Vector2(-1, -1)
+var selected_cells = []
 
 var hint = false
 var penciled_digits = []

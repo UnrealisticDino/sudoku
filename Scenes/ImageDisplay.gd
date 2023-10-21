@@ -33,7 +33,6 @@ func _ready():
 		penciled_sprites[i] = sprite
 
 func set_number(value, source):
-	print("Value = ", value, " source = ", source)
 	if value in number_positions:
 		if sprite_sheet:
 			var cell_width = sprite_sheet.get_width() / 3
