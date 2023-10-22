@@ -89,12 +89,13 @@ func _input(event):
 						if digit != null:
 							selected_cells = DrawGrid.selected_cells
 							print(selected_cells, digit)
-							DrawGrid.input_number(selected_cells, digit)  # Call the function with the digit
+							for selected_cell in selected_cells:
+								DrawGrid.input_number(selected_cell, digit)  # Call the function with the digit
 						else:
 							print("Digit is null")
 						
-						if selected_cells:
-							selected_cells.get_child(0).visible = false  # Hide the highlight of the previously selected cell
+#						if selected_cells:
+#							selected_cells.get_child(0).visible = false  # Hide the highlight of the previously selected cell
 						selected_cells = cell
 						selected_cells.get_child(0).visible = true  # Show the highlight of the selected cell
 						break
@@ -103,9 +104,9 @@ func _input(event):
 			if is_hint_box_pressed and is_mouse_over_hint_box:
 				is_hint_box_pressed = false
 				_swap_colors()
-#			elif selected_cells:
-#				selected_cells.get_child(0).visible = false  # Hide the highlight of the selected cell
-#				selected_cells = null
+			elif selected_cells:
+				selected_cells.get_child(0).visible = false  # Hide the highlight of the selected cell
+				selected_cells = null
 
 func _swap_colors():
 	if is_hint_box_pressed:

@@ -155,16 +155,20 @@ func _draw():
 func _process(delta):
 	if !Global.hint and mouse_button_down:  # Added the !Global.hint condition
 		var mouse_position = get_global_mouse_position()
-		for i in range(grid_size):
-			for j in range(grid_size):
-				var cell_name = "cell_" + str(i) + "_" + str(j)
-				var cell = get_node_or_null(cell_name)
-				if cell and cell.get_rect().has_point(mouse_position):
-					var cell_vector = Vector2(i, j)
-					if !selected_cells.has(cell_vector):
-						selected_cells.append(cell_vector)
-						# Add any additional logic for when a cell is selected
-	_draw_grid()  # Redraw the grid to reflect the changes
+		
+		# Add the condition here to check if the mouse is within the grid boundaries
+		if (start_x <= mouse_position.x) and (mouse_position.x <= start_x + grid_width) and (start_y <= mouse_position.y) and (mouse_position.y <= start_y + grid_height):
+			
+			for i in range(grid_size):
+				for j in range(grid_size):
+					var cell_name = "cell_" + str(i) + "_" + str(j)
+					var cell = get_node_or_null(cell_name)
+					if cell and cell.get_rect().has_point(mouse_position):
+						var cell_vector = Vector2(i, j)
+						if !selected_cells.has(cell_vector):
+							selected_cells.append(cell_vector)
+
+			_draw_grid()  # Redraw the grid to reflect the changes
 
 func _input(event):
 	if event is InputEventMouseButton:
@@ -188,26 +192,29 @@ func _input(event):
 
 	# Check for mouse click to select a cell
 	if event is InputEventMouseButton and event.pressed:
-		var cell_y = int((event.position.x - start_x) / scaled_cell_size)
-		var cell_x = int((event.position.y - start_y) / scaled_cell_size)
+		print("Mouse clicked at: ", event.position)
+		print("Grid boundaries: x(", start_x, ", ", start_x + grid_width, ") y(", start_y, ", ", start_y + grid_height, ")")
 		
-		# Check if the click is within the grid boundaries
-		if 0 <= cell_x and cell_x < grid_size and 0 <= cell_y and cell_y < grid_size:
-			var new_selected_cell = Vector2(cell_x, cell_y)
+		if (start_x <= event.position.x) and (event.position.x <= start_x + grid_width) and (start_y <= event.position.y) and (event.position.y <= start_y + grid_height):
+			var cell_y = int((event.position.x - start_x) / scaled_cell_size)
+			var cell_x = int((event.position.y - start_y) / scaled_cell_size)
 
-			# If Shift key is pressed, add to the list; otherwise, clear the list and add the new cell
-			if is_shift_pressed:
-				if new_selected_cell in selected_cells:
-					selected_cells.erase(new_selected_cell)
+			# Check if the click is within the grid boundaries
+			if 0 <= cell_x and cell_x < grid_size and 0 <= cell_y and cell_y < grid_size:
+				var new_selected_cell = Vector2(cell_x, cell_y)
+
+				# If Shift key is pressed, add to the list; otherwise, clear the list and add the new cell
+				if is_shift_pressed:
+					if new_selected_cell in selected_cells:
+						selected_cells.erase(new_selected_cell)
+					else:
+						selected_cells.append(new_selected_cell)
 				else:
-					selected_cells.append(new_selected_cell)
-			else:
-				selected_cells = [new_selected_cell]
-			
-			# Update the highlighted digits if the setting is turned on
-			if Global.highlight_identical_digits:
-				highlight_identical_digits(new_selected_cell)
-			
+					selected_cells = [new_selected_cell]
+				
+				# Update the highlighted digits if the setting is turned on
+				if Global.highlight_identical_digits:
+					highlight_identical_digits(new_selected_cell)
 			_draw_grid()
 
 	# Check for Backspace key press to clear the selected cell
@@ -254,6 +261,10 @@ func clear_selected_cells():
 
 func input_number(cell, number):
 	print("cell == ", cell, "number == ", number)
+	
+	if number_source[cell.x][cell.y] != "player":
+		print("Cannot overwrite a game-placed digit.")
+		return
 
 	save_state()  # Save the state before making changes
 	if Global.hint:
@@ -288,6 +299,7 @@ func input_number(cell, number):
 		highlight_identical_digits(cell)
 	
 	Global.hint = false
+	_draw_grid()
 
 func _on_size_changed():
 	# Recalculate the grid parameters
@@ -338,7 +350,7 @@ func toggle_pencil_digit(cell, digit):
 			current_pencils.append(digit)  # Add the penciled-in digit
 			#print("Added pencil digit: ", digit)
 		Global.penciled_digits[cell.x][cell.y] = current_pencils
-#		_draw_grid()  # Redraw the grid to reflect the changes
+		_draw_grid()  # Redraw the grid to reflect the changes
 
 func undo():
 	print("Undo stack before undo: ", undo_stack)
