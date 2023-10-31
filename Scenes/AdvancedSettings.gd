@@ -13,6 +13,17 @@ onready var grid_lines_color = $GameGrid
 # Config file to save and load settings
 var config = ConfigFile.new()
 
+func _notification(what):
+	if what == MainLoop.NOTIFICATION_WM_GO_BACK_REQUEST:
+		print("Android back button pressed")
+		get_tree().change_scene("res://Scenes/Settings.tscn")
+		
+func _input(event):
+	if event is InputEventKey:
+		if event.pressed && event.scancode == KEY_ESCAPE:
+			get_tree().change_scene("res://Scenes/Settings.tscn")
+			return
+
 func _ready():
 	# Load the saved colors when the scene is loaded
 	config.load("user://settings.cfg")

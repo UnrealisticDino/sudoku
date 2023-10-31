@@ -23,6 +23,7 @@ var penciled_digits = []
 var current_penciled_digits = []
 
 func _ready():
+
 	var hint = false
 	load_selected_cell_color()
 	load_player_placed_digit_color()

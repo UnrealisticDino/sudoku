@@ -301,20 +301,6 @@ func input_number(cell, number):
 	Global.hint = false
 	_draw_grid()
 
-func _on_size_changed():
-	# Recalculate the grid parameters
-	_calculate_grid_parameters()
-	
-	# Reposition and scale all game elements based on the new parameters
-	for i in range(grid_size):
-		for j in range(grid_size):
-			var cell_name = "cell_" + str(i) + "_" + str(j)
-			var cell = get_node_or_null(cell_name)
-			if cell:
-				cell.position = Vector2(start_x + j * scaled_cell_size + scaled_cell_size / 2, start_y + i * scaled_cell_size + scaled_cell_size / 2)
-				# If the Cell scene has a scale property, adjust it based on the new scaled_cell_size
-				cell.scale = Vector2(scaled_cell_size / cell_size, scaled_cell_size / cell_size) * digit_scale_factor
-
 func update_puzzle():
 	puzzle = Global.puzzle
 	_draw_grid()

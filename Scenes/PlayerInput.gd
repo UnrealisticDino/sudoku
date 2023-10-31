@@ -63,7 +63,17 @@ func _ready():
 	hint_label.rect_scale = Vector2(2, 2)
 	hint_label.rect_position = Vector2((hint_box.rect_min_size.x - hint_label.rect_min_size.x * hint_label.rect_scale.x) / 2, (hint_box.rect_min_size.y - hint_label.rect_min_size.y * hint_label.rect_scale.y) / 2)
 
+func _notification(what):
+	if what == MainLoop.NOTIFICATION_WM_GO_BACK_REQUEST:
+		print("Android back button pressed")
+		get_tree().change_scene("res://Scenes/MainMenu.tscn")
+		
 func _input(event):
+	if event is InputEventKey:
+		if event.pressed && event.scancode == KEY_ESCAPE:
+			get_tree().change_scene("res://Scenes/MainMenu.tscn")
+			return
+			
 	if event is InputEventMouseButton:
 		var mouse_pos = event.position
 		var is_mouse_over_hint_box = hint_box_outline.rect_global_position.x < mouse_pos.x and mouse_pos.x < hint_box_outline.rect_global_position.x + hint_box_outline.rect_min_size.x and hint_box_outline.rect_global_position.y < mouse_pos.y and mouse_pos.y < hint_box_outline.rect_global_position.y + hint_box_outline.rect_min_size.y

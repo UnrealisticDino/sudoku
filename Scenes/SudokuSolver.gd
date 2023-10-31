@@ -12,7 +12,16 @@ func load_settings():
 	if err == OK:
 		difficulty = config.get_value("difficulty", "selected", "Easy")
 
+func print_puzzle(puzzle):
+	for row in puzzle:
+		var row_str = ""
+		for cell in row:
+			row_str += str(cell) + " "
+		print(row_str.strip_edges())
+
 func solve(puzzle, filled_sudoku, source):
+	print_puzzle(puzzle)
+	print("\n")
 	load_settings()
 	move_details.clear()
 	
@@ -22,7 +31,10 @@ func solve(puzzle, filled_sudoku, source):
 		"Easy":
 			allowed_techniques = ["use_full_house", "use_naked_singles", "use_hidden_singles"]
 		"Medium":
-			allowed_techniques = ["use_full_house", "use_naked_singles", "use_hidden_singles", "use_naked_pairs", "use_hidden_pairs", "use_naked_triples", "use_hidden_triples", "use_naked_quads", "use_hidden_quads"]
+			allowed_techniques = ["use_full_house", "use_naked_singles", "use_hidden_singles", "use_naked_pairs"]
+
+#		"Medium":
+#			allowed_techniques = ["use_full_house", "use_naked_singles", "use_hidden_singles", "use_naked_pairs", "use_hidden_pairs", "use_naked_triples", "use_hidden_triples", "use_naked_quads", "use_hidden_quads"]
 		"Hard":
 			allowed_techniques = ["use_full_house", "use_naked_singles", "use_hidden_singles", "use_naked_quads", "use_hidden_quads", "use_pointing_pairs", "use_pointing_triples"]
 	
@@ -51,8 +63,8 @@ func solve_with_techniques(puzzle, techniques, source):
 				"use_hidden_singles":
 					move_result = use_hidden_singles(puzzle)
 				#Medium
-#				"use_naked_pairs":
-#					move_result = use_naked_pairs(puzzle)
+				"use_naked_pairs":
+					move_result = use_naked_pairs(puzzle)
 				# ... (other techniques)
 			made_move = move_result.made_move or made_move
 			
@@ -72,6 +84,15 @@ func solve_with_techniques(puzzle, techniques, source):
 			break
 		is_solved = check_if_solved(puzzle)
 	return puzzle
+
+func update_move_details(row, col, value, technique, eliminated_values = {}):
+	move_details.append({
+		"row": row,
+		"col": col,
+		"value": value,
+		"technique": technique,
+		"eliminated_values": eliminated_values
+	})
 
 # Prints the moves made and the eliminated values to a file
 func print_moves_made():
@@ -190,6 +211,117 @@ func use_hidden_singles(puzzle):
 					})
 					return {"made_move": true, "cell": Vector2(i, j), "number": possible_values[0]}
 	return {"made_move": false}
+
+# Naked Pairs technique
+func use_naked_pairs(puzzle):
+	for i in range(9):
+		for j in range(9):
+			if puzzle[i][j] == 0:
+				var possible_values = [1, 2, 3, 4, 5, 6, 7, 8, 9]
+				
+				# Check row and column to find initial possible values
+				for x in range(9):
+					if puzzle[i][x] in possible_values:
+						possible_values.erase(puzzle[i][x])
+					if puzzle[x][j] in possible_values:
+						possible_values.erase(puzzle[x][j])
+				
+				# Check block to find initial possible values
+				var block_row = i / 3 * 3
+				var block_col = j / 3 * 3
+				for x in range(block_row, block_row + 3):
+					for y in range(block_col, block_col + 3):
+						if puzzle[x][y] in possible_values:
+							possible_values.erase(puzzle[x][y])
+				
+				# If there are two possible values, check for Naked Pair
+				if possible_values.size() == 2:
+					var first_value = possible_values[0]
+					var second_value = possible_values[1]
+					
+					# Check the same row for another cell with the same pair of possible values
+					for col1 in range(9):
+						if col1 != j:
+							var other_possible_values = get_possible_values(puzzle, i, col1)  # Change col to col1 here
+							if other_possible_values.size() == 2 and other_possible_values[0] == first_value and other_possible_values[1] == second_value:
+								# Naked Pair found, eliminate these two values from other cells in the row
+								for col3 in range(9):
+									if col3 != j:
+										var eliminated = eliminate_values_from_cell(puzzle, i, col3, [first_value, second_value])  # Change col to col3 here
+										if eliminated:
+											return {"made_move": true, "cell": Vector2(i, j), "number": possible_values[0]}
+					
+					# Similar checks for the same column
+					for row1 in range(9):
+						if row1 != i:
+							var other_possible_values = get_possible_values(puzzle, row1, j)
+							if other_possible_values.size() == 2 and other_possible_values[0] == first_value and other_possible_values[1] == second_value:
+								# Naked Pair found, eliminate these two values from other cells in the column
+								for row3 in range(9):
+									if row3 != i:
+										var eliminated = eliminate_values_from_cell(puzzle, row3, j, [first_value, second_value])
+										if eliminated:
+											return {"made_move": true, "cell": Vector2(i, j), "number": possible_values[0]}
+
+					# Similar checks for the same 3x3 block
+					var block_start_row = i / 3 * 3
+					var block_start_col = j / 3 * 3
+					for row1 in range(block_start_row, block_start_row + 3):
+						for col1 in range(block_start_col, block_start_col + 3):
+							if row1 != i or col1 != j:
+								var other_possible_values = get_possible_values(puzzle, row1, col1)
+								if other_possible_values.size() == 2 and other_possible_values[0] == first_value and other_possible_values[1] == second_value:
+									# Naked Pair found, eliminate these two values from other cells in the block
+									for row3 in range(block_start_row, block_start_row + 3):
+										for col3 in range(block_start_col, block_start_col + 3):
+											if row3 != i or col3 != j:
+												var eliminated = eliminate_values_from_cell(puzzle, row3, col3, [first_value, second_value])
+												if eliminated:
+													return {"made_move": true, "cell": Vector2(i, j), "number": possible_values[0]}
+
+	return {"made_move": false}
+
+# Helper function to get possible values for a cell
+func get_possible_values(puzzle, row, col):
+	var possible_values = [1, 2, 3, 4, 5, 6, 7, 8, 9]
+	for x in range(9):
+		if puzzle[row][x] in possible_values:
+			possible_values.erase(puzzle[row][x])
+		if puzzle[x][col] in possible_values:
+			possible_values.erase(puzzle[x][col])
+	
+	var block_row = row / 3 * 3
+	var block_col = col / 3 * 3
+	for x in range(block_row, block_row + 3):
+		for y in range(block_col, block_col + 3):
+			if puzzle[x][y] in possible_values:
+				possible_values.erase(puzzle[x][y])
+	
+	return possible_values
+
+# Helper function to eliminate values from a cell
+func eliminate_values_from_cell(puzzle, row, col, values_to_eliminate):
+	var possible_values = get_possible_values(puzzle, row, col)
+	var eliminated = false
+	var eliminated_values = [] # To keep track of which values were eliminated
+	
+	for value in values_to_eliminate:
+		if value in possible_values:
+			possible_values.erase(value)
+			eliminated = true
+			eliminated_values.append(value)
+	
+	if eliminated and possible_values.size() == 1:
+		puzzle[row][col] = possible_values[0]
+		move_details.append({
+			"row": row,
+			"col": col,
+			"value": possible_values[0],
+			"technique": "Elimination via Naked Pair",
+			"eliminated_values": eliminated_values
+		})
+		
+	return eliminated
 
 #Needed
 var use_full_house = false

@@ -13,6 +13,8 @@ config_version=4
 config/name="Sudoku"
 run/main_scene="res://Scenes/MainMenu.tscn"
 config/icon="res://icon.png"
+config/auto_accept_quit=false
+config/quit_on_go_back=false
 
 [autoload]
 
@@ -23,6 +25,7 @@ Global="*res://Scenes/Global.gd"
 
 window/size/width=1080
 window/size/height=1920
+window/handheld/orientation="sensor"
 window/stretch/mode="viewport"
 
 [global]

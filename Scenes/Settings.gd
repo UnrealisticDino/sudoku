@@ -19,7 +19,19 @@ const UNSELECTED_COLOR = Color(0.5, 0.5, 0.5)  # Grey
 # Current difficulty setting
 var current_difficulty = "Easy"
 
+func _notification(what):
+	if what == MainLoop.NOTIFICATION_WM_GO_BACK_REQUEST:
+		print("Android back button pressed")
+		get_tree().change_scene("res://Scenes/MainMenu.tscn")
+		
+func _input(event):
+	if event is InputEventKey:
+		if event.pressed && event.scancode == KEY_ESCAPE:
+			get_tree().change_scene("res://Scenes/MainMenu.tscn")
+			return
+
 func _ready():
+	print("Settings scene ready")
 	# Load settings when the scene starts
 	load_settings()
 	

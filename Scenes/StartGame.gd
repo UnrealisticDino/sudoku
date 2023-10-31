@@ -6,6 +6,7 @@ func _ready():
 	connect("pressed", self, "_on_StartGame_pressed")
 
 func _on_StartGame_pressed():
+	print(OS.get_environment("PATH"))
 	# Send the generated puzzle to PuzzleGenerator
 	Global.send_grid(Global.filled_sudoku)
 	# Transition to the sudoku.tscn scene
