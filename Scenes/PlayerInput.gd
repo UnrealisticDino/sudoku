@@ -1,7 +1,6 @@
 # PlayerInput.gd
 extends Control
 
-var SudokuSolver = preload("res://Scenes/SudokuSolver.gd").new()
 var hint_box
 var hint_box_outline
 var hint_label
@@ -14,7 +13,6 @@ onready var DrawGrid = get_tree().get_nodes_in_group("DrawGridGroup")[0]
 onready var selected_cells = DrawGrid.selected_cells
 
 func _ready():
-	add_child(SudokuSolver)
 	
 	# Initialize 3x3 grid with numbers 1-9
 	for row in range(3):
@@ -127,7 +125,7 @@ func _swap_colors():
 		hint_label.add_color_override("font_color", Global.game_placed_digit_color)
 
 func _on_HintBox_pressed():
-	SudokuSolver.solve(Global.puzzle, Global.filled_sudoku, "PlayerInput")
+
 	yield(get_tree().create_timer(1.0), "timeout")
 
 func _draw():

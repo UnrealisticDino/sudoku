@@ -10,7 +10,7 @@ config_version=4
 
 [application]
 
-config/name="Sudoku"
+config/name="Sudoku + QQwing"
 run/main_scene="res://Scenes/MainMenu.tscn"
 config/icon="res://icon.png"
 config/auto_accept_quit=false
@@ -18,7 +18,6 @@ config/quit_on_go_back=false
 
 [autoload]
 
-SudokuSolver="res://Scenes/SudokuSolver.gd"
 Global="*res://Scenes/Global.gd"
 
 [display]
