@@ -8,6 +8,16 @@
 
 config_version=4
 
+_global_script_classes=[ {
+"base": "Node",
+"class": "NakedTriplesSolver",
+"language": "GDScript",
+"path": "res://Scripts/NakedTriples.gd"
+} ]
+_global_script_class_icons={
+"NakedTriplesSolver": ""
+}
+
 [application]
 
 config/name="Sudoku"
