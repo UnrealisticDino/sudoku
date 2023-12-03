@@ -13,9 +13,15 @@ _global_script_classes=[ {
 "class": "NakedTriplesSolver",
 "language": "GDScript",
 "path": "res://Scripts/NakedTriples.gd"
+}, {
+"base": "Node",
+"class": "Sudoku",
+"language": "GDScript",
+"path": "res://TMP/Sudokutmpgenerator.gd"
 } ]
 _global_script_class_icons={
-"NakedTriplesSolver": ""
+"NakedTriplesSolver": "",
+"Sudoku": ""
 }
 
 [application]
