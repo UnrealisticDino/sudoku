@@ -1,0 +1,42 @@
+[gd_scene load_steps=3 format=2]
+
+[ext_resource path="res://Scripts/SelectGame.gd" type="Script" id=1]
+[ext_resource path="res://Scripts/PlaceHolder.gd" type="Script" id=2]
+
+[node name="SaveFiles" type="Control"]
+margin_right = 40.0
+margin_bottom = 40.0
+script = ExtResource( 1 )
+
+[node name="BackgroundColor" type="ColorRect" parent="."]
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_right = 40.0
+margin_bottom = 40.0
+
+[node name="MenuLandscape" type="Control" parent="."]
+margin_right = 40.0
+margin_bottom = 40.0
+
+[node name="PlaceHolder" type="Button" parent="MenuLandscape"]
+margin_left = 246.0
+margin_top = 249.0
+margin_right = 788.0
+margin_bottom = 607.0
+text = "PlaceHolder"
+script = ExtResource( 2 )
+
+[node name="MenuPortrait" type="Control" parent="."]
+margin_right = 40.0
+margin_bottom = 40.0
+
+[node name="PlaceHolder" type="Button" parent="MenuPortrait"]
+margin_left = 246.0
+margin_top = 249.0
+margin_right = 788.0
+margin_bottom = 607.0
+text = "PlaceHolder"
+script = ExtResource( 2 )
+
+[connection signal="button_up" from="MenuLandscape/PlaceHolder" to="MenuLandscape/PlaceHolder" method="_on_PlaceHolder_button_up"]
+[connection signal="button_up" from="MenuPortrait/PlaceHolder" to="MenuPortrait/PlaceHolder" method="_on_PlaceHolder_button_up"]

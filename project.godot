@@ -12,12 +12,12 @@ _global_script_classes=[ {
 "base": "Node",
 "class": "NakedTriplesSolver",
 "language": "GDScript",
-"path": "res://Scripts/NakedTriples.gd"
+"path": "res://Sudoku/Scripts/NakedTriples.gd"
 }, {
 "base": "Node",
 "class": "Sudoku",
 "language": "GDScript",
-"path": "res://TMP/Sudokutmpgenerator.gd"
+"path": "res://Sudoku/TMP/Sudokutmpgenerator.gd"
 } ]
 _global_script_class_icons={
 "NakedTriplesSolver": "",
@@ -26,16 +26,15 @@ _global_script_class_icons={
 
 [application]
 
-config/name="Sudoku"
+config/name="Sudoku++"
 run/main_scene="res://Scenes/MainMenu.tscn"
+run/low_processor_mode=true
 config/icon="res://icon.png"
-config/auto_accept_quit=false
 config/quit_on_go_back=false
 
 [autoload]
 
-SudokuSolver="res://Scenes/SudokuSolver.gd"
-Global="*res://Scenes/Global.gd"
+Global="*res://Sudoku/Scripts/Global.gd"
 
 [display]
 
@@ -44,13 +43,14 @@ window/size/height=1920
 window/handheld/orientation="sensor"
 window/stretch/mode="viewport"
 
-[global]
-
-window=false
-
 [gui]
 
 common/drop_mouse_on_gui_input_disabled=true
+
+[locale]
+
+locale_filter=[ 0, [  ] ]
+translations=PoolStringArray( "res://Languages/en.po", "res://Languages/es.po" )
 
 [physics]
 
