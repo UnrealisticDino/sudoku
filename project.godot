@@ -12,7 +12,7 @@ _global_script_classes=[ {
 "base": "Node",
 "class": "NakedTriplesSolver",
 "language": "GDScript",
-"path": "res://Sudoku/Scripts/NakedTriples.gd"
+"path": "res://Sudoku/Techniques/NakedTriples.gd"
 }, {
 "base": "Node",
 "class": "Sudoku",
@@ -41,6 +41,7 @@ Global="*res://Sudoku/Scripts/Global.gd"
 window/size/width=1080
 window/size/height=1920
 window/handheld/orientation="sensor"
+window/ios/hide_home_indicator=false
 window/stretch/mode="viewport"
 
 [gui]

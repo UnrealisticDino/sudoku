@@ -53,7 +53,6 @@ func fetch_grid(received_puzzle):
 
 func toggle_highlight(value):
 	highlight_identical_digits = value
-	print("Highlight identical digits:", highlight_identical_digits) # Debugging print statement
 
 func generate_full_grid():
 	var grid = []

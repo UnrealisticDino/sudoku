@@ -181,7 +181,7 @@ func _input(event):
 	if event is InputEventKey:
 		if event.scancode == pencil_mode_key:
 			is_shift_pressed = event.pressed
-			print("Shift key state: ", is_shift_pressed)
+			#print("Shift key state: ", is_shift_pressed)
 	
 	if event is InputEventKey and event.pressed:
 		if event.control:
@@ -192,8 +192,8 @@ func _input(event):
 
 	# Check for mouse click to select a cell
 	if event is InputEventMouseButton and event.pressed:
-		print("Mouse clicked at: ", event.position)
-		print("Grid boundaries: x(", start_x, ", ", start_x + grid_width, ") y(", start_y, ", ", start_y + grid_height, ")")
+		#print("Mouse clicked at: ", event.position)
+		#print("Grid boundaries: x(", start_x, ", ", start_x + grid_width, ") y(", start_y, ", ", start_y + grid_height, ")")
 		
 		if (start_x <= event.position.x) and (event.position.x <= start_x + grid_width) and (start_y <= event.position.y) and (event.position.y <= start_y + grid_height):
 			var cell_y = int((event.position.x - start_x) / scaled_cell_size)
@@ -221,7 +221,7 @@ func _input(event):
 	if event is InputEventKey and event.pressed:
 		if selected_cells.size() > 0:
 			if event.scancode == KEY_BACKSPACE:
-				print("Backspace pressed. Clearing selected cells.")
+				#print("Backspace pressed. Clearing selected cells.")
 				clear_selected_cells()
 
 	# Check for number key press
@@ -260,7 +260,7 @@ func clear_selected_cells():
 	highlighted_cells.clear()  # Clear the highlighted cells
 
 func input_number(cell, number):
-	print("cell == ", cell, "number == ", number)
+	#print("cell == ", cell, "number == ", number)
 	
 	if number_source[cell.x][cell.y] != "player":
 		print("Cannot overwrite a game-placed digit.")
@@ -283,13 +283,10 @@ func input_number(cell, number):
 		Global.penciled_digits[row][col] = []  # Clear any penciled digits for the cell
 	
 	var cell_name = "cell_" + str(row) + "_" + str(col)
-	print("cell name = ", cell_name)
 	
 	var selected_cell_node = get_node_or_null(cell_name)
-	print("selected cell node ", selected_cell_node)
 	
 	if selected_cell_node:
-		print("puzzle =", puzzle,"\nrow =", row,"\ncol =", col)
 		for i in range(1, 10):  # Clear the visual representation of penciled digits
 			selected_cell_node.set_pencil_digit(i, false)
 		selected_cell_node.set_number(puzzle[row][col], "player")
@@ -320,7 +317,6 @@ func highlight_identical_digits(cell):
 				highlighted_cells.append(Vector2(i, j))
 
 func toggle_pencil_digit(cell, digit):
-	print("Toggling pencil digit: ", digit)
 	# Check if the cell is empty before allowing penciling in digits
 	if puzzle[cell.x][cell.y] == 0:
 		save_state()  # Save the state before making changes
@@ -339,8 +335,6 @@ func toggle_pencil_digit(cell, digit):
 		_draw_grid()  # Redraw the grid to reflect the changes
 
 func undo():
-	print("Undo stack before undo: ", undo_stack)
-	print("Redo stack before undo: ", redo_stack)
 	if undo_stack.size() > 0:  # Changed from > 1 to > 0
 		var current_state = {
 			"puzzle": puzzle.duplicate(true),
@@ -351,15 +345,10 @@ func undo():
 		
 		var last_state = undo_stack.pop_back()
 		load_state(last_state)
-		print("Undo successful")
 	else:
 		print("Undo stack is empty. Cannot undo.")
-	print("Undo stack after undo: ", undo_stack)
-	print("Redo stack after undo: ", redo_stack)
 
 func redo():
-	print("Undo stack before redo: ", undo_stack)
-	print("Redo stack before redo: ", redo_stack)
 	if redo_stack.size() > 0:
 		var last_state = redo_stack.pop_back()
 		undo_stack.append({
@@ -371,8 +360,6 @@ func redo():
 		print("Redo successful")
 	else:
 		print("Redo stack is empty. Cannot redo.")
-	print("Undo stack after redo: ", undo_stack)
-	print("Redo stack after redo: ", redo_stack)
 
 func save_state():
 	if puzzle is Array and selected_cells is Array and Global.penciled_digits is Array:

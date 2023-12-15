@@ -1,40 +1,24 @@
-#SettingsMenu
+#SelectGame.gd
 extends Control
 
 var settings = ConfigFile.new()
 var last_orientation = OS.get_screen_orientation()
 var background_color = Color(1, 1, 1) # Default to white
 var last_screen_size = OS.get_window_size()
+var ButtonManager = preload("res://Sudoku/SaveFiles/ButtonManager.gd").new()
 
 func _ready():
-	var screen_size = OS.get_screen_size()
-	OS.set_window_size(screen_size)
-	var viewport = get_tree().root
-	viewport.size = screen_size
-	viewport.connect("size_changed", self, "_on_screen_resized")
-	_on_screen_resized()
 	last_orientation = OS.get_screen_orientation()
 	load_settings()
 	adjust_to_screen_orientation()
-
-func _on_screen_resized():
-	var screen_size = OS.get_window_size()
-	var is_landscape = screen_size.x > screen_size.y
-
-	var viewport = get_tree().root
-	viewport.size = screen_size  # Adjust the viewport size to the current window size.
-
-	update_background_size()  # Ensure the background fills the new size.
-		
-func setup_background():
-	var background = ColorRect.new()
-	background.color = background_color
-	background.name = "BackgroundColor"
-	add_child(background)
-	background.rect_min_size = get_viewport_rect().size
-	background.anchor_right = 1
-	background.anchor_bottom = 1
-	move_child(background, 0)
+	
+	var vbox_container_path = "MenuPortrait/VScrollBar/VBoxContainer"
+	var vbox_container = get_node_or_null(vbox_container_path)
+	
+	if vbox_container:
+		ButtonManager.load_buttons_state(vbox_container)
+	else:
+		print("Error: VBoxContainer not found at path: ", vbox_container_path)
 
 func _process(_delta):
 	var current_screen_size = OS.get_window_size()
@@ -50,10 +34,8 @@ func adjust_to_screen_orientation():
 	print("Is landscape: ", is_landscape, " | Screen size: ", screen_size)
 	if is_landscape:
 		layout_for_landscape()
-		setup_background()
 	else:
 		layout_for_portrait()
-		setup_background()
 	last_orientation = OS.get_screen_orientation()
 
 func layout_for_landscape():
@@ -64,10 +46,9 @@ func layout_for_landscape():
 	menu_portrait.visible = false
 
 func layout_for_portrait():
-	# Assuming you have a Control node for menu items in portrait orientation
 	var menu_portrait = $MenuPortrait
 	menu_portrait.visible = true
-	# Assuming you have a Control node for menu items in landscape orientation
+
 	var menu_landscape = $MenuLandscape
 	menu_landscape.visible = false
 

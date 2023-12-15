@@ -20,8 +20,8 @@ func print_puzzle(puzzle):
 		print(row_str.strip_edges())
 
 func solve(puzzle, filled_sudoku, source):
-	print_puzzle(puzzle)
-	print("\n")
+#	print_puzzle(puzzle)
+#	print("\n")
 	load_settings()
 	move_details.clear()
 	
