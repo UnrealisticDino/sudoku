@@ -5,20 +5,20 @@ var settings = ConfigFile.new()
 var last_orientation = OS.get_screen_orientation()
 var background_color = Color(1, 1, 1) # Default to white
 var last_screen_size = OS.get_window_size()
-var ButtonManager = preload("res://Sudoku/SaveFiles/ButtonManager.gd").new()
+var ButtonManager = preload("res://Sudoku/Scripts/SaveFiles/ButtonManager.gd").new()
 
 func _ready():
 	last_orientation = OS.get_screen_orientation()
 	load_settings()
 	adjust_to_screen_orientation()
 	
-	var vbox_container_path = "MenuPortrait/VScrollBar/VBoxContainer"
-	var vbox_container = get_node_or_null(vbox_container_path)
+	var grid_container_path = "MenuPortrait/VScrollBar/VBoxContainer/GridContainer"
+	var grid_container = get_node_or_null(grid_container_path)
 	
-	if vbox_container:
-		ButtonManager.load_buttons_state(vbox_container)
+	if grid_container:
+		ButtonManager.load_buttons_state(grid_container)
 	else:
-		print("Error: VBoxContainer not found at path: ", vbox_container_path)
+		print("Error: GridContainer not found at path: ", grid_container_path)
 
 func _process(_delta):
 	var current_screen_size = OS.get_window_size()
@@ -31,7 +31,7 @@ func _process(_delta):
 func adjust_to_screen_orientation():
 	var screen_size = OS.get_window_size()
 	var is_landscape = screen_size.x > screen_size.y
-	print("Is landscape: ", is_landscape, " | Screen size: ", screen_size)
+	
 	if is_landscape:
 		layout_for_landscape()
 	else:

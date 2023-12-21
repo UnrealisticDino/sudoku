@@ -34,7 +34,9 @@ config/quit_on_go_back=false
 
 [autoload]
 
-Global="*res://Sudoku/Scripts/Global.gd"
+GameState="*res://Sudoku/Scripts/Singletons/GameState.gd"
+Global="*res://Sudoku/Scripts/Singletons/Global.gd"
+ButtonManager="*res://Sudoku/Scripts/SaveFiles/ButtonManager.gd"
 
 [display]
 

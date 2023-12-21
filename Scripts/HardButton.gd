@@ -2,7 +2,7 @@
 extends Button
 
 var button_count = 0
-var ButtonManager = preload("res://Sudoku/SaveFiles/ButtonManager.gd").new()
+var ButtonManager = preload("res://Sudoku/Scripts/SaveFiles/ButtonManager.gd").new()
 
 func _on_Hard_button_up():
 	# Set the difficulty to Hard
@@ -29,7 +29,7 @@ func _on_Hard_button_up():
 	get_tree().change_scene("res://Sudoku/Scenes/Sudoku.tscn")
 
 func _deferred_setup():
-	var hbox_container_path = "../../VScrollBar/VBoxContainer"  # Adjusted path
+	var hbox_container_path = "../../VScrollBar/VBoxContainer/GridContainer"  # Adjusted path
 	var hbox_container = get_node_or_null(hbox_container_path)
 
 	if hbox_container:

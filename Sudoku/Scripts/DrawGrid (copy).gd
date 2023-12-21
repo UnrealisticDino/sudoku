@@ -26,9 +26,8 @@ var highlighted_cells = []
 var undo_stack = []
 var redo_stack = []
 var mouse_button_down = false
-var save_button_name = GameState.save_button_name
 
-# Current game state variables
+# Your current game state variables
 var current_puzzle = []
 var current_selected_cells = []
 var current_penciled_digits = []
@@ -169,7 +168,7 @@ func _process(delta):
 						if !selected_cells.has(cell_vector):
 							selected_cells.append(cell_vector)
 
-			_draw_grid()
+			_draw_grid()  # Redraw the grid to reflect the changes
 
 func _input(event):
 	if event is InputEventMouseButton:
@@ -258,7 +257,7 @@ func clear_selected_cells():
 			if selected_cell_node:
 				selected_cell_node.clear_cell()  # Clear the visual representation of the cell
 	
-	highlighted_cells.clear()
+	highlighted_cells.clear()  # Clear the highlighted cells
 
 func input_number(cell, number):
 	#print("cell == ", cell, "number == ", number)
@@ -297,6 +296,10 @@ func input_number(cell, number):
 		highlight_identical_digits(cell)
 	
 	Global.hint = false
+	_draw_grid()
+
+func update_puzzle():
+	puzzle = Global.puzzle
 	_draw_grid()
 
 func highlight_identical_digits(cell):
@@ -368,15 +371,6 @@ func save_state():
 		}
 		undo_stack.append(state)
 		redo_stack.clear()
-		print(state)
-		# Print the name of the button being saved to
-		if save_button_name != "":
-			print("Saving state to button: " + save_button_name)
-			# Update the existing button with the new state
-			if not ButtonManager.update_button_state_in_file(save_button_name, state):
-				print("Failed to update button state in file")
-		else:
-			print("Error: save_button_name is not set")
 
 func load_state(state):
 	if state.has("puzzle") and state.has("selected_cells") and state.has("penciled_digits"):

@@ -6,20 +6,18 @@
 
 [node name="Sudoku" type="Control"]
 
-[node name="Background" type="TextureRect" parent="."]
+[node name="BackgroundPortrait" type="TextureRect" parent="."]
 margin_right = 1080.0
-margin_bottom = 2400.0
+margin_bottom = 1920.0
 texture = ExtResource( 2 )
 stretch_mode = 1
 
-[node name="DrawGrid" type="Control" parent="." groups=["DrawGridGroup"]]
-margin_right = 1080.0
-margin_bottom = 2400.0
+[node name="DrawGrid" type="Control" parent="BackgroundPortrait" groups=["DrawGridGroup"]]
 script = ExtResource( 1 )
 
-[node name="PlayerInput" type="Control" parent="."]
+[node name="PlayerInput" type="Control" parent="BackgroundPortrait"]
 margin_left = 50.0
-margin_top = 1200.0
-margin_right = 1130.0
-margin_bottom = 1200.0
+margin_top = 1210.0
+margin_right = 50.0
+margin_bottom = 1210.0
 script = ExtResource( 3 )

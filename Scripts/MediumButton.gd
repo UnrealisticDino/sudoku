@@ -2,11 +2,10 @@
 extends Button
 
 var button_count = 0
-var ButtonManager = preload("res://Sudoku/SaveFiles/ButtonManager.gd").new()
+var ButtonManager = preload("res://Sudoku/Scripts/SaveFiles/ButtonManager.gd").new()
+var difficulty_setting = "Medium"
 
 func _on_Medium_button_up():
-	# Set the difficulty to Medium
-	var difficulty_setting = "Medium"
 	print("Difficulty setting: " + difficulty_setting)
 
 	# For the Medium button, the difficulty level is set to 1
@@ -29,10 +28,10 @@ func _on_Medium_button_up():
 	get_tree().change_scene("res://Sudoku/Scenes/Sudoku.tscn")
 
 func _deferred_setup():
-	var hbox_container_path = "../../VScrollBar/VBoxContainer"  # Adjusted path
-	var hbox_container = get_node_or_null(hbox_container_path)
+	var grid_container_path = "../../VScrollBar/VBoxContainer/GridContainer"
+	var grid_container = get_node_or_null(grid_container_path)
 
-	if hbox_container:
-		ButtonManager.add_load_button(hbox_container, "Medium")
+	if grid_container:
+		ButtonManager.add_load_button(grid_container, difficulty_setting)
 	else:
-		print("Error: HBoxContainer not found at path: ", hbox_container_path)
+		print("Error: GridContainer not found at path: ", grid_container_path)
