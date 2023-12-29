@@ -3,7 +3,7 @@ extends Control
 
 var settings = ConfigFile.new()
 var last_orientation = OS.get_screen_orientation()
-var background_color = Color(1, 1, 1) # Default to white
+var background_color = Color(1, 1, 1)  # Default to white
 var last_screen_size = OS.get_window_size()
 var ButtonManager = preload("res://Sudoku/Scripts/SaveFiles/ButtonManager.gd").new()
 
@@ -11,14 +11,29 @@ func _ready():
 	last_orientation = OS.get_screen_orientation()
 	load_settings()
 	adjust_to_screen_orientation()
-	
+
 	var grid_container_path = "MenuPortrait/VScrollBar/VBoxContainer/GridContainer"
 	var grid_container = get_node_or_null(grid_container_path)
-	
+
 	if grid_container:
-		ButtonManager.load_buttons_state(grid_container)
+		var button_identifiers = get_button_identifiers()
+		ButtonManager.load_buttons_state(grid_container, button_identifiers)
 	else:
 		print("Error: GridContainer not found at path: ", grid_container_path)
+
+func get_button_identifiers():
+	var identifiers = []
+	var dir = Directory.new()
+	if dir.open("user://") == OK:
+		dir.list_dir_begin()
+		var filename = dir.get_next()
+		while filename != "":
+			if filename.ends_with("_save.json"):
+				var identifier = filename.replace("_save.json", "")
+				identifiers.append(identifier)
+			filename = dir.get_next()
+		dir.list_dir_end()
+	return identifiers
 
 func _process(_delta):
 	var current_screen_size = OS.get_window_size()

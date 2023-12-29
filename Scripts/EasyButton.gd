@@ -8,7 +8,7 @@ var difficulty_setting = "Easy"
 func _on_Easy_button_up():
 	print("Difficulty setting: " + difficulty_setting)
 
-	# Since it's the Easy button, the difficulty level is set to 0
+	# For the Easy button, the difficulty level is set to 0
 	var difficulty_level = 0
 
 	# Create an instance of the Sudoku class
@@ -19,17 +19,17 @@ func _on_Easy_button_up():
 
 	# Get the generated grid from the Sudoku instance
 	var generated_puzzle = sudoku_script.get_grid()
-	Global.puzzle = generated_puzzle
+	GameState.puzzle = generated_puzzle
 	
 	# Deferred setup for adding load button
-	call_deferred("_deferred_setup")
+	call_deferred("_deferred_setup", generated_puzzle)
 
-func _deferred_setup():
+func _deferred_setup(generated_puzzle):
 	var grid_container_path = "../../VScrollBar/VBoxContainer/GridContainer"
 	var grid_container = get_node_or_null(grid_container_path)
 	
 	if grid_container:
-		var button_name = ButtonManager.add_load_button(grid_container, difficulty_setting)
+		var button_name = ButtonManager.add_load_button(grid_container, difficulty_setting, generated_puzzle)
 		
 		# Set the button name in the global singleton
 		GameState.save_button_name = button_name

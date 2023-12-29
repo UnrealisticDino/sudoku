@@ -104,8 +104,6 @@ func _input(event):
 						else:
 							print("Digit is null")
 						
-#						if selected_cells:
-#							selected_cells.get_child(0).visible = false  # Hide the highlight of the previously selected cell
 						selected_cells = cell
 						selected_cells.get_child(0).visible = true  # Show the highlight of the selected cell
 						break

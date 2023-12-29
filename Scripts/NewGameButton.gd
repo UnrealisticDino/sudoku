@@ -2,7 +2,6 @@
 extends Button
 
 func _on_NewGameButton_button_up():
-	print_tree()
 	var difficulty_container = get_node("/root/SelectGame/MenuPortrait/DifficultyContainer")
 	if difficulty_container:
 		difficulty_container.visible = true

@@ -1,4 +1,4 @@
-#ImageDisplay
+#Cell
 extends Sprite
 
 # Preload the sprite sheet
@@ -21,7 +21,7 @@ var player_digits = Global.player_digit_color
 var game_placed_digits = Global.game_placed_digit_color
 var noted_digit = Global.player_digit_color
 
-# Signal for cell interaction (if needed)
+# Signal for cell interaction
 signal cell_clicked
 
 func _ready():
@@ -33,6 +33,7 @@ func _ready():
 		penciled_sprites[i] = sprite
 
 func set_number(value, source):
+	#print(value, number_positions)
 	if value in number_positions:
 		if sprite_sheet:
 			var cell_width = sprite_sheet.get_width() / 3
@@ -58,7 +59,6 @@ func set_number(value, source):
 		elif source == "player":
 			self.modulate = player_digits
 	else:
-		# Handle the case where the value is not in number_positions (likely 0)
 		clear_cell()
 
 func clear_overlay():
