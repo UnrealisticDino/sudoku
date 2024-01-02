@@ -6,7 +6,11 @@ func _on_CustomGame_button_up():
 	var config = ConfigFile.new()
 	var config_path = "user://settings.cfg"
 	var error = config.load(config_path)
-	Global.puzzle = [[0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0]]
+	var generated_puzzle = [[0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0]]
+	var grid_container_path = "../GridContainer"
+	var grid_container = get_node_or_null(grid_container_path)
+	GameState.puzzle = generated_puzzle
 
-	# Transition to the sudoku.tscn scene
+	# Transition to the Sudoku scene
+	GameState.transition_source = "CustomGame"
 	get_tree().change_scene("res://Sudoku/Scenes/Sudoku.tscn")

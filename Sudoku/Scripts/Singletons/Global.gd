@@ -14,8 +14,7 @@ var game_background_texture = preload("res://Images/Default/Backgound.png")
 var PuzzleGenerator = preload("res://Sudoku/Scripts/PuzzleGenerator.gd").new()
 var SudokuSolver = preload("res://Sudoku/Scripts/SudokuSolver.gd").new()
 var CellScene = preload("res://Sudoku/Scenes/Cell.tscn")
-var selected_cell = Vector2(-1, -1)
-var selected_cells = []
+var background_color = Color(1, 1, 1)
 
 var hint = false
 

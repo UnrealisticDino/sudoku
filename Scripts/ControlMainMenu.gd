@@ -3,7 +3,7 @@ extends Control
 
 var settings = ConfigFile.new()
 var last_orientation = OS.get_screen_orientation()
-var background_color = Color(1, 1, 1) # Default to white
+var background_color = Global.background_color
 var last_screen_size = OS.get_window_size()
 
 func _ready():

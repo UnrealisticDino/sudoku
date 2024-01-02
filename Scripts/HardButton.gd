@@ -1,7 +1,6 @@
 # HardButton.gd
 extends Button
 
-var button_count = 0
 var ButtonManager = preload("res://Sudoku/Scripts/SaveFiles/ButtonManager.gd").new()
 var difficulty_setting = "Hard"
 

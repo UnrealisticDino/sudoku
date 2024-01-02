@@ -5,7 +5,7 @@ var puzzle
 # Function to add a load button
 func add_load_button(grid_container, difficulty, puzzle):
 	var current_datetime = OS.get_datetime_from_unix_time(OS.get_unix_time())
-	var time_string = "%d-%02d-%02d %02d:%02d" % [current_datetime.year, current_datetime.month, current_datetime.day, current_datetime.hour, current_datetime.minute]
+	var time_string = "%02d:%02d" % [current_datetime.hour, current_datetime.minute]
 	var font = DynamicFont.new()
 	font.font_data = load("res://Fonts/Old-Standard-TT/OldStandard-Regular.ttf")
 	font.size = 50
@@ -71,23 +71,35 @@ func get_button_state(button_text):
 
 	return null
 
-func update_button_state_in_file(button_name: String, new_state: Dictionary) -> bool:
+func update_button_state_in_file(button_name: String, new_state) -> bool:
 	var file = File.new()
-	var file_path = "user://" + button_name + "_save.json"
+	var file_path = "user://" + button_name + ".json"
 
-	var existing_data = {}
-	if file.file_exists(file_path) and file.open(file_path, File.READ) == OK:
-		var json_data = file.get_as_text()
-		file.close()
-		existing_data = parse_json(json_data)
-		if existing_data == null:
-			existing_data = {}
+	var data_to_store = ""
 
-	for key in new_state.keys():
-		existing_data[key] = new_state[key]
+	if new_state is Array:
+		# If new_state is an array, simply convert it to JSON.
+		data_to_store = to_json(new_state)
+	elif new_state is Dictionary:
+		# If new_state is a dictionary, read existing data and merge it
+		var existing_data = {}
+		if file.file_exists(file_path) and file.open(file_path, File.READ) == OK:
+			var json_data = file.get_as_text()
+			file.close()  # Close the file after reading
+			existing_data = parse_json(json_data)
+			if existing_data == null:
+				existing_data = {}
 
+		for key in new_state.keys():
+			existing_data[key] = new_state[key]
+
+		data_to_store = to_json(existing_data)
+	else:
+		return false  # Invalid type passed
+
+	# Open the file for writing
 	if file.open(file_path, File.WRITE) == OK:
-		file.store_line(to_json(existing_data))
+		file.store_line(data_to_store)
 		file.close()
 		return true
 	else:
@@ -101,17 +113,19 @@ func _on_load_button_pressed(button):
 	var button_text_parts = button.text.split(" - ")
 	var difficulty = button_text_parts[0] if button_text_parts.size() > 0 else "Unknown"
 	var time_string = button_text_parts[1] if button_text_parts.size() > 1 else "Unknown"
-	#print("Load button pressed for difficulty: ", difficulty, " at time: ", time_string)
 	
 	# Retrieve the saved state from the button's specific save file
 	var file_path = "user://" + button.text + "_save.json"
+	var history_file_path = "user://" + button.text + "_history.json"
 	var file = File.new()
+
+	# Load and parse JSON data from the save file
 	if file.file_exists(file_path):
 		file.open(file_path, File.READ)
 		var json_data = file.get_as_text()
 		file.close()
-
 		var button_data = parse_json(json_data)
+
 		if button_data:
 			# Handle the original puzzle
 			if button_data.has("puzzle"):
@@ -131,6 +145,35 @@ func _on_load_button_pressed(button):
 			if button_data.has("number_source"):
 				GameState.number_source = button_data["number_source"]
 
+			if button_data.has("selected_cells"):
+				var cells = []
+				for cell_str in button_data["selected_cells"]:
+					# Parse the string to extract x and y values
+					var cell_parts = cell_str.substr(1, cell_str.length() - 2).split(", ")
+					var x = int(cell_parts[0])
+					var y = int(cell_parts[1])
+
+					# Create a Vector2 object and add it to the cells array
+					cells.append(Vector2(x, y))
+
+				# Assign the array of Vector2 objects to GameState.selected_cells
+				GameState.selected_cells = cells
+
+			if file.file_exists(history_file_path):
+				file.open(history_file_path, File.READ)
+				var history_json_data = file.get_as_text()
+				file.close()
+				var history_data = parse_json(history_json_data)
+
+				if history_data:
+					GameState.history_stack = history_data
+					GameState.current_pointer = history_data.size() - 1
+				else:
+					print("Failed to load history data from file: ", history_file_path)
+			else:
+				print("History file not found: ", history_file_path)
+
+			# Transition to game scene
 			var current_scene_tree = Engine.get_main_loop()
 			if current_scene_tree:
 				GameState.transition_source = "LoadButton"
@@ -141,15 +184,25 @@ func _on_load_button_pressed(button):
 		print("No save file found for button: ", button.text)
 
 func _on_delete_button_pressed(container, save_file_name, delete_button):
-	# Construct the path for the specific button's save file
-	var save_path = "user://" + save_file_name + "_save.json"
+	# Base path for the save files
+	var base_path = "user://" + save_file_name
+
+	# Paths for the specific button's save file and history file
+	var save_path = base_path + "_save.json"
+	var history_path = base_path + "_history.json"
 	var dir = Directory.new()
 
-	# Check if the save file exists and delete it
+	# Delete the save file
 	if dir.file_exists(save_path):
 		var error = dir.remove(save_path)
 		if error != OK:
 			print("Failed to delete save file: ", save_path)
+
+	# Delete the history file
+	if dir.file_exists(history_path):
+		var error = dir.remove(history_path)
+		if error != OK:
+			print("Failed to delete history file: ", history_path)
 
 	# Remove the associated buttons and the delete button itself
 	for child in container.get_children():
@@ -164,7 +217,7 @@ func _on_delete_button_pressed(container, save_file_name, delete_button):
 func load_buttons_state(grid_container, button_identifiers):
 	var font = DynamicFont.new()
 	font.font_data = load("res://Fonts/Old-Standard-TT/OldStandard-Regular.ttf")
-	font.size = 50
+	font.size = 85
 
 	for button_identifier in button_identifiers:
 		var file_path = "user://" + button_identifier + "_save.json"
@@ -196,8 +249,9 @@ func load_buttons_state(grid_container, button_identifiers):
 
 					# Create and connect a delete button
 					var delete_button = Button.new()
-					delete_button.text = "Delete"
+					delete_button.text = "X"
 					delete_button.rect_min_size = Vector2(100, 50)
+					delete_button.add_font_override("font", font)  # Apply the same font
 					delete_button.connect("pressed", self, "_on_delete_button_pressed", [grid_container, button_text, delete_button])
 					grid_container.add_child(delete_button)
 			else:

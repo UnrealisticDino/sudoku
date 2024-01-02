@@ -26,7 +26,7 @@ _global_script_class_icons={
 
 [application]
 
-config/name="Sudoku++"
+config/name="My Sudoku"
 run/main_scene="res://Scenes/MainMenu.tscn"
 run/low_processor_mode=true
 config/icon="res://icon.png"
@@ -37,6 +37,7 @@ config/quit_on_go_back=false
 GameState="*res://Sudoku/Scripts/Singletons/GameState.gd"
 Global="*res://Sudoku/Scripts/Singletons/Global.gd"
 ButtonManager="*res://Sudoku/Scripts/SaveFiles/ButtonManager.gd"
+ButtonThemeManager="*res://Sudoku/Scripts/Singletons/ButtonThemeManager.gd"
 
 [display]
 

@@ -1,7 +1,6 @@
 # EasyButton.gd
 extends Button
 
-var button_count = 0
 var ButtonManager = preload("res://Sudoku/Scripts/SaveFiles/ButtonManager.gd").new()
 var difficulty_setting = "Easy"
 
@@ -27,6 +26,8 @@ func _on_Easy_button_up():
 func _deferred_setup(generated_puzzle):
 	var grid_container_path = "../../VScrollBar/VBoxContainer/GridContainer"
 	var grid_container = get_node_or_null(grid_container_path)
+	
+	print(grid_container)
 	
 	if grid_container:
 		var button_name = ButtonManager.add_load_button(grid_container, difficulty_setting, generated_puzzle)

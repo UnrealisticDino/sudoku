@@ -30,10 +30,10 @@ text = "Back"
 script = ExtResource( 2 )
 
 [node name="HighlightColorPicker" type="ColorPicker" parent="."]
-margin_left = 219.0
-margin_top = 504.0
-margin_right = 541.0
-margin_bottom = 966.0
+margin_left = 223.0
+margin_top = 508.0
+margin_right = 545.0
+margin_bottom = 970.0
 
 [node name="SelectedCellPreview" type="Panel" parent="."]
 margin_left = 539.0
@@ -50,19 +50,19 @@ margin_bottom = 536.0
 script = ExtResource( 5 )
 
 [node name="PlayerDigits" type="ColorPicker" parent="."]
-margin_left = 217.0
-margin_top = 1005.0
-margin_right = 525.0
-margin_bottom = 1467.0
+margin_left = 221.0
+margin_top = 1009.0
+margin_right = 529.0
+margin_bottom = 1471.0
 
 [node name="GamePlacedDigits" type="ColorPicker" parent="."]
-margin_left = 561.0
-margin_top = 1011.0
-margin_right = 869.0
-margin_bottom = 1473.0
+margin_left = 565.0
+margin_top = 1015.0
+margin_right = 873.0
+margin_bottom = 1477.0
 
 [node name="GameGrid" type="ColorPicker" parent="."]
-margin_left = 581.0
-margin_top = 505.0
-margin_right = 889.0
-margin_bottom = 967.0
+margin_left = 585.0
+margin_top = 509.0
+margin_right = 893.0
+margin_bottom = 971.0

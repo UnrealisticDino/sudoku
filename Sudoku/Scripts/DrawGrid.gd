@@ -10,9 +10,7 @@ var start_y
 var grid_width
 var grid_height
 var margin = 50
-var selected_cell = Global.selected_cell
 var digit_scale_factor = 0.7
-var selected_cells = Global.selected_cells
 var grid_color = Global.grid_lines_color
 var selected_cell_color = Global.selected_cell_color
 var identical_digits_color = selected_cell_color.linear_interpolate(Color(0.5, 0.5, 1, 0.5), 0.5)
@@ -20,23 +18,23 @@ var is_shift_pressed = false
 var pencil_mode_key = KEY_SHIFT
 var is_pencil_mode = false
 var highlighted_cells = []
-var undo_stack = []
-var redo_stack = []
 var mouse_button_down = false
-var save_button_name = GameState.save_button_name
 
+
+var current_pointer = GameState.current_pointer
+var save_button_name = GameState.save_button_name
+var history_stack = GameState.history_stack
 var puzzle = GameState.puzzle
 var number_source = GameState.number_source
 var penciled_digits = GameState.penciled_digits
-# Current game state variables
-var current_puzzle = []
-var current_selected_cells = []
-var current_penciled_digits = []
+var selected_cell = GameState.selected_cell
+var selected_cells = GameState.selected_cells
 
 func _ready():
+	print(GameState.test)
 	# Call the draw function when the node is ready
 	_calculate_grid_parameters()
-
+	print("At start current pointer ", current_pointer)
 	# Instantiate and add the Cell scene
 	for i in range(grid_size):
 		for j in range(grid_size):
@@ -45,17 +43,24 @@ func _ready():
 			add_child(cell)
 			cell.connect("cell_clicked", self, "_on_cell_clicked", [Vector2(i, j)])
 
-	# Initialize the penciled_digits array only if the game wasn't started from a load button
+	# Initialize the array only if the game wasn't started from a load button
 	if GameState.transition_source != "LoadButton":
+		var button_path = "../GridContainer/CreateCustomGame"
+		var button = get_node(button_path)
+
+		if GameState.transition_source == "CustomGame":
+			button.visible = true
+
+		selected_cells.clear()
+
 		penciled_digits.clear()
 		for i in range(grid_size):
 			var row = []
 			for j in range(grid_size):
-				row.append([])  # Each cell starts with an empty array for penciled digits
+				row.append([])
 			penciled_digits.append(row)
-		
-		GameState.number_source.clear()
-		# Initialize the number_source array
+
+		number_source.clear()
 		for i in range(grid_size):
 			var row = []
 			for j in range(grid_size):
@@ -65,29 +70,32 @@ func _ready():
 					row.append("player")
 			number_source.append(row)
 
+		history_stack = []
+
+		save_state()
+
 	GameState.transition_source = ""
-	
-	save_state()
+	print("At start current pointer ", current_pointer)
 	_draw_grid()
 
 func _calculate_grid_parameters():
 	# Get the window size
 	var window_width = OS.get_window_size().x
 	var window_height = OS.get_window_size().y
-	
+
 	# Calculate the available width, considering the margins
 	var available_width = window_width - 2 * margin
-	
+
 	# The size of the grid should be the minimum of the available width and the window height
 	var grid_dimension = min(available_width, window_height)
-	
+
 	# Calculate the scaled cell size
 	scaled_cell_size = grid_dimension / grid_size
-	
+
 	# Calculate the total grid width and height (they will be the same since it's a square)
 	grid_width = scaled_cell_size * grid_size
 	grid_height = grid_width
-	
+
 	# Calculate the starting position to center the grid horizontally and maintain equal distance from the top
 	start_x = (window_width - grid_width) / 2
 	start_y = margin
@@ -96,10 +104,11 @@ func _draw_grid():
 	self.update()
 
 func _draw():
-	# Highlight the selected cell
-	if selected_cell != Vector2(-1, -1):
-		var cell_pos = Vector2(start_x + selected_cell.y * scaled_cell_size, start_y + selected_cell.x * scaled_cell_size)
-		draw_rect(Rect2(cell_pos, Vector2(scaled_cell_size, scaled_cell_size)), selected_cell_color)
+#	print(selected_cell)
+#	# Highlight the selected cell
+#	if selected_cell != Vector2(-1, -1):
+#		var cell_pos = Vector2(start_x + selected_cell.y * scaled_cell_size, start_y + selected_cell.x * scaled_cell_size)
+#		draw_rect(Rect2(cell_pos, Vector2(scaled_cell_size, scaled_cell_size)), selected_cell_color)
 
 	# Highlight all selected cells
 	for cell in selected_cells:
@@ -187,7 +196,7 @@ func _input(event):
 		if event.scancode == pencil_mode_key:
 			is_shift_pressed = event.pressed
 			#print("Shift key state: ", is_shift_pressed)
-	
+
 	if event is InputEventKey and event.pressed:
 		if event.control:
 			if event.scancode == KEY_Z:
@@ -234,24 +243,24 @@ func _input(event):
 		for selected_cell in selected_cells:
 			var cell_name = "cell_" + str(selected_cell.x) + "_" + str(selected_cell.y)
 			var selected_cell_node = get_node_or_null(cell_name)
-			
+
 			if number_source[selected_cell.x][selected_cell.y] == "player":
 				for i in range(1, 10):
 					if event.scancode == KEY_1 + i - 1 or event.scancode == KEY_KP_1 + i - 1:  # Check for both keyboard and numpad keys
 						#print("Attempting to input number: ", i)
 						if is_pencil_mode:  # Check if pencil mode is active
 							toggle_pencil_digit(selected_cell, i)
+							save_state()
 						else:
 							#print("Inputting number into cell.")
 							input_number(selected_cell, i)
-						save_state()
 						break
 
 func clear_selected_cells():
 	for cell in selected_cells:
 		var row = cell.x
 		var col = cell.y
-		
+
 		# Check if the digit was placed by the player before clearing it
 		if number_source[row][col] == "player":
 			puzzle[row][col] = 0  # Clear the cell's value
@@ -260,7 +269,7 @@ func clear_selected_cells():
 			var selected_cell_node = get_node_or_null(cell_name)
 			if selected_cell_node:
 				selected_cell_node.clear_cell()  # Clear the visual representation of the cell
-	
+
 	highlighted_cells.clear()
 
 func input_number(cell, number):
@@ -269,13 +278,9 @@ func input_number(cell, number):
 		print("Cannot overwrite a game-placed digit.")
 		return
 
-	if Global.hint:
-		var new_selected_cell = cell
-		selected_cells = [new_selected_cell]
-
 	var col = cell.y
 	var row = cell.x
-	
+
 	# Check if the digit being placed is the same as the one already in the cell
 	if puzzle[row][col] == number:
 		puzzle[row][col] = 0  # Remove the digit
@@ -283,28 +288,28 @@ func input_number(cell, number):
 	else:
 		puzzle[row][col] = number
 		penciled_digits[row][col] = []  # Clear any penciled digits for the cell
-	
+
 	var cell_name = "cell_" + str(row) + "_" + str(col)
-	
+
 	var selected_cell_node = get_node_or_null(cell_name)
-	
+
 	if selected_cell_node:
 		for i in range(1, 10):  # Clear the visual representation of penciled digits
 			selected_cell_node.set_pencil_digit(i, false)
 		selected_cell_node.set_number(puzzle[row][col], "player")
-	
+
 	# Update the highlighted digits if the setting is turned on
 	if Global.highlight_identical_digits:
 		highlight_identical_digits(cell)
-	
+
 	Global.hint = false
-	#save_state()
+	save_state()
 	_draw_grid()
 
 func highlight_identical_digits(cell):
 	highlighted_cells.clear()
 	var selected_value = puzzle[cell.x][cell.y]
-	
+
 	# If the selected cell is empty, return early without highlighting other cells
 	if selected_value == 0:
 		return
@@ -334,29 +339,17 @@ func toggle_pencil_digit(cell, digit):
 		_draw_grid()  # Redraw the grid to reflect the changes
 
 func undo():
-	print("undo")
-	if undo_stack.size() > 0:  # Changed from > 1 to > 0
-		var current_state = {
-			"puzzle": puzzle.duplicate(true),
-			"selected_cells": selected_cells.duplicate(true),
-			"penciled_digits": penciled_digits.duplicate(true),
-		}
-		redo_stack.append(current_state)
-		
-		var last_state = undo_stack.pop_back()
-		load_state(last_state)
+	if current_pointer > 0:
+		current_pointer -= 1
+		load_state(history_stack[current_pointer])
+		print("Undo successful")
 	else:
 		print("Undo stack is empty. Cannot undo.")
 
 func redo():
-	if redo_stack.size() > 0:
-		var last_state = redo_stack.pop_back()
-		undo_stack.append({
-			"puzzle": puzzle.duplicate(true),
-			"selected_cells": selected_cells.duplicate(true),
-			"penciled_digits": penciled_digits.duplicate(true),
-		})
-		load_state(last_state)
+	if current_pointer < history_stack.size() - 1:
+		current_pointer += 1
+		load_state(history_stack[current_pointer])
 		print("Redo successful")
 	else:
 		print("Redo stack is empty. Cannot redo.")
@@ -367,31 +360,32 @@ func save_state():
 			"puzzle": puzzle.duplicate(true),
 			"selected_cells": selected_cells.duplicate(true),
 			"penciled_digits": penciled_digits.duplicate(true),
-			"number_source": number_source.duplicate(true)
+			"number_source": number_source.duplicate(true),
+			"selected_cell": selected_cells.duplicate(true),
+			"current_pointer": current_pointer
 			# Add other game state variables here
 		}
-
-		undo_stack.append(state)
-		redo_stack.clear()
-		print(undo_stack.size())
-		print("Saving \n")
+		
+		current_pointer += 1
+		history_stack.append(state)
+		
+		print("State saved. History stack size: ", history_stack.size())
+		print("State saved. Current pointer: ", current_pointer)
+		print("Save button name, ", save_button_name)
 		if save_button_name != "":
-			# Update the existing button with the new state
-			if not ButtonManager.update_button_state_in_file(save_button_name, state):
-				print("Failed to update button state in file")
-		else:
-			print("Error: save_button_name is not set")
+			ButtonManager.update_button_state_in_file(save_button_name + "_save", state)
+			ButtonManager.update_button_state_in_file(save_button_name + "_history", history_stack)
 
 func load_state(state):
 	if state.has("puzzle") and state.has("selected_cells") and state.has("penciled_digits"):
 		puzzle = state["puzzle"].duplicate(true)
 		selected_cells = state["selected_cells"].duplicate(true)
 		penciled_digits = state["penciled_digits"].duplicate(true)
-		
 		# Load other game state variables here
-		save_state()
-		update_cells()  # Update the visual elements
-		_draw_grid()  # Redraw the grid to reflect the changes
+	  
+		ButtonManager.update_button_state_in_file(save_button_name + "_save", state)
+		update_cells()
+		_draw_grid()
 
 func update_cells():
 	for i in range(grid_size):
