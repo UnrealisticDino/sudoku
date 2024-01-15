@@ -20,7 +20,6 @@ func add_load_button(grid_container, difficulty, puzzle):
 
 	# Create and add a delete button
 	var delete_button = Button.new()
-	delete_button.text = "Delete"
 	delete_button.rect_min_size = Vector2(100, 50)
 
 	# Save the state of the newly created button
@@ -30,7 +29,8 @@ func add_load_button(grid_container, difficulty, puzzle):
 
 func save_button_state(button_text, puzzle):
 	var button_state = {
-		"puzzle": puzzle
+		"puzzle": puzzle,
+		"solved": false
 	}
 
 	var file = File.new()
@@ -88,7 +88,15 @@ func update_button_state_in_file(button_name: String, new_state) -> bool:
 			file.close()  # Close the file after reading
 			existing_data = parse_json(json_data)
 			if existing_data == null:
-				existing_data = {}
+				existing_data = {}#	if GameState.transition_source != "LoadButton":
+#		print("Not load")
+#		puzzle = state["puzzle"].duplicate(true)
+#		penciled_digits = state["penciled_digits"].duplicate(true)
+#		ButtonManager.update_button_state_in_file(save_button_name + "_save", state)
+#		update_cells()
+#		_draw_grid()
+		
+#if GameState.transition_source == "LoadButton":
 
 		for key in new_state.keys():
 			existing_data[key] = new_state[key]
@@ -108,6 +116,7 @@ func update_button_state_in_file(button_name: String, new_state) -> bool:
 func _on_load_button_pressed(button):
 	# Set the save_button_name in GameState
 	GameState.save_button_name = button.text
+	GameState.history_stack = []
 
 	# Extract difficulty and time_string from button text
 	var button_text_parts = button.text.split(" - ")
@@ -126,7 +135,19 @@ func _on_load_button_pressed(button):
 		file.close()
 		var button_data = parse_json(json_data)
 
-		if button_data:
+		if button_data:#	if GameState.transition_source != "LoadButton":
+#		print("Not load")
+#		puzzle = state["puzzle"].duplicate(true)
+#		penciled_digits = state["penciled_digits"].duplicate(true)
+#		ButtonManager.update_button_state_in_file(save_button_name + "_save", state)
+#		update_cells()
+#		_draw_grid()
+		
+#if GameState.transition_source == "LoadButton":
+			# Handle current pointer
+			if button_data.has("current_pointer"):
+				GameState.current_pointer = int(button_data["current_pointer"])
+
 			# Handle the original puzzle
 			if button_data.has("puzzle"):
 				var original_puzzle = button_data["puzzle"]
@@ -166,8 +187,56 @@ func _on_load_button_pressed(button):
 				var history_data = parse_json(history_json_data)
 
 				if history_data:
-					GameState.history_stack = history_data
-					GameState.current_pointer = history_data.size() - 1
+					for state in history_data:
+						# Handle current_pointer
+						var current_pointer = int(state["current_pointer"])
+
+						# Handle number_source
+						var number_source = state["number_source"]
+
+						# Handle penciled_digits
+						var penciled_digits = state["penciled_digits"]
+
+						# Handle puzzle
+						var original_puzzle = state["puzzle"]
+						# Convert each element of the retrieved puzzle to integer
+						var converted_puzzle = []
+						for row in original_puzzle:
+							var converted_row = []
+							for cell in row:
+								converted_row.append(int(cell))
+							converted_puzzle.append(converted_row)
+						var puzzle = converted_puzzle
+
+						# Handle selected_cell
+						var cell_string = state["selected_cell"]
+						var cell_vector = Vector2.ZERO  # Default to ZERO Vector2
+
+						# Remove parentheses and split the string by comma
+						cell_string = cell_string.trim_prefix("(").trim_suffix(")")
+						var parts = cell_string.split(", ")
+						if parts.size() == 2:
+							cell_vector = Vector2(int(parts[0]), int(parts[1]))
+
+						var selected_cell = cell_vector
+
+						# Handle selected_cells (if they are saved as strings)
+						var cells = []
+						for cell_str in state["selected_cells"]:
+							# Parse the string to extract x and y values
+							var cell_parts = cell_str.substr(1, cell_str.length() - 2).split(", ")
+							var x = int(cell_parts[0])
+							var y = int(cell_parts[1])
+
+							# Create a Vector2 object and add it to the cells array
+							cells.append(Vector2(x, y))
+
+							# Assign the array of Vector2 objects to GameState.selected_cells
+							var selected_cells = cells
+							#print("Type of selected_cells: " + str(typeof(selected_cells))
+
+						GameState.history_stack.append(state)
+
 				else:
 					print("Failed to load history data from file: ", history_file_path)
 			else:
@@ -249,7 +318,8 @@ func load_buttons_state(grid_container, button_identifiers):
 
 					# Create and connect a delete button
 					var delete_button = Button.new()
-					delete_button.text = "X"
+					# Check the solved status and set delete button text
+					delete_button.text = "O" if button_data["solved"] else "X"
 					delete_button.rect_min_size = Vector2(100, 50)
 					delete_button.add_font_override("font", font)  # Apply the same font
 					delete_button.connect("pressed", self, "_on_delete_button_pressed", [grid_container, button_text, delete_button])

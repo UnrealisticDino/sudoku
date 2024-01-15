@@ -16,7 +16,3 @@ var grid_container
 
 func fetch_grid(received_puzzle):
 	puzzle = received_puzzle.duplicate()
-
-func set_grid_container(container):
-	grid_container = container
-	print("GridContainer reference: ", grid_container)

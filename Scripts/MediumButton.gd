@@ -24,7 +24,7 @@ func _on_Medium_button_up():
 	call_deferred("_deferred_setup", generated_puzzle)
 
 func _deferred_setup(generated_puzzle):
-	var grid_container_path = "../../VScrollBar/VBoxContainer/GridContainer"
+	var grid_container_path = "../../VBoxContainer/GridContainer"
 	var grid_container = get_node_or_null(grid_container_path)
 	
 	if grid_container:

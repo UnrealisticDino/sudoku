@@ -6,6 +6,6 @@ func _on_NewGameButton_button_up():
 	if difficulty_container:
 		difficulty_container.visible = true
 
-	var vboxContainer = get_node("/root/SelectGame/MenuPortrait/VScrollBar/VBoxContainer")
+	var vboxContainer = get_node("/root/SelectGame/MenuPortrait/VBoxContainer")
 	if vboxContainer:
 		vboxContainer.visible = false

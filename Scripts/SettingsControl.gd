@@ -71,12 +71,17 @@ func save_settings():
 
 func _notification(what):
 	if what == MainLoop.NOTIFICATION_WM_GO_BACK_REQUEST:
-		get_tree().quit()
+		# This will run for mobile platforms when the back button is pressed
+		handle_back_action()
 
 func _input(event):
-	if event is InputEventKey:
-		if event.scancode == KEY_F4 and event.alt:
-			get_tree().quit()  # Ensure this line exists to allow Alt+F4 to work
-		elif event.scancode == KEY_ESCAPE:
-			# ... Some other code for handling ESCAPE
-			pass
+	if event.is_action_pressed("ui_cancel"):  # Default action for Escape key
+		# This will run on PC when the Escape key is pressed
+		handle_back_action()
+		# Make sure to consume the event so it doesn't propagate further
+		event.set_echo(false)
+		get_tree().set_input_as_handled()
+
+func handle_back_action():
+	print("Back action triggered")
+	get_tree().change_scene("res://Scenes/MainMenu.tscn")

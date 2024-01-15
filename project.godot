@@ -29,7 +29,7 @@ _global_script_class_icons={
 config/name="My Sudoku"
 run/main_scene="res://Scenes/MainMenu.tscn"
 run/low_processor_mode=true
-config/icon="res://icon.png"
+config/icon="res://IconTest.jpg"
 config/quit_on_go_back=false
 
 [autoload]

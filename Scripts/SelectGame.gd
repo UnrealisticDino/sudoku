@@ -8,13 +8,8 @@ var last_screen_size = OS.get_window_size()
 var ButtonManager = preload("res://Sudoku/Scripts/SaveFiles/ButtonManager.gd").new()
 
 func _ready():
-	var grid_container_path = "MenuPortrait/VScrollBar/VBoxContainer/GridContainer"
+	var grid_container_path = "MenuPortrait/VBoxContainer/GridContainer"
 	var grid_container = get_node_or_null(grid_container_path)
-	
-	if grid_container != null:
-		GameState.set_grid_container(grid_container)
-	else:
-		print("GridContainer not found")
 
 	last_orientation = OS.get_screen_orientation()
 	load_settings()

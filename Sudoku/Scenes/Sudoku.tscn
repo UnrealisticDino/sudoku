@@ -1,9 +1,10 @@
-[gd_scene load_steps=9 format=2]
+[gd_scene load_steps=12 format=2]
 
 [ext_resource path="res://Sudoku/Scripts/DrawGrid.gd" type="Script" id=1]
 [ext_resource path="res://Sudoku/DefaultSprites/Backgound.png" type="Texture" id=2]
 [ext_resource path="res://Sudoku/Scripts/PlayerInput.gd" type="Script" id=3]
 [ext_resource path="res://Sudoku/Scripts/SudokuGridContainer.gd" type="Script" id=4]
+[ext_resource path="res://Sudoku/Scripts/SudokuScene/PuzzleCompleted.gd" type="Script" id=5]
 [ext_resource path="res://Sudoku/Scripts/CreateCustomGame.gd" type="Script" id=6]
 [ext_resource path="res://Fonts/Old-Standard-TT/OldStandard-Regular.ttf" type="DynamicFontData" id=7]
 
@@ -12,6 +13,13 @@
 [sub_resource type="DynamicFont" id=1]
 size = 100
 font_data = ExtResource( 7 )
+
+[sub_resource type="DynamicFontData" id=3]
+font_path = "res://Fonts/Old-Standard-TT/OldStandard-Regular.ttf"
+
+[sub_resource type="DynamicFont" id=4]
+size = 200
+font_data = SubResource( 3 )
 
 [node name="Sudoku" type="Control"]
 
@@ -50,4 +58,32 @@ custom_fonts/font = SubResource( 1 )
 text = "Create"
 script = ExtResource( 6 )
 
+[node name="Undo" type="Button" parent="BackgroundPortrait/GridContainer"]
+margin_right = 248.0
+margin_bottom = 132.0
+theme = SubResource( 2 )
+custom_fonts/font = SubResource( 1 )
+text = "Undo"
+
+[node name="Redo" type="Button" parent="BackgroundPortrait/GridContainer"]
+margin_top = 136.0
+margin_right = 248.0
+margin_bottom = 268.0
+theme = SubResource( 2 )
+custom_fonts/font = SubResource( 1 )
+text = "Redo"
+
+[node name="PuzzleCompleted" type="Button" parent="BackgroundPortrait"]
+visible = false
+margin_left = 78.0
+margin_top = 567.0
+margin_right = 998.0
+margin_bottom = 901.0
+custom_fonts/font = SubResource( 4 )
+text = "Completed"
+script = ExtResource( 5 )
+
 [connection signal="button_up" from="BackgroundPortrait/GridContainer/CreateCustomGame" to="BackgroundPortrait/GridContainer/CreateCustomGame" method="_on_CreateCustomGame_button_up"]
+[connection signal="button_up" from="BackgroundPortrait/GridContainer/Undo" to="BackgroundPortrait/DrawGrid" method="_on_Undo_button_up"]
+[connection signal="button_up" from="BackgroundPortrait/GridContainer/Redo" to="BackgroundPortrait/DrawGrid" method="_on_Redo_button_up"]
+[connection signal="button_up" from="BackgroundPortrait/PuzzleCompleted" to="BackgroundPortrait/PuzzleCompleted" method="_on_PuzzleCompleted_button_up"]

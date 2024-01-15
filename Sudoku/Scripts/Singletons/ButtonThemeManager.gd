@@ -4,6 +4,7 @@ extends Button
 var grid_lines_color = Global.grid_lines_color
 var player_digit_color = Global.player_digit_color
 var selected_cell_color = Global.selected_cell_color
+var button_bg_color = Global.button_bg_color
 
 var custom_theme = Theme.new()
 
@@ -16,7 +17,7 @@ func update_button_theme():
 	var outline_width = 2  # Change this value to increase or decrease the thickness
 
 	var style_normal = StyleBoxFlat.new()
-	style_normal.bg_color = Color(0, 0, 0, 0)  # Fully transparent for normal state
+	style_normal.bg_color = button_bg_color
 	style_normal.border_color = grid_lines_color
 	style_normal.border_width_left = outline_width
 	style_normal.border_width_top = outline_width
@@ -24,7 +25,7 @@ func update_button_theme():
 	style_normal.border_width_bottom = outline_width
 
 	var style_hover = StyleBoxFlat.new()
-	style_hover.bg_color = Color(0, 0, 0, 0)  # Fully transparent for hover state
+	style_hover.bg_color = button_bg_color
 	style_hover.border_color = grid_lines_color
 	style_hover.border_width_left = outline_width
 	style_hover.border_width_top = outline_width
@@ -40,7 +41,7 @@ func update_button_theme():
 	style_pressed.border_width_bottom = outline_width
 
 	var style_focus = StyleBoxFlat.new()
-	style_focus.bg_color = Color(0, 0, 0, 0)  # Fully transparent for focus state
+	style_focus.bg_color = Color(0, 0, 0, 0)
 	style_focus.border_color = grid_lines_color
 	style_focus.border_width_left = outline_width
 	style_focus.border_width_top = outline_width

@@ -48,7 +48,7 @@ func solve(puzzle, filled_sudoku, source):
 		return false
 
 func solve_with_techniques(puzzle, techniques, source):
-	var last_filled_cell = {}
+	var _last_filled_cell = {}
 	var is_solved = false
 	while not is_solved:
 		var made_move = false

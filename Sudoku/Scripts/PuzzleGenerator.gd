@@ -6,7 +6,7 @@ var SudokuSolver = preload("res://Sudoku/Scripts/SudokuSolver.gd").new()
 
 # Function to receive the filled Sudoku from Global.gd
 func receive_completed_grid(grid):
-	var puzzle = generate_puzzle(grid)
+	var _puzzle = generate_puzzle(grid)
 
 # Function to send the generated puzzle to the appropriate part of your code
 func send_grid(grid):

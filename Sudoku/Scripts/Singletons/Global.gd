@@ -3,8 +3,6 @@ extends Node
 
 var config = ConfigFile.new()
 var highlight_identical_digits = false
-#var filled_sudoku = []
-#var puzzle_generated = false
 var grid_lines_color = Color(0, 0,0)
 var player_digit_color = Color(1, 0, 0)
 var game_placed_digit_color = Color(0, 0, 0)
@@ -15,11 +13,12 @@ var PuzzleGenerator = preload("res://Sudoku/Scripts/PuzzleGenerator.gd").new()
 var SudokuSolver = preload("res://Sudoku/Scripts/SudokuSolver.gd").new()
 var CellScene = preload("res://Sudoku/Scenes/Cell.tscn")
 var background_color = Color(1, 1, 1)
+var button_bg_color = Color(1, 1, 1, 1)
 
 var hint = false
 
 func _ready():
-	var hint = false
+	var _hint = false
 	load_selected_cell_color()
 	load_player_placed_digit_color()
 	load_grid_color()
