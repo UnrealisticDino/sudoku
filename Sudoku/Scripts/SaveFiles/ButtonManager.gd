@@ -209,16 +209,16 @@ func _on_load_button_pressed(button):
 						var puzzle = converted_puzzle
 
 						# Handle selected_cell
-						var cell_string = state["selected_cell"]
-						var cell_vector = Vector2.ZERO  # Default to ZERO Vector2
+#						var cell_string = state["selected_cell"]
+#						var cell_vector = Vector2.ZERO  # Default to ZERO Vector2
 
 						# Remove parentheses and split the string by comma
-						cell_string = cell_string.trim_prefix("(").trim_suffix(")")
-						var parts = cell_string.split(", ")
-						if parts.size() == 2:
-							cell_vector = Vector2(int(parts[0]), int(parts[1]))
-
-						var selected_cell = cell_vector
+#						cell_string = cell_string.trim_prefix("(").trim_suffix(")")
+#						var parts = cell_string.split(", ")
+#						if parts.size() == 2:
+#							cell_vector = Vector2(int(parts[0]), int(parts[1]))
+#
+#						var selected_cell = cell_vector
 
 						# Handle selected_cells (if they are saved as strings)
 						var cells = []

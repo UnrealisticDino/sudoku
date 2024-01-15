@@ -31,7 +31,6 @@ var selected_cell = GameState.selected_cell
 var selected_cells = GameState.selected_cells
 
 func _ready():
-	print(GameState.transition_source)
 	# Call the draw function when the node is ready
 	_calculate_grid_parameters()
 	
@@ -363,7 +362,7 @@ func save_state():
 	solved = false
 	var state = {
 		"puzzle": puzzle.duplicate(true),
-		"selected_cell": selected_cell,
+#		"selected_cell": selected_cell,
 		"selected_cells": selected_cells.duplicate(true),
 		"penciled_digits": penciled_digits.duplicate(true),
 		"number_source": number_source.duplicate(true),
@@ -403,9 +402,9 @@ func load_state(state):
 	puzzle = converted_puzzle
 
 	# Handle selected_cells (if they are saved as strings)
-	var cells = []
 	for cell_str in state["selected_cells"]:
 		if typeof(cell_str) == 4:
+			var cells = []
 			# Parse the string to extract x and y values
 			var cell_parts = cell_str.substr(1, cell_str.length() - 2).split(", ")
 			var x = int(cell_parts[0])
@@ -415,12 +414,14 @@ func load_state(state):
 			cells.append(Vector2(x, y))
 
 			# Assign the array of Vector2 objects to GameState.selected_cells
-			var selected_cells = cells
-		
+			selected_cells = cells
+
 		if typeof(cell_str) == 5:
 			selected_cells = state["selected_cells"].duplicate(true)
 
+	# Handle penciled_digits
 	penciled_digits = state["penciled_digits"].duplicate(true)
+
 	# Load other game state variables here
 	ButtonManager.update_button_state_in_file(save_button_name + "_save", state)
 	update_cells()
