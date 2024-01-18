@@ -42,14 +42,14 @@ margin_bottom = 1241.0
 margin_right = 65.0
 script = ExtResource( 3 )
 
-[node name="GridContainer" type="GridContainer" parent="BackgroundPortrait"]
+[node name="ButtonContainer" type="GridContainer" parent="BackgroundPortrait"]
 margin_left = 738.0
 margin_top = 1204.0
 margin_right = 1035.0
 margin_bottom = 1646.0
 script = ExtResource( 4 )
 
-[node name="CreateCustomGame" type="Button" parent="BackgroundPortrait/GridContainer"]
+[node name="Create" type="Button" parent="BackgroundPortrait/ButtonContainer"]
 visible = false
 margin_right = 297.0
 margin_bottom = 132.0
@@ -58,20 +58,29 @@ custom_fonts/font = SubResource( 1 )
 text = "Create"
 script = ExtResource( 6 )
 
-[node name="Undo" type="Button" parent="BackgroundPortrait/GridContainer"]
+[node name="Undo" type="Button" parent="BackgroundPortrait/ButtonContainer"]
 margin_right = 248.0
 margin_bottom = 132.0
 theme = SubResource( 2 )
 custom_fonts/font = SubResource( 1 )
 text = "Undo"
 
-[node name="Redo" type="Button" parent="BackgroundPortrait/GridContainer"]
+[node name="Redo" type="Button" parent="BackgroundPortrait/ButtonContainer"]
 margin_top = 136.0
 margin_right = 248.0
 margin_bottom = 268.0
 theme = SubResource( 2 )
 custom_fonts/font = SubResource( 1 )
 text = "Redo"
+
+[node name="Validate" type="Button" parent="BackgroundPortrait/ButtonContainer"]
+visible = false
+margin_top = 272.0
+margin_right = 275.0
+margin_bottom = 404.0
+theme = SubResource( 2 )
+custom_fonts/font = SubResource( 1 )
+text = "Check"
 
 [node name="PuzzleCompleted" type="Button" parent="BackgroundPortrait"]
 visible = false
@@ -83,7 +92,8 @@ custom_fonts/font = SubResource( 4 )
 text = "Completed"
 script = ExtResource( 5 )
 
-[connection signal="button_up" from="BackgroundPortrait/GridContainer/CreateCustomGame" to="BackgroundPortrait/GridContainer/CreateCustomGame" method="_on_CreateCustomGame_button_up"]
-[connection signal="button_up" from="BackgroundPortrait/GridContainer/Undo" to="BackgroundPortrait/DrawGrid" method="_on_Undo_button_up"]
-[connection signal="button_up" from="BackgroundPortrait/GridContainer/Redo" to="BackgroundPortrait/DrawGrid" method="_on_Redo_button_up"]
+[connection signal="button_up" from="BackgroundPortrait/ButtonContainer/Create" to="BackgroundPortrait/ButtonContainer/Create" method="_on_CreateCustomGame_button_up"]
+[connection signal="button_up" from="BackgroundPortrait/ButtonContainer/Undo" to="BackgroundPortrait/DrawGrid" method="_on_Undo_button_up"]
+[connection signal="button_up" from="BackgroundPortrait/ButtonContainer/Redo" to="BackgroundPortrait/DrawGrid" method="_on_Redo_button_up"]
+[connection signal="button_up" from="BackgroundPortrait/ButtonContainer/Validate" to="BackgroundPortrait/DrawGrid" method="_on_Validate_button_up"]
 [connection signal="button_up" from="BackgroundPortrait/PuzzleCompleted" to="BackgroundPortrait/PuzzleCompleted" method="_on_PuzzleCompleted_button_up"]

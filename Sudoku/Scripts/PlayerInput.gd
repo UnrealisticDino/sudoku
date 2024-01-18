@@ -60,7 +60,6 @@ func _input(event):
 					var col = i % 3  # Modulo to get the column
 					var digit = row * 3 + col + 1  # Calculate the digit
 					
-					#print("Selected cell at row ", row, ", col ", col, " with digit ", digit)
 					if digit != null:
 						selected_cells = DrawGrid.selected_cells
 						#print(selected_cells, digit)

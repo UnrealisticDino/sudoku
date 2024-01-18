@@ -2,6 +2,7 @@
 extends Control
 
 var CellScene = preload("res://Sudoku/Scenes/Cell.tscn")
+var filled_grid_script = preload("res://Sudoku/Scripts/SudokuSolver/Techniques/FilledGrid.gd")
 var cell_size = 64
 var grid_size = 9
 var scaled_cell_size
@@ -44,11 +45,16 @@ func _ready():
 
 	# Initialize the array only if the game wasn't started from a load button
 	if GameState.transition_source != "LoadButton":
-		var button_path = "../GridContainer/CreateCustomGame"
-		var create_custom_game_button = get_node(button_path)
 
 		if GameState.transition_source == "CustomGame":
-			create_custom_game_button.visible = true
+			var create_button = get_node("../GridContainer/Create")
+			var check_button = get_node("../GridContainer/Validate")
+			var undo_button = get_node("../GridContainer/Undo")
+			var redo_button = get_node("../GridContainer/Redo")
+			create_button.visible = true
+			check_button.visible = true
+			undo_button.visible = false
+			redo_button.visible = false
 
 		selected_cells.clear()
 		penciled_digits.clear()
@@ -248,7 +254,6 @@ func _input(event):
 						else:
 							#print("Inputting number into cell.")
 							input_number(selected_cell, i)
-						break
 
 func clear_selected_cells():
 	for cell in selected_cells:
@@ -374,7 +379,8 @@ func save_state():
 	history_stack.append(state)
 
 	if all_cells_filled(puzzle):
-		if is_valid_sudoku(puzzle):
+		var filled_grid = filled_grid_script.new()
+		if filled_grid.is_valid_sudoku(puzzle):
 			solved = true
 			state = {
 				"puzzle": puzzle.duplicate(true),
@@ -385,6 +391,7 @@ func save_state():
 
 			puzzle_completed.visible = true
 			print("Sudoku is valid")
+
 	if save_button_name != "":
 		ButtonManager.update_button_state_in_file(save_button_name + "_save", state)
 		ButtonManager.update_button_state_in_file(save_button_name + "_history", history_stack)
@@ -442,46 +449,25 @@ func all_cells_filled(puzzle):
 				return false
 	return true
 
-# Sudoku validation function
-func is_valid_sudoku(puzzle):
-	# Check if rows, columns, and 3x3 squares are valid
-	for i in range(9):
-		if not is_valid_row(puzzle, i) or not is_valid_column(puzzle, i) or not is_valid_square(puzzle, i):
-			return false
-	return true
-
-# Check if a row is valid
-func is_valid_row(puzzle, row):
-	var seen = []
-	for cell in puzzle[row]:
-		if cell in seen and cell != 0:
-			return false
-		seen.append(cell)
-	return true
-
-# Check if a column is valid
-func is_valid_column(puzzle, col):
-	var seen = []
-	for row in range(9):
-		var cell = puzzle[row][col]
-		if cell in seen and cell != 0:
-			return false
-		seen.append(cell)
-	return true
-
-# Check if a 3x3 square is valid
-func is_valid_square(puzzle, square):
-	var seen = []
-	for row in range(square / 3 * 3, square / 3 * 3 + 3):
-		for col in range(square % 3 * 3, square % 3 * 3 + 3):
-			var cell = puzzle[row][col]
-			if cell in seen and cell != 0:
-				return false
-			seen.append(cell)
-	return true
-
 func _on_Undo_button_up():
 	undo()
 
 func _on_Redo_button_up():
 	redo()
+
+func _on_Validate_button_up():
+	var sudoku_solver_script = preload("res://Sudoku/Scripts/SudokuSolver/SudokuSolver.gd")
+	var sudoku_solver = sudoku_solver_script.new()
+#	var current_grid = puzzle
+	var current_grid = [
+	[0,0,0,3,7,4,2,0,0],
+	[0,0,0,0,8,2,0,4,0],
+	[0,0,0,0,0,0,0,0,0],
+	[0,0,0,0,3,0,8,2,6],
+	[6,0,0,0,9,0,0,0,4],
+	[8,0,5,0,4,6,9,7,0],
+	[5,4,7,0,2,0,0,0,9],
+	[0,0,0,0,0,0,4,0,5],
+	[0,1,0,4,5,0,7,0,2]
+	]
+	var solved_grid = sudoku_solver.solve_sudoku(current_grid)

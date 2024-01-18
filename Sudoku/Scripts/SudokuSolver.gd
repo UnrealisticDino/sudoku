@@ -324,14 +324,14 @@ func eliminate_values_from_cell(puzzle, row, col, values_to_eliminate):
 	return eliminated
 
 #Needed
-var use_full_house = false
-var use_naked_singles = false
+#var use_full_house = false
+#var use_naked_singles = false
 #Basic
-var use_hidden_singles = false
+#var use_hidden_singles = false
 #Medium
-var use_naked_pairs = false
-var use_hidden_pairs = false
-var use_naked_triples = false
+#var use_naked_pairs = false
+#var use_hidden_pairs = false
+#var use_naked_triples = false
 var use_hidden_triples = false
 #Hard Maybe
 var use_naked_quads = false
