@@ -5,6 +5,7 @@ extends Node
 func solve(candidates: Array) -> Array:
 	#print("HiddenTriples")
 	var updated = false
+	print(candidates)
 
 	# Check each row, column, and box for Hidden Triples
 	for i in range(9):

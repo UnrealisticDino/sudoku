@@ -47,10 +47,10 @@ func _ready():
 	if GameState.transition_source != "LoadButton":
 
 		if GameState.transition_source == "CustomGame":
-			var create_button = get_node("../GridContainer/Create")
-			var check_button = get_node("../GridContainer/Validate")
-			var undo_button = get_node("../GridContainer/Undo")
-			var redo_button = get_node("../GridContainer/Redo")
+			var create_button = get_node("../ButtonContainer/Create")
+			var check_button = get_node("../ButtonContainer/Validate")
+			var undo_button = get_node("../ButtonContainer/Undo")
+			var redo_button = get_node("../ButtonContainer/Redo")
 			create_button.visible = true
 			check_button.visible = true
 			undo_button.visible = false
@@ -459,15 +459,18 @@ func _on_Validate_button_up():
 	var sudoku_solver_script = preload("res://Sudoku/Scripts/SudokuSolver/SudokuSolver.gd")
 	var sudoku_solver = sudoku_solver_script.new()
 #	var current_grid = puzzle
-	var current_grid = [
-	[0,0,0,3,7,4,2,0,0],
-	[0,0,0,0,8,2,0,4,0],
-	[0,0,0,0,0,0,0,0,0],
-	[0,0,0,0,3,0,8,2,6],
-	[6,0,0,0,9,0,0,0,4],
-	[8,0,5,0,4,6,9,7,0],
-	[5,4,7,0,2,0,0,0,9],
-	[0,0,0,0,0,0,4,0,5],
-	[0,1,0,4,5,0,7,0,2]
-	]
+	var current_grid = [[0,0,8,0,0,0,0,2,0],[4,7,0,2,0,9,1,0,5],[0,1,5,0,0,0,0,0,0],[5,6,0,0,0,0,7,9,8],[0,4,0,8,0,5,0,0,0],[0,8,0,0,0,2,5,0,3],[7,5,4,3,2,1,0,0,0],[6,0,1,0,9,8,3,5,4],[0,0,0,6,5,0,0,7,0]]
+
+
+#	[
+#	[0,0,0,3,7,4,2,0,0],
+#	[0,0,0,0,8,2,0,4,0],
+#	[0,0,0,0,0,0,0,0,0],
+#	[0,0,0,0,3,0,8,2,6],
+#	[6,0,0,0,9,0,0,0,4],
+#	[8,0,5,0,4,6,9,7,0],
+#	[5,4,7,0,2,0,0,0,9],
+#	[0,0,0,0,0,0,4,0,5],
+#	[0,1,0,4,5,0,7,0,2]
+#	]
 	var solved_grid = sudoku_solver.solve_sudoku(current_grid)

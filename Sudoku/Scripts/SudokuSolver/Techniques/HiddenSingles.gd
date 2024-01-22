@@ -3,7 +3,6 @@ extends Node
 
 # Function to solve Hidden Singles in a Sudoku grid
 func solve(candidates: Array) -> Array:
-	#print("HiddenSingles")
 	var check = candidates.duplicate(true)
 	var updated = false
 

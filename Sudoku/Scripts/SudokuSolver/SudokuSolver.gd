@@ -3,7 +3,6 @@ extends Node
 
 var filled_grid_script = preload("res://Sudoku/Scripts/SudokuSolver/Techniques/FilledGrid.gd")
 
-
 var techniques = [
 				preload("res://Sudoku/Scripts/SudokuSolver/Techniques/FullHouse.gd"),
 				preload("res://Sudoku/Scripts/SudokuSolver/Techniques/NakedSingles.gd"),
