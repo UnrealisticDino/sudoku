@@ -2,7 +2,7 @@
 extends Node
 
 var GRID_SIZE = 9
-var SudokuSolver = preload("res://Sudoku/Scripts/SudokuSolver.gd").new()
+var SudokuSolver = preload("res://Sudoku/Scripts/SudokuSolver/SudokuSolver.gd").new()
 
 # Function to receive the filled Sudoku from Global.gd
 func receive_completed_grid(grid):

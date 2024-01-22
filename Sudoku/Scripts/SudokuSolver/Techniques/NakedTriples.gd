@@ -1,112 +1,107 @@
 #NakedTriples.gd
 extends Node
 
-class_name NakedTriplesSolver
-
-# Function to solve Naked Triples in a Sudoku grid
-func solve(grid: Array) -> Array:
-	print("NakedTriples")
+# Function to solve Naked Triples in the candidates array
+func solve(candidates: Array) -> Array:
+	#print("NakedTriples")
 	var updated = false
 
-	# Check each row, column, and box for Naked Triples
 	for i in range(9):
-		updated = check_naked_triples_unit(grid, i, true) or updated  # Check rows
-		updated = check_naked_triples_unit(grid, i, false) or updated  # Check columns
-		updated = check_naked_triples_box(grid, i) or updated  # Check boxes
+		updated = check_naked_triples_unit(candidates, i, true) or updated  # Check rows
+		updated = check_naked_triples_unit(candidates, i, false) or updated  # Check columns
+		updated = check_naked_triples_box(candidates, i) or updated  # Check boxes
 
-	return grid
+	if updated:
+		print("NakedTriples used")
+	return candidates
 
 # Helper function to check and resolve Naked Triples in a row or column
-func check_naked_triples_unit(grid: Array, index: int, is_row: bool) -> bool:
+func check_naked_triples_unit(candidates: Array, index: int, is_row: bool) -> bool:
 	var updated = false
-	var cell_groups = get_cell_groups(grid, index, is_row)  # You need to implement this
+	var cell_groups = get_cell_groups(candidates, index, is_row)
 
 	for i in range(cell_groups.size()):
 		for j in range(i + 1, cell_groups.size()):
 			for k in range(j + 1, cell_groups.size()):
 				var combined = cell_groups[i] + cell_groups[j] + cell_groups[k]
-				combined = combined.deduplicate()  # Removes duplicates from the array
+				combined = remove_duplicates(combined)
 
 				if combined.size() == 3:
-					# Found a naked triple, now eliminate these numbers from other cells
-					updated = eliminate_numbers(grid, index, is_row, combined, [i, j, k]) or updated  # Implement this
+					updated = eliminate_numbers(candidates, index, is_row, combined, [i, j, k]) or updated
 
 	return updated
 
 # Helper function to check and resolve Naked Triples in a 3x3 box
-func check_naked_triples_box(grid: Array, box: int) -> bool:
+func check_naked_triples_box(candidates: Array, box: int) -> bool:
 	var updated = false
-	var cell_groups = get_box_cell_groups(grid, box)
+	var cell_groups = get_box_cell_groups(candidates, box)
 
-	# Iterate through all combinations of three cells in the cell_groups
 	for i in range(cell_groups.size()):
 		for j in range(i + 1, cell_groups.size()):
 			for k in range(j + 1, cell_groups.size()):
 				var combined = cell_groups[i] + cell_groups[j] + cell_groups[k]
-				combined = combined.deduplicate()  # Removes duplicates from the array
+				combined = remove_duplicates(combined)
 
-				# Check if the combined group forms a naked triple
 				if combined.size() == 3:
-					# Found a naked triple, now eliminate these numbers from other cells in the box
-					updated = eliminate_numbers_from_box(grid, box, combined, [i, j, k]) or updated
+					updated = eliminate_numbers_from_box(candidates, box, combined, [i, j, k]) or updated
 
 	return updated
 
-func eliminate_numbers_from_box(grid: Array, box: int, numbers: Array, exceptions: Array) -> bool:
-	var updated = false
-	var start_row = (box / 3) * 3
-	var start_col = (box % 3) * 3
-
-	for row in range(start_row, start_row + 3):
-		for col in range(start_col, start_col + 3):
-			if not ([row, col] in exceptions):
-				var cell = grid[row][col]
-				if cell is Array:
-					for number in numbers:
-						if number in cell:
-							cell.erase(number)
-							updated = true
-
-	return updated
-
-func get_box_cell_groups(grid: Array, box: int) -> Array:
-	var cell_groups = []
-	var start_row = (box / 3) * 3
-	var start_col = (box % 3) * 3
-
-	for row in range(start_row, start_row + 3):
-		for col in range(start_col, start_col + 3):
-			var cell = grid[row][col]
-			if cell is Array:
-				cell_groups.append(cell)
-	return cell_groups
-
-func get_cell_groups(grid: Array, index: int, is_row: bool) -> Array:
+# Function to get candidate groups for each cell in a unit (row or column)
+func get_cell_groups(candidates: Array, index: int, is_row: bool) -> Array:
 	var cell_groups = []
 	for i in range(9):
-		var cell
-		if is_row:
-			cell = grid[index][i]
-		else:
-			cell = grid[i][index]
-		
-		if cell is Array:  # Assuming a cell with multiple candidates is an Array
+		var cell = candidates[index][i] if is_row else candidates[i][index]
+		if cell.size() > 1:  # Ignore cells with a single candidate
 			cell_groups.append(cell)
 	return cell_groups
 
-func eliminate_numbers(grid: Array, index: int, is_row: bool, numbers: Array, exceptions: Array) -> bool:
+# Function to get candidate groups for each cell in a 3x3 box
+func get_box_cell_groups(candidates: Array, box: int) -> Array:
+	var cell_groups = []
+	var start_row = (box / 3) * 3
+	var start_col = (box % 3) * 3
+	for i in range(3):
+		for j in range(3):
+			var cell = candidates[start_row + i][start_col + j]
+			if cell.size() > 1:  # Ignore cells with a single candidate
+				cell_groups.append(cell)
+	return cell_groups
+
+# Function to eliminate numbers from candidates in a row or column
+func eliminate_numbers(candidates: Array, index: int, is_row: bool, numbers: Array, exceptions: Array) -> bool:
 	var updated = false
 	for i in range(9):
-		if not (i in exceptions):
-			var cell
-			if is_row:
-				cell = grid[index][i]
-			else:
-				cell = grid[i][index]
-
-			if cell is Array:
+		if not exceptions.has(i):
+			var cell = candidates[index][i] if is_row else candidates[i][index]
+			if cell.size() > 1 and (cell.size() - numbers.size() >= 1):
 				for number in numbers:
 					if number in cell:
 						cell.erase(number)
 						updated = true
+
 	return updated
+
+# Function to eliminate numbers from candidates in a 3x3 box
+func eliminate_numbers_from_box(candidates: Array, box: int, numbers: Array, exceptions: Array) -> bool:
+	var updated = false
+	var start_row = (box / 3) * 3
+	var start_col = (box % 3) * 3
+	for i in range(3):
+		for j in range(3):
+			var pos = Vector2(start_row + i, start_col + j)
+			if not exceptions.has(pos):
+				var cell = candidates[pos.x][pos.y]
+				if cell.size() > 1 and (cell.size() - numbers.size() >= 1):
+					for number in numbers:
+						if number in cell:
+							cell.erase(number)
+							updated = true
+	return updated
+
+# Function to remove duplicates from an array
+func remove_duplicates(arr: Array) -> Array:
+	var unique_dict = {}
+	for item in arr:
+		unique_dict[item] = null
+	return unique_dict.keys()

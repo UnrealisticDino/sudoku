@@ -3,62 +3,67 @@ extends Node
 
 var filled_grid_script = preload("res://Sudoku/Scripts/SudokuSolver/Techniques/FilledGrid.gd")
 
+
 var techniques = [
-				
-				
-				
-				preload("res://Sudoku/Scripts/SudokuSolver/Techniques/HiddenQuads.gd"),
-				preload("res://Sudoku/Scripts/SudokuSolver/Techniques/NakedQuads.gd"),
-				preload("res://Sudoku/Scripts/SudokuSolver/Techniques/HiddenTriples.gd"),
-				preload("res://Sudoku/Scripts/SudokuSolver/Techniques/NakedTriples.gd"),
-				preload("res://Sudoku/Scripts/SudokuSolver/Techniques/HiddenPairs.gd"),
-				preload("res://Sudoku/Scripts/SudokuSolver/Techniques/NakedPairs.gd"),
-				preload("res://Sudoku/Scripts/SudokuSolver/Techniques/HiddenSingles.gd"),
-				preload("res://Sudoku/Scripts/SudokuSolver/Techniques/NakedSingles.gd"),
 				preload("res://Sudoku/Scripts/SudokuSolver/Techniques/FullHouse.gd"),
+				preload("res://Sudoku/Scripts/SudokuSolver/Techniques/NakedSingles.gd"),
+				preload("res://Sudoku/Scripts/SudokuSolver/Techniques/HiddenSingles.gd"),
+				preload("res://Sudoku/Scripts/SudokuSolver/Techniques/NakedPairs.gd"),
+				preload("res://Sudoku/Scripts/SudokuSolver/Techniques/HiddenPairs.gd"),
+				preload("res://Sudoku/Scripts/SudokuSolver/Techniques/NakedTriples.gd"),
+				preload("res://Sudoku/Scripts/SudokuSolver/Techniques/HiddenTriples.gd"),
+				preload("res://Sudoku/Scripts/SudokuSolver/Techniques/NakedQuads.gd"),
+				preload("res://Sudoku/Scripts/SudokuSolver/Techniques/HiddenQuads.gd"),
+				preload("res://Sudoku/Scripts/SudokuSolver/Techniques/PointingPairs.gd"),
+				preload("res://Sudoku/Scripts/SudokuSolver/Techniques/PointingTriples.gd"),
+				preload("res://Sudoku/Scripts/SudokuSolver/Techniques/BoxLineReduction.gd"),
+				preload("res://Sudoku/Scripts/SudokuSolver/Techniques/LockedCandidates.gd"),
+				preload("res://Sudoku/Scripts/SudokuSolver/Techniques/XWing.gd"),
+				preload("res://Sudoku/Scripts/SudokuSolver/Techniques/Swordfish.gd"),
+				preload("res://Sudoku/Scripts/SudokuSolver/Techniques/Jellyfish.gd"),
 				]
 
 func solve_sudoku(grid):
+	var test = 1
 	var filled_grid_instance = filled_grid_script.new()
 	var progress_made = true
 	var iteration_grid = grid.duplicate()
+	var candidates = create_candidates_array(iteration_grid)
 
 	while progress_made:
+		print(test)
 		var original_grid = iteration_grid.duplicate(true)
-		#print(original_grid)
+		var original_candidates = candidates.duplicate(true)
 
 		for i in range(techniques.size()):
 			var technique = techniques[i]
 			var technique_instance = technique.new()
-			iteration_grid = technique_instance.solve(iteration_grid)
+			candidates = technique_instance.solve(candidates)
+			iteration_grid = update_grid_from_candidates(iteration_grid, candidates)
+
+			if has_empty_cells(candidates):
+				print("There are empty cells in the candidates array.")
+
 			if has_rule_violations(iteration_grid):
 				display_sudoku_grid(original_grid)
-				print("has a rule violation")
+				print("\nSudoku has rule violations")
 				display_sudoku_grid(iteration_grid)
+				print("\nCandidates\n", candidates)
 				break
 
-		if iteration_grid == original_grid:
+		test = test +1
+		if iteration_grid == original_grid and candidates == original_candidates:
 			progress_made = false
 
 		if all_cells_filled(iteration_grid):
-			var filled_grid = filled_grid_script.new()
-			if filled_grid.is_valid_sudoku(iteration_grid):
+			print("All cells filled")
+			if filled_grid_instance.is_valid_sudoku(iteration_grid):
 				progress_made = false
 				print("Sudoku is valid")
 
-	if is_sudoku_solved(grid, filled_grid_instance):
-		print("Sudoku Solved: ", grid)
-	else:
-		print("Sudoku could not be fully solved with current techniques.", grid)
-
+	display_sudoku_grid(grid)
+	print(candidates)
 	return grid
-
-func is_sudoku_solved(grid, filled_grid_instance):
-	# Use the passed instance of FilledGrid
-	if filled_grid_instance.is_valid_sudoku(grid):
-		return true
-	else:
-		return false
 
 func all_cells_filled(puzzle):
 	for row in puzzle:
@@ -95,6 +100,64 @@ func has_rule_violations(board: Array) -> bool:
 				box_values.append(board[row_index][col_index])
 
 	return false
+
+# Function to create an initial candidates array based on the given grid
+func create_candidates_array(grid):
+	var candidates = []
+	for row in range(9):
+		var row_candidates = []
+		for col in range(9):
+			if grid[row][col] == 0:
+				# If the cell is empty (0), calculate possible candidates
+				var possible_candidates = []
+				for num in range(1, 10):
+					if is_valid_candidate(grid, row, col, num):
+						possible_candidates.append(num)
+				row_candidates.append(possible_candidates)
+			else:
+				# If the cell is filled, add only the filled number as the candidate
+				row_candidates.append([grid[row][col]])
+		candidates.append(row_candidates)
+	return candidates
+
+# Function to check if a number is a valid candidate for a cell
+func is_valid_candidate(grid, row, col, num):
+	# Check the row
+	for i in range(9):
+		if grid[row][i] == num:
+			return false
+	
+	# Check the column
+	for i in range(9):
+		if grid[i][col] == num:
+			return false
+	
+	# Check the 3x3 subgrid
+	var start_row = row - row % 3
+	var start_col = col - col % 3
+	for i in range(3):
+		for j in range(3):
+			if grid[start_row + i][start_col + j] == num:
+				return false
+	
+	return true
+
+func has_empty_cells(candidates: Array) -> bool:
+	for row in candidates:
+		for cell in row:
+			if cell.size() == 0:
+				return true
+	return false
+
+# Function to update the grid based on the candidates array
+func update_grid_from_candidates(grid, candidates):
+	for row in range(len(grid)):
+		for col in range(len(grid[row])):
+			# Check if there's exactly one candidate left for a cell
+			if len(candidates[row][col]) == 1:
+				# Update the grid with this candidate number
+				grid[row][col] = candidates[row][col][0]
+	return grid
 
 func display_sudoku_grid(iteration_grid):
 	for row in iteration_grid:

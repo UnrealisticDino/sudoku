@@ -10,23 +10,11 @@ config_version=4
 
 _global_script_classes=[ {
 "base": "Node",
-"class": "HiddenTriplesSolver",
-"language": "GDScript",
-"path": "res://Sudoku/Scripts/SudokuSolver/Techniques/HiddenTriples.gd"
-}, {
-"base": "Node",
-"class": "NakedTriplesSolver",
-"language": "GDScript",
-"path": "res://Sudoku/Scripts/SudokuSolver/Techniques/NakedTriples.gd"
-}, {
-"base": "Node",
 "class": "Sudoku",
 "language": "GDScript",
 "path": "res://Sudoku/TMP/Sudokutmpgenerator.gd"
 } ]
 _global_script_class_icons={
-"HiddenTriplesSolver": "",
-"NakedTriplesSolver": "",
 "Sudoku": ""
 }
 

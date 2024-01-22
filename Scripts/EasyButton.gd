@@ -5,8 +5,6 @@ var ButtonManager = preload("res://Sudoku/Scripts/SaveFiles/ButtonManager.gd").n
 var difficulty_setting = "Easy"
 
 func _on_Easy_button_up():
-#	print("Difficulty setting: " + difficulty_setting)
-
 	# For the Easy button, the difficulty level is set to 0
 	var difficulty_level = 0
 

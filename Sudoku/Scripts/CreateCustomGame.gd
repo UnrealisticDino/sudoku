@@ -17,7 +17,8 @@ func _on_CreateCustomGame_button_up():
 	print("Puzzle data: ", GameState.puzzle)
 
 	# Call the add_load_button function in ButtonManager singleton
-	var _button_name = ButtonManager.save_button_state(button_text, GameState.puzzle)
+	var button_name = (button_text)
+	GameState.save_button_name = button_name
 
 	# Transition to the Sudoku scene
 	get_tree().change_scene("res://Sudoku/Scenes/Sudoku.tscn")
