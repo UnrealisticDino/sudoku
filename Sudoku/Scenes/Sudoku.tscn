@@ -1,0 +1,115 @@
+[gd_scene load_steps=11 format=2]
+
+[ext_resource path="res://Sudoku/Scripts/SudokuScene/DrawGrid.gd" type="Script" id=1]
+[ext_resource path="res://Sudoku/DefaultSprites/Backgound.png" type="Texture" id=2]
+[ext_resource path="res://Sudoku/Scripts/SudokuScene/PlayerInput.gd" type="Script" id=3]
+[ext_resource path="res://Sudoku/Scripts/SudokuScene/PuzzleCompleted.gd" type="Script" id=5]
+[ext_resource path="res://Sudoku/Scripts/CreateCustomGame.gd" type="Script" id=6]
+[ext_resource path="res://Fonts/Old-Standard-TT/OldStandard-Regular.ttf" type="DynamicFontData" id=7]
+
+[sub_resource type="Theme" id=2]
+
+[sub_resource type="DynamicFont" id=1]
+size = 100
+font_data = ExtResource( 7 )
+
+[sub_resource type="DynamicFontData" id=3]
+font_path = "res://Fonts/Old-Standard-TT/OldStandard-Regular.ttf"
+
+[sub_resource type="DynamicFont" id=4]
+size = 200
+font_data = SubResource( 3 )
+
+[node name="Sudoku" type="Control"]
+
+[node name="BackgroundPortrait" type="TextureRect" parent="."]
+margin_right = 1080.0
+margin_bottom = 1920.0
+texture = ExtResource( 2 )
+stretch_mode = 1
+
+[node name="DrawGrid" type="Control" parent="BackgroundPortrait" groups=["DrawGridGroup"]]
+script = ExtResource( 1 )
+
+[node name="VBoxContainer" type="VBoxContainer" parent="BackgroundPortrait"]
+margin_left = 50.0
+margin_top = 1200.0
+margin_right = 115.0
+margin_bottom = 1241.0
+
+[node name="PlayerInput" type="Control" parent="BackgroundPortrait/VBoxContainer"]
+margin_right = 65.0
+script = ExtResource( 3 )
+
+[node name="ButtonContainer" type="GridContainer" parent="BackgroundPortrait"]
+margin_left = 733.0
+margin_top = 1198.0
+margin_right = 1030.0
+margin_bottom = 1836.0
+
+[node name="Create" type="Button" parent="BackgroundPortrait/ButtonContainer"]
+visible = false
+margin_right = 297.0
+margin_bottom = 132.0
+theme = SubResource( 2 )
+custom_fonts/font = SubResource( 1 )
+text = "Create"
+script = ExtResource( 6 )
+
+[node name="Undo" type="Button" parent="BackgroundPortrait/ButtonContainer"]
+margin_right = 248.0
+margin_bottom = 132.0
+theme = SubResource( 2 )
+custom_fonts/font = SubResource( 1 )
+text = "Undo"
+
+[node name="Redo" type="Button" parent="BackgroundPortrait/ButtonContainer"]
+margin_top = 136.0
+margin_right = 248.0
+margin_bottom = 268.0
+theme = SubResource( 2 )
+custom_fonts/font = SubResource( 1 )
+text = "Redo"
+
+[node name="Validate" type="Button" parent="BackgroundPortrait/ButtonContainer"]
+visible = false
+margin_top = 272.0
+margin_right = 275.0
+margin_bottom = 404.0
+theme = SubResource( 2 )
+custom_fonts/font = SubResource( 1 )
+text = "Check"
+
+[node name="Pencil" type="Button" parent="BackgroundPortrait/ButtonContainer"]
+margin_top = 272.0
+margin_right = 248.0
+margin_bottom = 404.0
+theme = SubResource( 2 )
+custom_fonts/font = SubResource( 1 )
+text = "Pen"
+
+[node name="Clear" type="Button" parent="BackgroundPortrait/ButtonContainer"]
+margin_top = 408.0
+margin_right = 248.0
+margin_bottom = 540.0
+theme = SubResource( 2 )
+custom_fonts/font = SubResource( 1 )
+text = "Clear"
+
+[node name="PuzzleCompleted" type="Button" parent="BackgroundPortrait"]
+visible = false
+margin_left = 78.0
+margin_top = 567.0
+margin_right = 998.0
+margin_bottom = 901.0
+custom_fonts/font = SubResource( 4 )
+text = "Completed"
+script = ExtResource( 5 )
+
+[connection signal="button_up" from="BackgroundPortrait/ButtonContainer/Create" to="BackgroundPortrait/ButtonContainer/Create" method="_on_CreateCustomGame_button_up"]
+[connection signal="button_up" from="BackgroundPortrait/ButtonContainer/Undo" to="BackgroundPortrait/DrawGrid" method="_on_Undo_button_up"]
+[connection signal="button_up" from="BackgroundPortrait/ButtonContainer/Redo" to="BackgroundPortrait/DrawGrid" method="_on_Redo_button_up"]
+[connection signal="button_up" from="BackgroundPortrait/ButtonContainer/Validate" to="BackgroundPortrait/DrawGrid" method="_on_Validate_button_up"]
+[connection signal="button_up" from="BackgroundPortrait/ButtonContainer/Pencil" to="BackgroundPortrait/VBoxContainer/PlayerInput" method="_on_Pencil_button_up"]
+[connection signal="button_up" from="BackgroundPortrait/ButtonContainer/Clear" to="BackgroundPortrait/DrawGrid" method="_on_Clear_button_up"]
+[connection signal="button_up" from="BackgroundPortrait/PuzzleCompleted" to="BackgroundPortrait/PuzzleCompleted" method="_on_PuzzleCompleted_button_up"]
