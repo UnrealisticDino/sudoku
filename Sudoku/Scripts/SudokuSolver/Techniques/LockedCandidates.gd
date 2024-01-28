@@ -4,14 +4,14 @@ extends Node
 # Function to solve Sudoku using the Locked Candidates technique
 func solve(candidates: Array) -> Array:
 	#print("LockedCandidates")
-	var check = candidates.duplicate(true)
+	#var check = candidates.duplicate(true)
 
 	# Apply Locked Candidates technique for each box
 	for box in range(9):
 		locked_candidates(candidates, box)
 
-	if check != candidates:
-		print("LockedCandidates used")
+#	if check != candidates:
+#		print("LockedCandidates used")
 	return candidates
 
 # Locked Candidates for a single box

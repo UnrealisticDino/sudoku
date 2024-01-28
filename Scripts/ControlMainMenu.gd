@@ -1,4 +1,4 @@
-# MainMenu.gd
+#MainMenu.gd
 extends Control
 
 var settings = ConfigFile.new()
@@ -46,12 +46,11 @@ func load_settings():
 	var err = settings.load("user://settings.cfg")
 	if err == OK:
 		# If settings loaded successfully, apply them
-		background_color = settings.get_value("graphics", "background_color", Color(0.5, 0.5, 0.5)) # Load the background color
-		var sound_volume = settings.get_value("audio", "sound_volume", 1.0) # Default volume is 1.0
-		AudioServer.set_bus_volume_db(AudioServer.get_bus_index("Master"), linear2db(sound_volume))
-		update_background_size() # Update the background color
+		background_color = Global.background_color
+		update_background_size()
 	else:
-		# If the settings file doesn't exist, you might want to create default settings
+		background_color = settings.get_value("graphics", "background_color", Color(0.5, 0.5, 0.5))
+		update_background_size()
 		save_settings() # This will create the file with default values
 
 func update_background_size():

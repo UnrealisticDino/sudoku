@@ -4,7 +4,7 @@ extends Node
 # Function to find and eliminate Naked Pairs in a Sudoku grid
 func solve(candidates: Array) -> Array:
 	#print("NakedPairs")
-	var check = candidates.duplicate(true)
+	#var check = candidates.duplicate(true)
 	var updated = false
 
 	# Check each row, column, and box for Naked Pairs
@@ -12,8 +12,8 @@ func solve(candidates: Array) -> Array:
 		if _check_naked_pairs_unit(candidates, i, true) or _check_naked_pairs_unit(candidates, i, false) or _check_naked_pairs_box(candidates, i):
 			updated = true
 
-	if check != candidates:
-		print("NakedPairs used")
+#	if check != candidates:
+#		print("NakedPairs used")
 	return candidates
 
 # Helper function to check and eliminate Naked Pairs in a row or column

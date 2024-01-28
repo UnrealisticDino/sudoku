@@ -1,6 +1,5 @@
 #ButtonManager
 extends Node
-var puzzle
 
 # Function to add a load button
 func add_load_button(grid_container, difficulty, puzzle):
@@ -34,7 +33,7 @@ func save_button_state(button_text, puzzle):
 	}
 
 	var file = File.new()
-	var save_path = "user://" + button_text + "_save.json"
+	var save_path = "user://SaveFiles/" + button_text + "_save.json"
 	file.open(save_path, File.WRITE)
 	var json_data = to_json(button_state)
 	file.store_string(json_data)
@@ -42,7 +41,7 @@ func save_button_state(button_text, puzzle):
 
 func get_button_state(button_text):
 	# File path for the specific button's state
-	var file_path = "user://" + button_text + "_save.json"
+	var file_path = "user://SaveFiles/" + button_text + "_save.json"
 	var file = File.new()
 
 	# Check if the file for this button exists
@@ -73,7 +72,7 @@ func get_button_state(button_text):
 
 func update_button_state_in_file(button_name: String, new_state) -> bool:
 	var file = File.new()
-	var file_path = "user://" + button_name + ".json"
+	var file_path = "user://SaveFiles/" + button_name + ".json"
 
 	var data_to_store = ""
 
@@ -88,7 +87,8 @@ func update_button_state_in_file(button_name: String, new_state) -> bool:
 			file.close()  # Close the file after reading
 			existing_data = parse_json(json_data)
 			if existing_data == null:
-				existing_data = {}#	if GameState.transition_source != "LoadButton":
+				existing_data = {}
+				#if GameState.transition_source != "LoadButton":
 #		print("Not load")
 #		puzzle = state["puzzle"].duplicate(true)
 #		penciled_digits = state["penciled_digits"].duplicate(true)
@@ -124,8 +124,8 @@ func _on_load_button_pressed(button):
 	var time_string = button_text_parts[1] if button_text_parts.size() > 1 else "Unknown"
 	
 	# Retrieve the saved state from the button's specific save file
-	var file_path = "user://" + button.text + "_save.json"
-	var history_file_path = "user://" + button.text + "_history.json"
+	var file_path = "user://SaveFiles/" + button.text + "_save.json"
+	var history_file_path = "user://SaveFiles/" + button.text + "_history.json"
 	var file = File.new()
 
 	# Load and parse JSON data from the save file
@@ -135,7 +135,8 @@ func _on_load_button_pressed(button):
 		file.close()
 		var button_data = parse_json(json_data)
 
-		if button_data:#	if GameState.transition_source != "LoadButton":
+		if button_data:
+			#if GameState.transition_source != "LoadButton":
 #		print("Not load")
 #		puzzle = state["puzzle"].duplicate(true)
 #		penciled_digits = state["penciled_digits"].duplicate(true)
@@ -199,6 +200,7 @@ func _on_load_button_pressed(button):
 
 						# Handle puzzle
 						var original_puzzle = state["puzzle"]
+
 						# Convert each element of the retrieved puzzle to integer
 						var converted_puzzle = []
 						for row in original_puzzle:
@@ -254,7 +256,7 @@ func _on_load_button_pressed(button):
 
 func _on_delete_button_pressed(container, save_file_name, delete_button):
 	# Base path for the save files
-	var base_path = "user://" + save_file_name
+	var base_path = "user://SaveFiles/" + save_file_name
 
 	# Paths for the specific button's save file and history file
 	var save_path = base_path + "_save.json"
@@ -289,7 +291,7 @@ func load_buttons_state(grid_container, button_identifiers):
 	font.size = 85
 
 	for button_identifier in button_identifiers:
-		var file_path = "user://" + button_identifier + "_save.json"
+		var file_path = "user://SaveFiles/" + button_identifier + "_save.json"
 		var file = File.new()
 		if file.file_exists(file_path):
 			var error = file.open(file_path, File.READ)

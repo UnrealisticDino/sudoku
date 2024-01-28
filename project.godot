@@ -8,30 +8,21 @@
 
 config_version=4
 
-_global_script_classes=[ {
-"base": "Node",
-"class": "Sudoku",
-"language": "GDScript",
-"path": "res://Sudoku/TMP/Sudokutmpgenerator.gd"
-} ]
-_global_script_class_icons={
-"Sudoku": ""
-}
-
 [application]
 
 config/name="My Sudoku"
 run/main_scene="res://Scenes/MainMenu.tscn"
 run/low_processor_mode=true
-config/icon="res://IconTest.jpg"
+config/icon="res://IconTest.png"
 config/quit_on_go_back=false
 
 [autoload]
 
-GameState="*res://Sudoku/Scripts/Singletons/GameState.gd"
 Global="*res://Sudoku/Scripts/Singletons/Global.gd"
+GameState="*res://Sudoku/Scripts/Singletons/GameState.gd"
 ButtonManager="*res://Sudoku/Scripts/SaveFiles/ButtonManager.gd"
 ButtonThemeManager="*res://Sudoku/Scripts/Singletons/ButtonThemeManager.gd"
+SudokuGenerator="res://Sudoku/Scripts/SudokuGenerator/SudokuGenerator.gd"
 
 [display]
 
@@ -39,7 +30,6 @@ window/size/width=1080
 window/size/height=1920
 window/handheld/orientation="sensor"
 window/ios/hide_home_indicator=false
-window/stretch/mode="viewport"
 
 [gui]
 

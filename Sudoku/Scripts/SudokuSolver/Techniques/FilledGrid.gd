@@ -1,4 +1,4 @@
-#FilledGrid
+#FilledGrid.gd
 extends Node
 
 # Sudoku validation function

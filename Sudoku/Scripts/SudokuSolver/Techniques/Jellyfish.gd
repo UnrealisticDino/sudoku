@@ -4,14 +4,14 @@ extends Node
 # Function to solve Sudoku using the Jellyfish technique
 func solve(candidates: Array) -> Array:
 	#print("Jellyfish")
-	var check = candidates.duplicate(true)
+	#var check = candidates.duplicate(true)
 
 	# Apply Jellyfish technique for each number
 	for num in range(1, 10):
 		check_jellyfish(candidates, num)
 
-	if check != candidates:
-		print("Jellyfish used")
+#	if check != candidates:
+#		print("Jellyfish used")
 	return candidates
 
 # Check and apply Jellyfish for a specific number

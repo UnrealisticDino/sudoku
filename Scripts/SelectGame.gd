@@ -24,7 +24,7 @@ func _ready():
 func get_button_identifiers():
 	var identifiers = []
 	var dir = Directory.new()
-	if dir.open("user://") == OK:
+	if dir.open("user://SaveFiles/") == OK:
 		dir.list_dir_begin()
 		var filename = dir.get_next()
 		while filename != "":

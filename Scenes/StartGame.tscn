@@ -1,4 +1,4 @@
-[gd_scene load_steps=13 format=2]
+[gd_scene load_steps=15 format=2]
 
 [ext_resource path="res://Scripts/SelectGame.gd" type="Script" id=1]
 [ext_resource path="res://Scripts/CustomGame.gd" type="Script" id=2]
@@ -7,6 +7,8 @@
 [ext_resource path="res://Scripts/EasyButton.gd" type="Script" id=5]
 [ext_resource path="res://Scripts/MediumButton.gd" type="Script" id=6]
 [ext_resource path="res://Scripts/HardButton.gd" type="Script" id=7]
+[ext_resource path="res://Scripts/Simple.gd" type="Script" id=8]
+[ext_resource path="res://Scripts/Impossible.gd" type="Script" id=9]
 
 [sub_resource type="DynamicFont" id=11]
 size = 200
@@ -47,33 +49,49 @@ margin_bottom = 40.0
 
 [node name="DifficultyContainer" type="VBoxContainer" parent="MenuPortrait"]
 visible = false
-margin_left = 211.0
-margin_top = 364.0
-margin_right = 908.0
-margin_bottom = 1182.0
+margin_left = 80.0
+margin_top = 120.0
+size_flags_horizontal = 0
+size_flags_vertical = 0
+
+[node name="Simple" type="Button" parent="MenuPortrait/DifficultyContainer"]
+margin_right = 929.0
+margin_bottom = 256.0
+custom_fonts/font = SubResource( 11 )
+text = "Simple"
+script = ExtResource( 8 )
 
 [node name="Easy" type="Button" parent="MenuPortrait/DifficultyContainer"]
-margin_right = 697.0
-margin_bottom = 256.0
+margin_top = 260.0
+margin_right = 929.0
+margin_bottom = 516.0
 custom_fonts/font = SubResource( 11 )
 text = "Easy"
 script = ExtResource( 5 )
 
 [node name="Medium" type="Button" parent="MenuPortrait/DifficultyContainer"]
-margin_top = 260.0
-margin_right = 697.0
-margin_bottom = 516.0
+margin_top = 520.0
+margin_right = 929.0
+margin_bottom = 776.0
 custom_fonts/font = SubResource( 11 )
 text = "Medium"
 script = ExtResource( 6 )
 
 [node name="Hard" type="Button" parent="MenuPortrait/DifficultyContainer"]
-margin_top = 520.0
-margin_right = 697.0
-margin_bottom = 776.0
+margin_top = 780.0
+margin_right = 929.0
+margin_bottom = 1036.0
 custom_fonts/font = SubResource( 11 )
 text = "Hard"
 script = ExtResource( 7 )
+
+[node name="Impossible" type="Button" parent="MenuPortrait/DifficultyContainer"]
+margin_top = 1040.0
+margin_right = 929.0
+margin_bottom = 1296.0
+custom_fonts/font = SubResource( 11 )
+text = "Impossible"
+script = ExtResource( 9 )
 
 [node name="VBoxContainer" type="VBoxContainer" parent="MenuPortrait"]
 margin_left = 82.0
@@ -97,11 +115,15 @@ text = "New Game"
 script = ExtResource( 4 )
 
 [node name="GridContainer" type="GridContainer" parent="MenuPortrait/VBoxContainer"]
+margin_top = 396.0
 margin_right = 919.0
+margin_bottom = 396.0
 columns = 2
 
+[connection signal="button_up" from="MenuPortrait/DifficultyContainer/Simple" to="MenuPortrait/DifficultyContainer/Simple" method="_on_Simple_button_up"]
 [connection signal="button_up" from="MenuPortrait/DifficultyContainer/Easy" to="MenuPortrait/DifficultyContainer/Easy" method="_on_Easy_button_up"]
 [connection signal="button_up" from="MenuPortrait/DifficultyContainer/Medium" to="MenuPortrait/DifficultyContainer/Medium" method="_on_Medium_button_up"]
 [connection signal="button_up" from="MenuPortrait/DifficultyContainer/Hard" to="MenuPortrait/DifficultyContainer/Hard" method="_on_Hard_button_up"]
+[connection signal="button_up" from="MenuPortrait/DifficultyContainer/Impossible" to="MenuPortrait/DifficultyContainer/Impossible" method="_on_Impossible_button_up"]
 [connection signal="button_up" from="MenuPortrait/VBoxContainer/CustomGame" to="MenuPortrait/VBoxContainer/CustomGame" method="_on_CustomGame_button_up"]
 [connection signal="button_up" from="MenuPortrait/VBoxContainer/NewGameButton" to="MenuPortrait/VBoxContainer/NewGameButton" method="_on_NewGameButton_button_up"]

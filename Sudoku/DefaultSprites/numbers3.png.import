@@ -2,15 +2,15 @@
 
 importer="texture"
 type="StreamTexture"
-path="res://.import/icon.png-487276ed1e3a0c39cad0279d744ee560.stex"
+path="res://.import/numbers3.png-123538c7a7bb7bc03e7c7e3ae17f7b06.stex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://icon.png"
-dest_files=[ "res://.import/icon.png-487276ed1e3a0c39cad0279d744ee560.stex" ]
+source_file="res://Sudoku/DefaultSprites/numbers3.png"
+dest_files=[ "res://.import/numbers3.png-123538c7a7bb7bc03e7c7e3ae17f7b06.stex" ]
 
 [params]
 

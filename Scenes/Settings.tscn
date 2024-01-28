@@ -1,6 +1,13 @@
-[gd_scene load_steps=2 format=2]
+[gd_scene load_steps=4 format=2]
 
 [ext_resource path="res://Scripts/SettingsControl.gd" type="Script" id=1]
+
+[sub_resource type="DynamicFontData" id=11]
+font_path = "res://Fonts/Old-Standard-TT/OldStandard-Regular.ttf"
+
+[sub_resource type="DynamicFont" id=12]
+size = 200
+font_data = SubResource( 11 )
 
 [node name="SettingsControl" type="Control"]
 margin_right = 40.0
@@ -20,3 +27,43 @@ margin_bottom = 40.0
 [node name="MenuPortrait" type="Control" parent="."]
 margin_right = 40.0
 margin_bottom = 40.0
+
+[node name="GridContainer" type="GridContainer" parent="MenuPortrait"]
+margin_left = 300.0
+margin_top = 191.0
+margin_right = 40.0
+margin_bottom = 40.0
+
+[node name="StartGame" type="Button" parent="MenuPortrait/GridContainer"]
+margin_right = 458.0
+margin_bottom = 256.0
+custom_fonts/font = SubResource( 12 )
+text = "Start"
+
+[node name="StartGame2" type="Button" parent="MenuPortrait/GridContainer"]
+margin_top = 260.0
+margin_right = 458.0
+margin_bottom = 516.0
+custom_fonts/font = SubResource( 12 )
+text = "Start"
+
+[node name="StartGame3" type="Button" parent="MenuPortrait/GridContainer"]
+margin_top = 520.0
+margin_right = 458.0
+margin_bottom = 776.0
+custom_fonts/font = SubResource( 12 )
+text = "Start"
+
+[node name="StartGame4" type="Button" parent="MenuPortrait/GridContainer"]
+margin_top = 780.0
+margin_right = 458.0
+margin_bottom = 1036.0
+custom_fonts/font = SubResource( 12 )
+text = "Start"
+
+[node name="StartGame5" type="Button" parent="MenuPortrait/GridContainer"]
+margin_top = 1040.0
+margin_right = 458.0
+margin_bottom = 1296.0
+custom_fonts/font = SubResource( 12 )
+text = "Start"

@@ -4,6 +4,7 @@ extends Node
 # Function to solve Naked Triples in the candidates array
 func solve(candidates: Array) -> Array:
 	#print("NakedTriples")
+	#var check = candidates.duplicate(true)
 	var updated = false
 
 	for i in range(9):
@@ -11,8 +12,9 @@ func solve(candidates: Array) -> Array:
 		updated = check_naked_triples_unit(candidates, i, false) or updated  # Check columns
 		updated = check_naked_triples_box(candidates, i) or updated  # Check boxes
 
-	if updated:
-		print("NakedTriples used")
+#	if check != candidates:
+#		print("NakedTriples used")
+
 	return candidates
 
 # Helper function to check and resolve Naked Triples in a row or column

@@ -4,7 +4,7 @@ extends Node
 # Function to solve naked singles in a Sudoku grid
 func solve(candidates: Array) -> Array:
 	#print("NakedSingles")
-	var check = candidates.duplicate(true)
+	#var check = candidates.duplicate(true)
 	var updated = false
 
 	# Iterate over each cell in the grid
@@ -28,6 +28,6 @@ func solve(candidates: Array) -> Array:
 					candidates[row][col] = [last_num]  # Update to contain only the naked single
 					updated = true
 
-	if check != candidates:
-		print("NakedSingles used")
+#	if check != candidates:
+#		print("NakedSingles used")
 	return candidates

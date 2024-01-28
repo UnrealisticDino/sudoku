@@ -4,14 +4,14 @@ extends Node
 # Function to solve Sudoku using the Box Line Reduction technique
 func solve(candidates: Array) -> Array:
 	#print("BoxLineReduction")
-	var check = candidates.duplicate(true)
+	#var check = candidates.duplicate(true)
 
 	# Apply Box Line Reduction technique for each box
 	for box in range(9):
 		box_line_reduction(candidates, box)
 
-	if check != candidates:
-		print("BoxLineReduction used")
+#	if check != candidates:
+#		print("BoxLineReduction used")
 	return candidates
 
 # Box Line Reduction for a single box

@@ -2,30 +2,35 @@
 extends Control
 
 var grid_cells = []
-var scaled_cell_size = 220
+var scaled_cell_size = GameState.scaled_cell_size
 var selected_cell_color = Global.selected_cell_color
 var player_digit_color = Global.player_digit_color
 onready var DrawGrid = get_tree().get_nodes_in_group("DrawGridGroup")[0]
 var selected_cells = []
 var is_pencil_mode = false
+var digit_scale_factor = GameState.digit_scale_factor
 
 func _ready():
+	digit_scale_factor = GameState.digit_scale_factor
+	digit_scale_factor = digit_scale_factor * .03
+	scaled_cell_size = GameState.scaled_cell_size * 1.9
 	# Initialize 3x3 grid with numbers 1-9
 	for row in range(3):
 		for col in range(3):
 			var cell = Node2D.new()
-			
+
 			var highlight = ColorRect.new()
 			highlight.rect_min_size = Vector2(scaled_cell_size, scaled_cell_size)
 			highlight.color = selected_cell_color
 			highlight.visible = false
-			highlight.rect_position = Vector2(0, 0)  # Position it at the top-left corner of the cell
+			highlight.rect_position = Vector2(0, 0)
 			cell.add_child(highlight)
-			
+
 			var sprite = Sprite.new()
 			sprite.set_script(preload("res://Sudoku/Scripts/SudokuScene/ImageDisplay.gd"))
 			sprite.call("set_number", row * 3 + col + 1, "player")
-			sprite.position = Vector2(scaled_cell_size / 2, scaled_cell_size / 2)  # Position it at the center of the cell
+			sprite.position = Vector2(scaled_cell_size / 2, scaled_cell_size / 2)
+			sprite.scale = Vector2(scaled_cell_size / 2, scaled_cell_size / 2) * digit_scale_factor
 			cell.add_child(sprite)
 			
 			cell.position = Vector2(col * scaled_cell_size, row * scaled_cell_size)
@@ -38,11 +43,6 @@ func _notification(what):
 		get_tree().change_scene("res://Scenes/StartGame.tscn")
 		
 func _input(event):
-	if event is InputEventKey:
-		if event.pressed && event.scancode == KEY_ESCAPE:
-			get_tree().change_scene("res://Scenes/StartGame.tscn")
-			return
-
 	if event is InputEventMouseButton:
 		var mouse_pos = event.position
 
@@ -64,6 +64,7 @@ func _input(event):
 						for selected_cell in selected_cells:
 							if is_pencil_mode:
 								DrawGrid.toggle_pencil_digit(selected_cell, i+1)
+								DrawGrid.save_state()
 							else:
 								DrawGrid.input_number(selected_cell, digit)  # Call the function with the digit
 					else:

@@ -4,36 +4,59 @@ extends Node
 var filled_grid_script = preload("res://Sudoku/Scripts/SudokuSolver/Techniques/FilledGrid.gd")
 
 var techniques = [
-				preload("res://Sudoku/Scripts/SudokuSolver/Techniques/FullHouse.gd"),			#1
-				preload("res://Sudoku/Scripts/SudokuSolver/Techniques/NakedSingles.gd"),		#2
-				preload("res://Sudoku/Scripts/SudokuSolver/Techniques/HiddenSingles.gd"),   	#3
-				preload("res://Sudoku/Scripts/SudokuSolver/Techniques/NakedPairs.gd"),			#4
-				preload("res://Sudoku/Scripts/SudokuSolver/Techniques/HiddenPairs.gd"),			#5
-				preload("res://Sudoku/Scripts/SudokuSolver/Techniques/NakedTriples.gd"),		#6
-				preload("res://Sudoku/Scripts/SudokuSolver/Techniques/HiddenTriples.gd"),		#7
-				preload("res://Sudoku/Scripts/SudokuSolver/Techniques/NakedQuads.gd"),			#8
-				preload("res://Sudoku/Scripts/SudokuSolver/Techniques/HiddenQuads.gd"),			#9
-				preload("res://Sudoku/Scripts/SudokuSolver/Techniques/PointingPairs.gd"),		#10
-				preload("res://Sudoku/Scripts/SudokuSolver/Techniques/PointingTriples.gd"),		#11
-				preload("res://Sudoku/Scripts/SudokuSolver/Techniques/BoxLineReduction.gd"),	#12
-				preload("res://Sudoku/Scripts/SudokuSolver/Techniques/LockedCandidates.gd"),	#13
-				preload("res://Sudoku/Scripts/SudokuSolver/Techniques/XWing.gd"),				#14
-				preload("res://Sudoku/Scripts/SudokuSolver/Techniques/Swordfish.gd"),			#15
-				preload("res://Sudoku/Scripts/SudokuSolver/Techniques/Jellyfish.gd"),			#16
+				preload("res://Sudoku/Scripts/SudokuSolver/Techniques/FullHouse.gd"),			#0
+				preload("res://Sudoku/Scripts/SudokuSolver/Techniques/NakedSingles.gd"),		#1
+				preload("res://Sudoku/Scripts/SudokuSolver/Techniques/HiddenSingles.gd"),   	#2
+				preload("res://Sudoku/Scripts/SudokuSolver/Techniques/NakedPairs.gd"),			#3
+				preload("res://Sudoku/Scripts/SudokuSolver/Techniques/HiddenPairs.gd"),			#4
+				preload("res://Sudoku/Scripts/SudokuSolver/Techniques/NakedTriples.gd"),		#5
+				preload("res://Sudoku/Scripts/SudokuSolver/Techniques/HiddenTriples.gd"),		#6
+				preload("res://Sudoku/Scripts/SudokuSolver/Techniques/NakedQuads.gd"),			#7
+				preload("res://Sudoku/Scripts/SudokuSolver/Techniques/HiddenQuads.gd"),			#8
+				preload("res://Sudoku/Scripts/SudokuSolver/Techniques/PointingPairs.gd"),		#9
+				preload("res://Sudoku/Scripts/SudokuSolver/Techniques/PointingTriples.gd"),		#10
+				preload("res://Sudoku/Scripts/SudokuSolver/Techniques/BoxLineReduction.gd"),	#11
+				preload("res://Sudoku/Scripts/SudokuSolver/Techniques/LockedCandidates.gd"),	#12
+				preload("res://Sudoku/Scripts/SudokuSolver/Techniques/XWing.gd"),				#13
+				preload("res://Sudoku/Scripts/SudokuSolver/Techniques/Swordfish.gd"),			#14
+				preload("res://Sudoku/Scripts/SudokuSolver/Techniques/Jellyfish.gd"),			#15
+#				preload("res://Sudoku/Scripts/SudokuSolver/Techniques/SimpleColoring.gd"),		#16
+#				preload("res://Sudoku/Scripts/SudokuSolver/Techniques/XYZWing.gd"),				#17
+#				preload("res://Sudoku/Scripts/SudokuSolver/Techniques/XWing.gd"),				#18
+#				preload("res://Sudoku/Scripts/SudokuSolver/Techniques/Skyscraper.gd"),			#19
+#				preload("res://Sudoku/Scripts/SudokuSolver/Techniques/TwoStringKite.gd"),		#20
+#				preload("res://Sudoku/Scripts/SudokuSolver/Techniques/EmptyRectangle.gd"),		#21
+#				preload("res://Sudoku/Scripts/SudokuSolver/Techniques/UniqueRectangles.gd"),	#22
+#				preload("res://Sudoku/Scripts/SudokuSolver/Techniques/FinnedXWing.gd"),			#23
+#				preload("res://Sudoku/Scripts/SudokuSolver/Techniques/FinnedSwordfish.gd"),		#24
+#				preload("res://Sudoku/Scripts/SudokuSolver/Techniques/FinnedJellyfish.gd"),		#25
+				#preload("res://Sudoku/Scripts/SudokuSolver/Techniques/ALSXZ.gd"),				#26
+				#preload("res://Sudoku/Scripts/SudokuSolver/Techniques/ALSXYWing.gd"),			#27
+				#preload("res://Sudoku/Scripts/SudokuSolver/Techniques/DeathBlossom.gd"),		#28
+				#preload("res://Sudoku/Scripts/SudokuSolver/Techniques/Bug.gd"),				#29
+				#preload("res://Sudoku/Scripts/SudokuSolver/Techniques/ForcingChains.gd"),		#30
+				#preload("res://Sudoku/Scripts/SudokuSolver/Techniques/ForcingNets.gd"),		#31
+				#preload("res://Sudoku/Scripts/SudokuSolver/Techniques/YWingStyle.gd"),			#32
+				#preload("res://Sudoku/Scripts/SudokuSolver/Techniques/RemotePairs.gd"),		#33
+				#preload("res://Sudoku/Scripts/SudokuSolver/Techniques/GroupedXCycles.gd"),		#34
+				#preload("res://Sudoku/Scripts/SudokuSolver/Techniques/3DMedusa.gd"),			#35
 				]
 
 func solve_sudoku(grid, difficulty):
-	print(difficulty)
+	print(grid)
 	var filled_grid_instance = filled_grid_script.new()
 	var progress_made = true
 	var iteration_grid = grid.duplicate()
 	var candidates = create_candidates_array(iteration_grid)
+	#display_sudoku_grid(grid)
 
 	# Define difficulty levels and their associated techniques
 	var difficulty_techniques = {
-		"Easy": [0, 1, 2],  # FullHouse, NakedSingles, HiddenSingles
-		"Medium": [0, 1, 2, 3, 4],  # Add NakedPairs and HiddenPairs
-		"Hard": [0, 1, 2, 3, 4, 5, 6],  # Add NakedTriples and HiddenTriples
+		"Simple": [0, 1, 2],
+		"Easy": [0, 1, 2, 3, 4, 9],
+		"Medium": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+		"Hard": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15],
+		#"Impossible": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16],
 		# Add more difficulty levels as needed
 	}
 
@@ -42,6 +65,7 @@ func solve_sudoku(grid, difficulty):
 		available_techniques = []
 		for index in difficulty_techniques[difficulty]:
 			available_techniques.append(techniques[index])
+
 
 	while progress_made:
 		var original_grid = iteration_grid.duplicate(true)
@@ -55,27 +79,29 @@ func solve_sudoku(grid, difficulty):
 
 			if has_empty_cells(candidates):
 				print("There are empty cells in the candidates array.")
+				print(technique)
 
 			if has_rule_violations(iteration_grid):
 				print("\nSudoku has rule violations")
+				print(technique)
 				display_sudoku_grid(iteration_grid)
-				print("\nCandidates\n", candidates)
 				break
 
 		if iteration_grid == original_grid and candidates == original_candidates:
+			#print("progress could not be made")
 			progress_made = false
+			return false
 
 		if all_cells_filled(iteration_grid):
-#			display_sudoku_grid(grid)
-#			print("All cells filled")
 			if filled_grid_instance.is_valid_sudoku(iteration_grid):
+				#print("Sudoku is valid")
 				progress_made = false
-				print("Sudoku is valid")
+				return true
 
-	if difficulty == "" or difficulty == "null":
-#		print("Difficulty was null or empty")
+	if difficulty == "":
 		return grid
 	else:
+		print("else")
 		return true
 
 func all_cells_filled(puzzle):

@@ -4,7 +4,7 @@ extends Node
 # This function applies the Hidden Quads technique to the Sudoku candidates
 func solve(candidates):
 	#print("HiddenQuads")
-	var check = candidates.duplicate(true)
+	#var check = candidates.duplicate(true)
 
 	# Apply Hidden Quads technique for each row, column, and box
 	for i in range(9):
@@ -12,8 +12,8 @@ func solve(candidates):
 		apply_hidden_quads(candidates, get_column(i))
 		apply_hidden_quads(candidates, get_box(i))
 
-	if check != candidates:
-		print("HiddenQuads used")
+#	if check != candidates:
+#		print("HiddenQuads used")
 	return candidates
 
 func apply_hidden_quads(candidates, unit):

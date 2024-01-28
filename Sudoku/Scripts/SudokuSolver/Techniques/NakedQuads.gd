@@ -4,7 +4,7 @@ extends Node
 # Function to apply the Naked Quads technique to the Sudoku candidates
 func solve(candidates):
 	#print("NakedQuads")
-	var check = candidates.duplicate(true)
+	#var check = candidates.duplicate(true)
 
 	# Apply Naked Quads technique for each row, column, and box
 	for i in range(9):
@@ -12,8 +12,8 @@ func solve(candidates):
 		apply_naked_quads(candidates, get_column_candidates(candidates, i))
 		apply_naked_quads(candidates, get_box_candidates(candidates, i))
 
-	if check != candidates:
-		print("NakedQuads used")
+#	if check != candidates:
+#		print("NakedQuads used")
 	return candidates
 
 # Extracts the candidates for a specific row

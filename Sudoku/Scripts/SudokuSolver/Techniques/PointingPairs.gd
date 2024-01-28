@@ -4,15 +4,15 @@ extends Node
 # Function to solve Pointing Pairs in a Sudoku puzzle
 func solve(candidates: Array) -> Array:
 	#print("PointingPairs")
-	var check = candidates.duplicate(true)
+	#var check = candidates.duplicate(true)
 
 	for block_row in range(3):
 		for block_col in range(3):
 			var block_pointing_pairs = find_pointing_pairs_in_block(candidates, block_row, block_col)
 			candidates = apply_pointing_pairs(candidates, block_pointing_pairs)
 
-	if check != candidates:
-		print("PointingPairs used")
+#	if check != candidates:
+#		print("PointingPairs used")
 	return candidates
 
 # Find pointing pairs in a 3x3 block

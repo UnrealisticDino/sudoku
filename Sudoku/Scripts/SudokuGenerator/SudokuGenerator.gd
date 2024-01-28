@@ -3,9 +3,10 @@ extends Node
 
 var grid_size = 9
 var puzzle_folder = "user://SudokuPuzzles"
-var puzzle_files = ["Easy.json", "Medium.json", "Hard.json", "Impossible.json"]
+var puzzle_files = ["Simple.json", "Easy.json", "Medium.json", "Hard.json"]
+#var puzzle_files = ["Simple.json", "Easy.json", "Medium.json", "Hard.json", "Impossible.json"]
 var SudokuSolver = preload("res://Sudoku/Scripts/SudokuSolver/SudokuSolver.gd").new()
-var num_expected_puzzles = 5
+var num_expected_puzzles = 2
 
 func _ready():
 	var missing_puzzles = {}
@@ -19,7 +20,7 @@ func _ready():
 	# Check each puzzle file for missing puzzles
 	for file_name in puzzle_files:
 		var file_path = "%s/%s" % [puzzle_folder, file_name]
-		print(file_path)
+		#print(file_path)
 		
 		var file = File.new()
 		if not file.file_exists(file_path) or file.open(file_path, File.READ) != OK:
@@ -31,14 +32,14 @@ func _ready():
 			if num_puzzles < num_expected_puzzles:
 				if num_puzzles == 0:
 					# Create only two puzzles if file is empty
-					missing_puzzles[file_name] = 2
+					missing_puzzles[file_name] = 1
 				else:
 					# Fill up to 5 puzzles if the file already contains some puzzles
 					missing_puzzles[file_name] = num_expected_puzzles - num_puzzles
 
 	# Check if any puzzles are missing and create them if necessary
 	if missing_puzzles.empty():
-		print("All files have 5 puzzles")
+		print("All files have 2 puzzles")
 	else:
 		print("Missing puzzles:")
 		for file_name in missing_puzzles:
@@ -95,6 +96,7 @@ func generate_filled_grid(file_name):
 
 	if fill_grid(grid):
 		grid = generate_puzzle(grid, file_name)
+		print("Returing grid")
 		return grid
 	return []
 
@@ -144,15 +146,17 @@ func generate_puzzle(grid, file_name):
 	var puzzle = grid.duplicate()
 	var removed_cells = 0
 	var current_batch = []
-
-	# Decide which strategy to use
-	var strategy = randi() % 5  # 0: Random, 1: Block-based, 2: Row-based, 3: Diagonal, 4: Patterns
+	var tried_cells = []
+	var failed_puzzle = []
 
 	# Create a list of all cell coordinates
 	var all_cells = []
 	for row in range(grid_size):
 		for col in range(grid_size):
 			all_cells.append({"row": row, "col": col})
+
+	# Decide which strategy to use
+	var strategy = randi() % 5  # 0: Random, 1: Block-based, 2: Row-based, 3: Diagonal, 4: Patterns
 
 	# Apply the chosen strategy to the cell list
 	if strategy == 0:  # Random
@@ -170,13 +174,23 @@ func generate_puzzle(grid, file_name):
 
 	while removed_cells < num_cells_to_remove:
 		current_batch.clear()
-		
-		for i in range(batch_size):
-			if removed_cells >= num_cells_to_remove:
+
+		# Calculate the actual batch size to process
+		var actual_batch_size = min(batch_size, num_cells_to_remove - removed_cells)
+
+		# Keep a copy of all_cells before modification
+		var all_cells_copy = all_cells.duplicate(true)
+
+		for i in range(actual_batch_size):
+			if all_cells.size() == 0:
 				break
+
 			var random_index = randi() % all_cells.size()
 			var cell = all_cells[random_index]
-			all_cells.remove(random_index)  # Remove selected cell from the pool
+			all_cells.remove(random_index)
+
+			if cell in tried_cells:
+				continue
 
 			var row = cell["row"]
 			var col = cell["col"]
@@ -184,6 +198,7 @@ func generate_puzzle(grid, file_name):
 				current_batch.append({"row": row, "col": col, "value": puzzle[row][col]})
 				puzzle[row][col] = 0
 				removed_cells += 1
+				tried_cells.append(cell)
 
 		# Check if the puzzle is still solvable
 		var tmp_puzzle = puzzle.duplicate(true)
@@ -193,18 +208,26 @@ func generate_puzzle(grid, file_name):
 				puzzle[cell["row"]][cell["col"]] = cell["value"]
 			removed_cells -= current_batch.size()
 
+			# Restore all_cells array to its state before the last batch removal
+			all_cells = all_cells_copy.duplicate(true)
+		else:
+			# Update all_cells to reflect the successful removal
+			all_cells = all_cells_copy
+
+	print("removed cells ", removed_cells, ", trying to remove ", num_cells_to_remove)
+
 	return puzzle
 
 func get_cells_to_remove_based_on_difficulty(difficulty):
 	match difficulty:
+		"Simple":
+			return 30
 		"Easy":
 			return 20
 		"Medium":
 			return 40
 		"Hard":
-			return 60
-		_:
-			return 30
+			return 45
 		"Impossible":
 			return 64
 

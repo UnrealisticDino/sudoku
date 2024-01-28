@@ -4,7 +4,7 @@ extends Node
 # Function to solve Full House in a Sudoku grid
 func solve(candidates: Array) -> Array:
 	#print("FullHouse")
-	var check = candidates.duplicate(true)
+	#var check = candidates.duplicate(true)
 	var updated = false
 
 	# Check each row, column, and box for Full House
@@ -13,8 +13,8 @@ func solve(candidates: Array) -> Array:
 		updated = _check_full_house_unit(candidates, i, false) or updated  # Check columns
 		updated = _check_full_house_box(candidates, i) or updated  # Check boxes
 
-	if check != candidates:
-		print("FullHouse used")
+#	if check != candidates:
+#		print("FullHouse used")
 	return candidates
 
 # General helper function to check and fill Full House in a row or column

@@ -4,15 +4,15 @@ extends Node
 # Function to solve Pointing Triples in a Sudoku puzzle
 func solve(candidates: Array) -> Array:
 	#print("PointingTriples")
-	var check = candidates.duplicate(true)
+	#var check = candidates.duplicate(true)
 
 	for block_row in range(3):
 		for block_col in range(3):
 			var block_pointing_triples = find_pointing_triples_in_block(candidates, block_row, block_col)
 			candidates = apply_pointing_triples(candidates, block_pointing_triples)
 
-	if check != candidates:
-		print("PointingTriples used")
+#	if check != candidates:
+#		print("PointingTriples used")
 	return candidates
 
 # Find pointing triples in a 3x3 block

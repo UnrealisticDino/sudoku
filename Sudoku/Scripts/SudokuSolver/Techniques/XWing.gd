@@ -4,14 +4,14 @@ extends Node
 # Function to solve Sudoku using the X-Wing technique
 func solve(candidates: Array) -> Array:
 	#print("X-Wing")
-	var check = candidates.duplicate(true)
+	#var check = candidates.duplicate(true)
 
 	# Apply X-Wing technique for each number
 	for num in range(1, 10):
 		check_x_wing(candidates, num)
 
-	if check != candidates:
-		print("X-Wing used")
+#	if check != candidates:
+#		print("X-Wing used")
 	return candidates
 
 # Check and apply X-Wing for a specific number

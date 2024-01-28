@@ -2,6 +2,7 @@
 extends Control
 
 var CellScene = preload("res://Sudoku/Scenes/Cell.tscn")
+
 var filled_grid_script = preload("res://Sudoku/Scripts/SudokuSolver/Techniques/FilledGrid.gd")
 var cell_size = 64
 var grid_size = 9
@@ -10,8 +11,6 @@ var start_x
 var start_y
 var grid_width
 var grid_height
-var margin = 50
-var digit_scale_factor = 0.7
 var grid_color = Global.grid_lines_color
 var selected_cell_color = Global.selected_cell_color
 var identical_digits_color = selected_cell_color.linear_interpolate(Color(0.5, 0.5, 1, 0.5), 0.5)
@@ -22,6 +21,7 @@ var highlighted_cells = []
 var mouse_button_down = false
 var solved = false
 
+var digit_scale_factor = GameState.digit_scale_factor
 var current_pointer = GameState.current_pointer
 var history_stack = GameState.history_stack
 var number_source = GameState.number_source
@@ -30,6 +30,14 @@ var puzzle = GameState.puzzle
 var save_button_name = GameState.save_button_name
 var selected_cell = GameState.selected_cell
 var selected_cells = GameState.selected_cells
+
+onready var create_button = get_node("../ButtonContainer/Create")
+onready var undo_button = get_node("../ButtonContainer/Undo")
+onready var redo_button = get_node("../ButtonContainer/Redo")
+onready var check_button = get_node("../ButtonContainer/Validate")
+onready var pencil_button = get_node("../ButtonContainer/Pencil")
+onready var clear_button = get_node("../ButtonContainer/Clear")
+onready var is_sudoku_valid_button = get_node("../IsSudokuValid")
 
 var thread = Thread.new()
 var sudoku_generator_script = load("res://Sudoku/Scripts/SudokuGenerator/SudokuGenerator.gd")
@@ -45,20 +53,17 @@ func _ready():
 			var cell = CellScene.instance()
 			cell.position = Vector2(start_x + j * scaled_cell_size + scaled_cell_size / 2, start_y + i * scaled_cell_size + scaled_cell_size / 2)
 			add_child(cell)
-			cell.connect("cell_clicked", self, "_on_cell_clicked", [Vector2(i, j)])
+			#cell.connect("cell_clicked", self, "_on_cell_clicked", [Vector2(i, j)])
 
 	# Initialize the array only if the game wasn't started from a load button
 	if GameState.transition_source != "LoadButton":
 
 		if GameState.transition_source == "CustomGame":
-			var create_button = get_node("../ButtonContainer/Create")
-			var check_button = get_node("../ButtonContainer/Validate")
-			var undo_button = get_node("../ButtonContainer/Undo")
-			var redo_button = get_node("../ButtonContainer/Redo")
 			create_button.visible = true
 			check_button.visible = true
 			undo_button.visible = false
 			redo_button.visible = false
+			is_sudoku_valid_button.visible = false
 
 		selected_cells.clear()
 		penciled_digits.clear()
@@ -88,32 +93,44 @@ func _ready():
 	GameState.transition_source = ""
 	_draw_grid()
 
+func _draw_grid():
+	self.update()
+
 func _calculate_grid_parameters():
 	# Get the window size
 	var window_width = OS.get_window_size().x
 	var window_height = OS.get_window_size().y
 
-	# Calculate the available width, considering the margins
-	var available_width = window_width - 2 * margin
+	# Define the height of the validate button and top margin
+	var validate_button_height = 850
+	var top_margin = 20
 
-	# The size of the grid should be the minimum of the available width and the window height
-	var grid_dimension = min(available_width, window_height)
+	# Calculate the maximum height available for the grid, keeping the validate button in mind
+	var max_grid_height = window_height - validate_button_height - top_margin
+
+	# Calculate the available width, considering the margins
+	var available_width = window_width - 2 * top_margin
+
+	# The size of the grid should be the minimum of the available width and the max grid height
+	var grid_dimension = min(available_width, max_grid_height)
 
 	# Calculate the scaled cell size
 	scaled_cell_size = grid_dimension / grid_size
+	GameState.scaled_cell_size = scaled_cell_size
 
 	# Calculate the total grid width and height (they will be the same since it's a square)
 	grid_width = scaled_cell_size * grid_size
 	grid_height = grid_width
 
-	# Calculate the starting position to center the grid horizontally and maintain equal distance from the top
-	start_x = (window_width - grid_width) / 2
-	start_y = margin
+	# Check if the grid can be centered with equal margins
+	var horizontal_margin = (window_width - grid_width) / 2
+	var vertical_margin = (window_height - validate_button_height - grid_height) / 2
 
-func _draw_grid():
-	self.update()
+	start_x = top_margin
+	start_y = top_margin
 
 func _draw():
+	digit_scale_factor = GameState.digit_scale_factor
 	# Highlight all selected cells
 	for cell in selected_cells:
 		var cell_pos = Vector2(start_x + cell.y * scaled_cell_size, start_y + cell.x * scaled_cell_size)
@@ -140,25 +157,25 @@ func _draw():
 		for j in range(grid_size):
 			var cell_name = "cell_" + str(i) + "_" + str(j)
 			var cell = get_node_or_null(cell_name)
-			
+
 			# If the cell doesn't exist, instantiate it
 			if not cell:
 				cell = CellScene.instance()
 				cell.name = cell_name
 				add_child(cell)
-				cell.connect("cell_clicked", self, "_on_cell_clicked", [Vector2(i, j)])
-				
+				#cell.connect("cell_clicked", self, "_on_cell_clicked", [Vector2(i, j)])
+
 				# Only set the number if the cell is newly created
 				if puzzle[i][j] != 0:
 					cell.set_number(puzzle[i][j], number_source[i][j])
-			
+
 			# Update the position and scale of the cell based on the new parameters
 			cell.position = Vector2(start_x + j * scaled_cell_size + scaled_cell_size / 2, start_y + i * scaled_cell_size + scaled_cell_size / 2)
 			cell.scale = Vector2(scaled_cell_size / cell_size, scaled_cell_size / cell_size) * digit_scale_factor
-			
+
 			# Clear existing penciled digits
 			cell.clear_pencil_digits()
-			
+
 			# Draw penciled digits for the cell
 			var cell_pencils = penciled_digits[i][j]
 			for k in range(len(cell_pencils)):
@@ -194,7 +211,6 @@ func _input(event):
 		else:
 			mouse_button_down = false
 
-	# Check for shift key press or release
 	if event is InputEventKey:
 		if event.scancode == pencil_mode_key:
 			is_shift_pressed = event.pressed
@@ -208,11 +224,9 @@ func _input(event):
 
 	# Check for mouse click to select a cell
 	if event is InputEventMouseButton and event.pressed:
-
+		var cell_y = int((event.position.x - start_x) / scaled_cell_size)
+		var cell_x = int((event.position.y - start_y) / scaled_cell_size)
 		if (start_x <= event.position.x) and (event.position.x <= start_x + grid_width) and (start_y <= event.position.y) and (event.position.y <= start_y + grid_height):
-			var cell_y = int((event.position.x - start_x) / scaled_cell_size)
-			var cell_x = int((event.position.y - start_y) / scaled_cell_size)
-
 			# Check if the click is within the grid boundaries
 			if 0 <= cell_x and cell_x < grid_size and 0 <= cell_y and cell_y < grid_size:
 				selected_cell = Vector2(cell_x, cell_y)
@@ -229,7 +243,10 @@ func _input(event):
 				# Update the highlighted digits if the setting is turned on
 				if Global.highlight_identical_digits:
 					highlight_identical_digits(selected_cell)
-			_draw_grid()
+
+		elif event.scancode == KEY_RIGHT:
+			selected_cell = Vector2(cell_x + 1, cell_y)
+	_draw_grid()
 
 	# Check for Backspace key press to clear the selected cell
 	if event is InputEventKey and event.pressed:
@@ -369,7 +386,6 @@ func save_state():
 		solved = false
 		var state = {
 			"puzzle": puzzle.duplicate(true),
-	#		"selected_cell": selected_cell,
 			"selected_cells": selected_cells.duplicate(true),
 			"penciled_digits": penciled_digits.duplicate(true),
 			"number_source": number_source.duplicate(true),
@@ -463,9 +479,16 @@ func _on_Redo_button_up():
 func _on_Validate_button_up():
 	var sudoku_solver_script = preload("res://Sudoku/Scripts/SudokuSolver/SudokuSolver.gd")
 	var sudoku_solver = sudoku_solver_script.new()
-	var current_grid = puzzle
-
+	#var current_grid = puzzle
+	var current_grid = [[0,9,0,5,1,0,0,7,2],[5,0,7,0,0,4,0,0,1],[0,6,3,8,7,2,5,4,9],[7,0,8,9,0,6,0,0,0],[0,0,0,1,0,0,0,6,0],[6,0,0,3,4,7,0,0,8],[0,0,0,4,0,0,1,0,7],[0,0,5,2,8,1,3,9,0],[0,0,0,0,3,0,0,0,0]]
 	var solved_grid = sudoku_solver.solve_sudoku(current_grid, "null")
+
+	if solved_grid:
+		is_sudoku_valid_button.visible = true
+		is_sudoku_valid_button.text = "Sudoku is Valid"
+	if solved_grid == false:
+		is_sudoku_valid_button.visible = true
+		is_sudoku_valid_button.text = "Sudoku is Invalid"
 
 func run_sudoku_generator_in_background():
 	var sudoku_generator_instance = sudoku_generator_script.new()

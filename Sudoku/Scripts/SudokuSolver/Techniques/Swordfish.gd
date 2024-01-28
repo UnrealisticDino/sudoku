@@ -4,14 +4,14 @@ extends Node
 # Function to solve Sudoku using the Swordfish technique
 func solve(candidates: Array) -> Array:
 	#print("Swordfish")
-	var check = candidates.duplicate(true)
+	#var check = candidates.duplicate(true)
 
 	# Apply Swordfish technique for each number
 	for num in range(1, 10):
 		check_swordfish(candidates, num)
 
-	if check != candidates:
-		print("Swordfish used")
+#	if check != candidates:
+#		print("Swordfish used")
 	return candidates
 
 # Check and apply Swordfish for a specific number

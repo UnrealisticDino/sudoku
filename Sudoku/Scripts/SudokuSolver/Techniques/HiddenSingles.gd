@@ -4,7 +4,7 @@ extends Node
 # Function to solve Hidden Singles in a Sudoku grid
 func solve(candidates: Array) -> Array:
 	#print("HiddenSingles")
-	var check = candidates.duplicate(true)
+	#var check = candidates.duplicate(true)
 	var updated = false
 
 	# Check each row, column, and box for Hidden Singles
@@ -13,8 +13,8 @@ func solve(candidates: Array) -> Array:
 		updated = _check_hidden_singles_unit(candidates, i, false) or updated  # Check columns
 		updated = _check_hidden_singles_box(candidates, i) or updated  # Check boxes
 
-	if check != candidates:
-		print("HiddenSingles used")
+#	if check != candidates:
+#		print("HiddenSingles used")
 	return candidates
 
 # Hidden Singles in Row or Column

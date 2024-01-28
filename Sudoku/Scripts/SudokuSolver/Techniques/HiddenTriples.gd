@@ -4,6 +4,7 @@ extends Node
 # Function to solve Hidden Triples in the candidates array
 func solve(candidates: Array) -> Array:
 	#print("HiddenTriples")
+	#var check = candidates.duplicate(true)
 	var updated = false
 
 	# Check each row, column, and box for Hidden Triples
@@ -12,8 +13,8 @@ func solve(candidates: Array) -> Array:
 		updated = check_hidden_triples_unit(candidates, i, false) or updated  # Check columns
 		updated = check_hidden_triples_box(candidates, i) or updated  # Check boxes
 
-	if updated:
-		print("HiddenTriples used")
+#	if check != candidates:
+#		print("HiddenTriples used")
 
 	return candidates
 

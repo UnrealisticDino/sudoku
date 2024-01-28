@@ -4,7 +4,7 @@ extends Node
 # Function to solve Hidden Pairs in the candidates array
 func solve(candidates: Array) -> Array:
 	#print("HiddenPairs")
-	var check = candidates.duplicate(true)
+	#var check = candidates.duplicate(true)
 	var updated = false
 
 	# Check each row, column, and box for Hidden Pairs
@@ -12,8 +12,8 @@ func solve(candidates: Array) -> Array:
 		if _check_hidden_pairs_unit(candidates, i, true) or _check_hidden_pairs_unit(candidates, i, false) or _check_hidden_pairs_box(candidates, i):
 			updated = true
 
-	if check != candidates:
-		print("HiddenPairs used")
+#	if check != candidates:
+#		print("HiddenPairs used")
 	return candidates
 
 # Helper function to check and resolve Hidden Pairs in a row or column
